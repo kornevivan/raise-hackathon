@@ -110,6 +110,19 @@ def test_precedent_retrieval_top3():
     assert "PRECEDENT-2013-09" in {c["id"] for c in fp}
 
 
+def test_consistency_check_cross_verifies_filing_text():
+    """B2: the run cross-verifies a tool-store figure against the quarterly report's TEXT LAYER
+    (not an assumption). Debt must be corroborated by the test-quarter filing."""
+    evs = _run(scen.cfg("S1"))
+    cc = next((e for e in evs if e["title"].startswith("Consistency check")), None)
+    assert cc, "no consistency-check step emitted"
+    rows = cc["payload"]["consistency"]
+    debt = next(c for c in rows if c["figure"].startswith("Consolidated Total Debt"))
+    assert debt["consistent"] and debt["document"] == "financial_report_2014Q2"
+    assert str(int(debt["tool_value"])).startswith("34") and "3,480" in debt["snippet"]
+    assert cc["payload"]["consistent"] is True
+
+
 def test_negative_only_agreement_no_financials():
     """Upload path, no financial figures present → honest 'insufficient data', no invented
     numbers (guide §3.4.2)."""
@@ -142,6 +155,7 @@ if __name__ == "__main__":
     for fn in (test_s4_certificate_crosscheck, test_s1_trace_assertions, test_s0_scanned_thumbnail,
                test_live_doc_set_is_real_no_excerpts, test_precedent_retrieval_top3,
                test_no_golden_leakage_in_ingest, test_atlantic_coverage_and_filing,
+               test_consistency_check_cross_verifies_filing_text,
                test_negative_only_agreement_no_financials, test_negative_amendment_referenced_but_absent):
         fn(); print("ok:", fn.__name__)
     print("SCENARIO + TRACE + GUARD + NEGATIVE TESTS PASS")

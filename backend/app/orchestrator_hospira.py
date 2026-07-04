@@ -38,6 +38,7 @@ class HospiraRun:
         self.seq = itertools.count(1)
         self.citations: dict[str, dict] = {}
         self._cid = itertools.count(1)
+        self.consistency: list[dict] = []
 
     # ---- events + citations ----
     def ev(self, kind, phase, title, detail="", *, payload=None, tier=None, model=None,
@@ -220,6 +221,9 @@ class HospiraRun:
                           "steps": r.calc_steps[:3], "ratio": r.ratio_naive},
                           "threshold": r.threshold, "over": naive_over}, mode="code")
 
+        # --- consistency-check (B2): cross-verify tool-store figures against the filing text ---
+        yield from self._consistency_check()
+
         # --- gap-check (generalized instrument trigger) ---
         gap, gev = self._gap_check()
         yield gev
@@ -341,6 +345,39 @@ class HospiraRun:
                      tier=res.tier, model=res.model, mode=res.mode, latency_ms=res.latency_ms)
         return gap, ev
 
+    def _consistency_check(self):
+        """B2: an agent-driven consistency check — take a figure the tool store produced and
+        confirm the quarterly report's own text layer states the same number. A figure the filing
+        does not corroborate is flagged (never silently trusted)."""
+        order, by_q = hospira.financials()
+        row = by_q.get(self.tq, {})
+        reports = docroles.pages_with_role(self.pages, "financial_report")
+        reports = [p for p in reports if self.tq in p["doc_id"]] or reports   # the test-quarter filing
+        figures = [("Consolidated Total Debt", self.r.consolidated_total_debt),
+                   ("Net income (test quarter)", row.get("net_income"))]
+        self.consistency = []
+        for label, val in figures:
+            if val is None:
+                continue
+            p, b = linker.find_block(reports, value=val)
+            if b:
+                self.cite_value(val, role="financial_report")
+            self.consistency.append({
+                "figure": label, "tool_value": val, "consistent": b is not None,
+                "document": p["doc_id"] if p else None,
+                "snippet": " ".join(b["text"].split())[:90] if b else None})
+        n_ok = sum(c["consistent"] for c in self.consistency)
+        detail = "; ".join(
+            f"{c['figure']} = {c['tool_value']} "
+            + ("✓ corroborated by the filing" if c["consistent"] else "⚠ NOT found in the filing text")
+            for c in self.consistency)
+        self.consistent_all = self.consistency and all(c["consistent"] for c in self.consistency)
+        yield self.ev("verify", "EVIDENCE", "Consistency check · tool vs filing text",
+                      f"Cross-verified {n_ok}/{len(self.consistency)} tool-store figure(s) against "
+                      f"the quarterly report's text layer. {detail}",
+                      payload={"consistency": self.consistency, "consistent": self.consistent_all},
+                      mode="code")
+
     def _cause_debt_jump(self):
         tq = hospira.transactions_query(quarter=self.tq, category="debt_draw", min_abs=100000)
         big = tq["rows"][0] if tq["rows"] else None
@@ -365,9 +402,13 @@ class HospiraRun:
     # [3] VERIFIER
     def _verify(self):
         r = self.r
+        # the debt figure's tool-vs-filing agreement is the consistency-check result (B2), not an
+        # assumption — a figure the filing didn't corroborate would show up here as unverified.
+        debt_ok = next((c["consistent"] for c in self.consistency
+                        if c["figure"].startswith("Consolidated Total Debt")), True)
         claims = [
             {"text": f"Consolidated Total Debt at {r.period_end} is {r.consolidated_total_debt}.",
-             "has_citation": True, "number_matches_tool": True},
+             "has_citation": True, "number_matches_tool": debt_ok},
             {"text": f"Adjusted EBITDA (trailing 4 FQ) is {r.ebitda_correct}.",
              "has_citation": True, "number_matches_tool": True},
             {"text": f"Device Strategy addback is capped at {r.device.allowed} "
