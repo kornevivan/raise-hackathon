@@ -24,7 +24,7 @@ if config.LIVE:
     try:
         from openai import OpenAI
         _client = OpenAI(base_url=config.VULTR_BASE_URL, api_key=config.VULTR_INFERENCE_KEY,
-                         timeout=config.LLM_TIMEOUT_S)
+                         timeout=config.LLM_TIMEOUT_S, max_retries=0)
     except Exception:
         _client = None
 
@@ -110,13 +110,13 @@ class LLM:
                          latency_ms=latency, raw=raw)
 
     def _raw_chat(self, model: str, messages: list[dict]) -> str:
-        kwargs = dict(model=model, messages=messages, temperature=config.TEMPERATURE,
-                      max_tokens=1400)
-        try:  # prefer strict JSON mode when the endpoint supports it
-            resp = _client.chat.completions.create(response_format={"type": "json_object"}, **kwargs)
-        except Exception:
-            resp = _client.chat.completions.create(**kwargs)
-        return resp.choices[0].message.content or ""
+        # Plain mode + explicit "ONLY JSON" instruction proved far more reliable than
+        # the endpoint's json_object mode (which truncated some models mid-object).
+        resp = _client.chat.completions.create(
+            model=model, messages=messages, temperature=config.TEMPERATURE,
+            max_tokens=1800)
+        msg = resp.choices[0].message
+        return msg.content or getattr(msg, "reasoning_content", "") or ""
 
 
 def _schema_hint(schema: dict) -> str:
@@ -124,11 +124,18 @@ def _schema_hint(schema: dict) -> str:
             + json.dumps(schema))
 
 
+_THINK = None
+
+
 def _extract_json(text: str) -> dict | None:
+    import re
+    global _THINK
+    if _THINK is None:
+        _THINK = re.compile(r"<think>.*?</think>", re.DOTALL)
     text = (text or "").strip()
-    if text.startswith("```"):
-        text = text.strip("`")
-        text = text[text.find("{"):]
+    text = _THINK.sub("", text)          # strip reasoning-model think blocks
+    if "```" in text:
+        text = re.sub(r"```(?:json)?", "", text)
     start, end = text.find("{"), text.rfind("}")
     if start == -1 or end == -1:
         return None

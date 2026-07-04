@@ -149,8 +149,17 @@ class Run:
 
         res = self.llm.json_call(tier=PRIME, system=system, user=user,
                                  schema=PLAN_SCHEMA, offline_fn=offline)
-        self.plan = res.data
-        c = self.plan["checks"][0]
+        # Covenant structure is known at ingest — take it from the scenario, not the
+        # model. The planner only contributes prioritisation / data-needs (spec §9).
+        base = offline()["checks"][0]
+        llm_checks = res.data.get("checks") if isinstance(res.data, dict) else None
+        lc = (llm_checks or [{}])[0] if isinstance(llm_checks, list) else {}
+        check = {**base,
+                 "risk_priority": lc.get("risk_priority", base["risk_priority"]),
+                 "data_needed": lc.get("data_needed", base["data_needed"])
+                                if isinstance(lc.get("data_needed"), list) else base["data_needed"]}
+        self.plan = {"checks": [check]}
+        c = check
         yield self.ev("route", "PLAN", "Routing → Prime tier",
                       "Planning is a hard reasoning step → strongest model.",
                       tier="prime", model=res.model, mode=res.mode)
@@ -460,11 +469,14 @@ class Run:
                                       f"Citations available: "
                                       f"{[(cid, c['text'][:60]) for cid, c in self.citations.items()]}",
                                  schema=MEMO_SCHEMA, offline_fn=offline)
-        memo = res.data
-        memo.setdefault("recommendation", rec)
-        memo.setdefault("confidence", f["confidence"])
-        memo.setdefault("headline", headline)
-        memo.setdefault("sections", sections)
+        # The recommendation, confidence and every number are DETERMINISTIC functions
+        # of the verified calculation — never an LLM opinion. The model synthesises
+        # prose; we keep the audited facts authoritative and citation-safe.
+        memo = res.data if isinstance(res.data, dict) else {}
+        memo["recommendation"] = rec
+        memo["confidence"] = f["confidence"]
+        memo["headline"] = headline
+        memo["sections"] = sections
 
         payload = {
             "memo": memo,

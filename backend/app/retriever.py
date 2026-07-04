@@ -26,6 +26,7 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 
+import httpx
 from rank_bm25 import BM25Okapi
 
 from . import config, corpus
@@ -119,38 +120,107 @@ class LocalRetriever:
         return [h for h in hits if h.score > 0][:k]
 
 
-class VultrRetriever:
-    """Pages indexed as images in a Vultr Vector Store and queried through the
-    inference API. Falls back to LocalRetriever on any error so the demo is safe.
+_MARK = re.compile(r"\[\[(.+?)\]\]")
 
-    NOTE: exact vector-store payloads are confirmed against `/v1/models` and the
-    vector-store endpoints once the inference subscription is active; until then
-    LocalRetriever is the default backend.
-    """
+
+class VultrVectorStore:
+    """Thin client for the Vultr Serverless Inference Vector Store (the service
+    that fronts the VultronRetriever models)."""
+
+    def __init__(self):
+        self.base = config.VULTR_BASE_URL.rstrip("/")
+        self._c = httpx.Client(base_url=self.base, timeout=90,
+                               headers={"Authorization": f"Bearer {config.VULTR_INFERENCE_KEY}"})
+
+    def ensure_collection(self, name: str, want_items: int, items: list[tuple[str, str]]):
+        """Create the collection and (re)index `items` = [(page_uid, content)] if the
+        item count doesn't already match. Idempotent across restarts."""
+        existing = self._c.get(f"/vector_store/{name}/items")
+        if existing.status_code == 200 and len(existing.json().get("items", [])) == want_items:
+            return
+        # clean slate
+        self._c.delete(f"/vector_store/{name}")
+        self._c.post("/vector_store", json={"name": name})
+        for page_uid, content in items:
+            self._c.post(f"/vector_store/{name}/items",
+                         json={"content": f"[[{page_uid}]] {content}", "description": page_uid})
+
+    def search(self, name: str, query: str, model: str, top_k: int) -> list[str]:
+        """Return an ordered list of page_uids ranked by the VultronRetriever model."""
+        r = self._c.post(f"/vector_store/{name}/search",
+                         json={"input": query, "model": model, "top_k": top_k})
+        r.raise_for_status()
+        uids = []
+        for res in r.json().get("results", []):
+            m = _MARK.search(res.get("content", "") or "")
+            if m and m.group(1) not in uids:
+                uids.append(m.group(1))
+        return uids
+
+
+class VultrRetriever:
+    """Ranking runs on the VultronRetriever models via the Vultr Vector Store;
+    citations stay precise because we map each ranked page_uid back to the local
+    page (blocks + bboxes). Any error degrades to LocalRetriever so the demo is
+    always safe."""
 
     backend = "vultr"
 
-    def __init__(self, pages: list[dict]):
+    def __init__(self, borrower_id: str, pages: list[dict]):
         self.pages = pages
+        self.by_uid = {p["page_uid"]: p for p in pages}
         self._local = LocalRetriever(pages)
-        # collection provisioning happens lazily on first retrieve in live mode.
+        self.collection = f"cs-{borrower_id}"
+        self._vs = VultrVectorStore()
         self._ready = False
 
-    def _ensure_index(self):
-        # Placeholder for: create collection -> upload page images/text ->
-        # VultronRetriever embeds them. Implemented against the live API in
-        # LIVE mode; see README "Retrieval" section.
+    def _ensure(self):
+        if self._ready:
+            return
+        items = [(p["page_uid"], p["text"]) for p in self.pages]
+        self._vs.ensure_collection(self.collection, len(items), items)
         self._ready = True
+
+    def _hit_from_page(self, p: dict, query: str, rank: int) -> Hit:
+        q_tokens = set(_tok(query))
+        scored = sorted(
+            ((sum(1 for t in q_tokens if len(t) > 2 and t in b["text"].lower())
+              + (2 if b.get("kind") == "table" else 0), b) for b in p["blocks"]),
+            key=lambda x: x[0], reverse=True)
+        top = [b for s, b in scored[:3] if s > 0] or [scored[0][1]]
+        return Hit(page_uid=p["page_uid"], doc_id=p["doc_id"], doc_title=p["doc_title"],
+                   kind=p["kind"], page=p["page"], image=p["image"], width=p["width"],
+                   height=p["height"], scanned=p["scanned"],
+                   score=round(1.0 / (rank + 1), 3), blocks=top)
 
     def retrieve(self, query: str, tier: str = "core", k: int = 4,
                  restrict_kind: str | None = None) -> list[Hit]:
-        # Until vector-store payloads are locked against the live subscription,
-        # delegate ranking to the deterministic local retriever (same interface).
+        try:
+            self._ensure()
+            uids = self._vs.search(self.collection, query, model=TIER_MODEL[tier], top_k=max(k * 2, 6))
+            hits: list[Hit] = []
+            for rank, uid in enumerate(uids):
+                p = self.by_uid.get(uid)
+                if not p or (restrict_kind and p["kind"] != restrict_kind):
+                    continue
+                hits.append(self._hit_from_page(p, query, rank))
+                if len(hits) >= k:
+                    break
+            if hits:
+                return hits
+        except Exception:
+            pass
+        # safe fallback — never break a run
         return self._local.retrieve(query, tier=tier, k=k, restrict_kind=restrict_kind)
 
 
+_CACHE: dict[str, object] = {}
+
+
 def build_retriever(borrower_id: str):
+    if borrower_id in _CACHE:
+        return _CACHE[borrower_id]
     pages = corpus.pages_for_borrower(borrower_id)
-    if config.LIVE:
-        return VultrRetriever(pages)
-    return LocalRetriever(pages)
+    r = VultrRetriever(borrower_id, pages) if config.LIVE else LocalRetriever(pages)
+    _CACHE[borrower_id] = r
+    return r
