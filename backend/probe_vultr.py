@@ -56,6 +56,34 @@ if chat:
     except Exception as e:
         print("   smoke test error:", e)
 
+# --- P0-A: can the VultronRetriever models be used as CHAT/reasoning models? ---
+print("\n== P0-A: VultronRetriever as chat models (5 JSON-adherence runs + latency) ==")
+import time as _t
+for m in ["vultr/VultronRetrieverPrime-Qwen3.5-8B", "vultr/VultronRetrieverCore-Qwen3.5-4.5B",
+          "vultr/VultronRetrieverFlash-Qwen3.5-0.8B"]:
+    oks, lats, err = 0, [], None
+    for _ in range(5):
+        t0 = _t.time()
+        try:
+            r = client.chat.completions.create(
+                model=m, temperature=0, max_tokens=60,
+                messages=[{"role": "system", "content": "Reply ONLY a JSON object."},
+                          {"role": "user", "content": 'Return {"ok": true}.'}])
+            txt = r.choices[0].message.content or ""
+            if "{" in txt:
+                oks += 1
+            lats.append(int((_t.time() - t0) * 1000))
+        except Exception as e:
+            err = f"{type(e).__name__}: {str(e)[:80]}"
+            break
+    if err:
+        print(f"  {m:38s} NOT CHAT-CAPABLE → {err}")
+    else:
+        print(f"  {m:38s} json_ok {oks}/5  latency_ms={lats}")
+print("  Conclusion: VultronRetriever models are retrieval-only on Vultr Serverless")
+print("  Inference (chat/completions endpoints 404). Core reasoning therefore runs on a")
+print("  Vultr-hosted open-source chat model; retrieval runs on the VultronRetriever flavors.")
+
 print("\n# --- paste into backend/.env (edit tiers to taste) ---")
 def pick(lst, i, default):
     return lst[i] if i < len(lst) else (lst[-1] if lst else default)

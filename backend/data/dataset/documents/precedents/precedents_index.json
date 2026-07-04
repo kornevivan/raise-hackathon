@@ -1,0 +1,86 @@
+[
+  {
+    "id": "PRECEDENT-2013-04",
+    "borrower": "Hospira, Inc.",
+    "date": "2013-04-30",
+    "covenant": "Leverage Ratio (Section 6.6) max 3.50x",
+    "measured": "3.68x (Q1 2013)",
+    "event": "Covenant breach for the fiscal quarter ended 2013-03-31 driven by Device Strategy cash charges.",
+    "decision": "WAIVER + AMENDMENT. Requisite Lenders waived Section 6.6 non-compliance (Amendment No. 1, Section 2) and amended the covenant: new Section 6.6A threshold 3.75x through FQ ending 2014-12-31, stepping down to 3.50x thereafter; Permitted Addbacks expanded with $290.0M Device Strategy and $110.0M quality-matters caps (Amendment No. 1, Section 1(d)).",
+    "outcome": "Facility continued; amendment fee paid; enhanced quarterly reporting.",
+    "source": "REAL DOCUMENT: Amendment No. 1 dated 2013-04-30, Exhibit 10.12 to Hospira Form 10-Q (Q1 2013), SEC EDGAR: sec.gov/Archives/edgar/data/1274057/000127405713000013/hsp-ex1012_2013331x10q.htm",
+    "tags": "breach, waiver, amendment, addback-caps, threshold-reset"
+  },
+  {
+    "id": "PRECEDENT-2012-11",
+    "borrower": "Lakeshore Packaging Corp.",
+    "date": "2012-11-19",
+    "covenant": "Total Net Leverage max 3.75x",
+    "measured": "3.91x (Q3 2012)",
+    "event": "Breach after debt-funded tuck-in acquisition; EBITDA contribution lagged one quarter.",
+    "decision": "WAIVER granted for one test period. 25 bps waiver fee; pricing grid shifted +50 bps until leverage below 3.25x for two consecutive quarters.",
+    "outcome": "Cured next quarter; pricing restored 2013Q3.",
+    "source": "Synthetic precedent (fictional borrower).",
+    "tags": "breach, waiver, acquisition-driven, pricing-bump"
+  },
+  {
+    "id": "PRECEDENT-2013-09",
+    "borrower": "TriState Components LLC",
+    "date": "2013-09-12",
+    "covenant": "Total Net Leverage max 3.50x",
+    "measured": "reported 3.62x; corrected 3.31x",
+    "event": "FALSE POSITIVE. Internal calculation omitted a permitted addback for restructuring charges expressly allowed by the credit agreement definition of EBITDA.",
+    "decision": "NO BREACH. Committee required a definition-first recalculation protocol: every covenant computation must quote the operative definition and any amendments before escalation to lenders.",
+    "outcome": "Process fix; no lender notification was ultimately required.",
+    "source": "Synthetic precedent (fictional borrower).",
+    "tags": "false-positive, addbacks, definition-check"
+  },
+  {
+    "id": "PRECEDENT-2014-03",
+    "borrower": "Harbor Dining Group Inc.",
+    "date": "2014-03-27",
+    "covenant": "Senior Secured Leverage max 4.00x",
+    "measured": "4.18x (Q4 2013)",
+    "event": "Breach on seasonal EBITDA trough.",
+    "decision": "EQUITY CURE exercised per credit agreement cure rights; sponsor contributed $35.0M treated as EBITDA for the test period.",
+    "outcome": "Compliance restored; one of two permitted cures consumed.",
+    "source": "Synthetic precedent (fictional borrower).",
+    "tags": "breach, equity-cure"
+  },
+  {
+    "id": "PRECEDENT-2014-08",
+    "borrower": "Novaline Chemicals Corp.",
+    "date": "2014-08-21",
+    "covenant": "Total Net Leverage: 4.00x stepping down to 3.75x after 2014-06-30",
+    "measured": "3.88x (Q2 2014)",
+    "event": "STEP-DOWN MISSED. Borrower tested against the stale 4.00x threshold; the scheduled step-down to 3.75x had taken effect, producing an unnoticed breach discovered by the agent bank.",
+    "decision": "FORBEARANCE 60 days, then amendment resetting the step-down schedule; 40 bps fee; covenant headroom reporting added to compliance certificate.",
+    "outcome": "Resolved; relationship strain noted by committee.",
+    "source": "Synthetic precedent (fictional borrower).",
+    "tags": "breach, step-down-trap, forbearance, amendment"
+  },
+  {
+    "id": "PRECEDENT-2013-06",
+    "borrower": "Redwood Fitness Holdings",
+    "date": "2013-06-10",
+    "covenant": "Total Net Leverage max 3.50x",
+    "measured": "3.41x (Q1 2013)",
+    "event": "THIN HEADROOM (<0.15x) two consecutive quarters; no breach.",
+    "decision": "ENHANCED MONITORING: monthly management accounts, 13-week cash flow, covenant projection two quarters forward at each test date.",
+    "outcome": "Deleveraged below 3.0x by 2014Q1; monitoring lifted.",
+    "source": "Synthetic precedent (fictional borrower).",
+    "tags": "thin-headroom, monitoring, no-breach"
+  },
+  {
+    "id": "PRECEDENT-2015-01",
+    "borrower": "Gulfport Marine Services Inc.",
+    "date": "2015-01-15",
+    "covenant": "Total Net Leverage max 3.50x",
+    "measured": "4.35x (Q4 2014)",
+    "event": "Breach with deteriorating liquidity; second breach in four quarters.",
+    "decision": "WAIVER DECLINED by lender group. Default declared; facility accelerated; restructuring advisors engaged.",
+    "outcome": "Negative precedent: late escalation and repeat breaches reduce waiver likelihood.",
+    "source": "Synthetic precedent (fictional borrower).",
+    "tags": "breach, waiver-declined, default"
+  }
+]

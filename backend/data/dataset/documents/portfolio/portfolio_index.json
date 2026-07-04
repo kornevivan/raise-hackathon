@@ -1,0 +1,35 @@
+{
+  "portfolio": [
+    "Hospira, Inc.",
+    "Cascadia Medical Supply Corp",
+    "Atlantic Beverage Partners Inc"
+  ],
+  "borrower_data": {
+    "Cascadia Medical Supply Corp": {
+      "facility": "$900M revolving credit facility, matures 2018-06; First National Bank as Admin Agent",
+      "covenant_max": 3.5,
+      "step_down": null,
+      "ratios": {
+        "2014Q1": 2.18,
+        "2014Q2": 2.11,
+        "2014Q3": 2.05,
+        "2014Q4": 2.09,
+        "2015Q1": 2.14
+      },
+      "notes": "Stable distributor; no one-time charges; no amendments."
+    },
+    "Atlantic Beverage Partners Inc": {
+      "facility": "$1.4B term loan B + revolver, matures 2019-03; Meridian Bank as Admin Agent",
+      "covenant_max": 3.5,
+      "step_down": null,
+      "ratios": {
+        "2014Q1": 3.05,
+        "2014Q2": 3.14,
+        "2014Q3": 3.22,
+        "2014Q4": 3.31,
+        "2015Q1": 3.38
+      },
+      "notes": "Leverage drifting upward five consecutive quarters on soft volumes; no amendments; no addback capacity in agreement."
+    }
+  }
+}

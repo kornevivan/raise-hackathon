@@ -1,0 +1,706 @@
+date,description,counterparty,category,amount_usd_thousands,quarter
+2013-01-04,Materials & production,Contract Manufacturer 3,cogs,-114013,2013Q1
+2013-01-05,Trade receivables collection,Hospital Group 28,revenue,55228,2013Q1
+2013-01-07,Trade receivables collection,Hospital Group 13,revenue,20956,2013Q1
+2013-01-07,"Selling, general & administrative",Corporate Services 2,sga,-3464,2013Q1
+2013-01-07,Research & development,R&D Programs 1,rnd,-4550,2013Q1
+2013-01-09,Trade receivables collection,Hospital Group 19,revenue,798,2013Q1
+2013-01-12,Trade receivables collection,Hospital Group 25,revenue,23864,2013Q1
+2013-01-13,Materials & production,Contract Manufacturer 4,cogs,-25132,2013Q1
+2013-01-13,Device Strategy program cash charge,Pump Retirement Logistics LLC,device_strategy,-36265,2013Q1
+2013-01-14,Quality remediation cash charge,Quality Compliance Partners LLP,quality_matters,-105,2013Q1
+2013-01-15,Trade receivables collection,Hospital Group 04,revenue,36782,2013Q1
+2013-01-16,Research & development,R&D Programs 3,rnd,-6268,2013Q1
+2013-01-18,"Selling, general & administrative",Corporate Services 1,sga,-1556,2013Q1
+2013-01-18,"Selling, general & administrative",Corporate Services 4,sga,-2249,2013Q1
+2013-01-19,Trade receivables collection,Hospital Group 10,revenue,64799,2013Q1
+2013-01-20,Trade receivables collection,Hospital Group 22,revenue,79471,2013Q1
+2013-01-21,"Selling, general & administrative",Corporate Services 3,sga,-1657,2013Q1
+2013-01-23,Trade receivables collection,Hospital Group 07,revenue,7555,2013Q1
+2013-01-25,Trade receivables collection,Hospital Group 16,revenue,22128,2013Q1
+2013-01-26,Research & development,R&D Programs 4,rnd,-7210,2013Q1
+2013-01-26,Quality remediation cash charge,Quality Compliance Partners LLP,quality_matters,-10999,2013Q1
+2013-01-27,Materials & production,Contract Manufacturer 2,cogs,-15093,2013Q1
+2013-01-28,Research & development,R&D Programs 2,rnd,-1644,2013Q1
+2013-01-31,Trade receivables collection,Hospital Group 01,revenue,39616,2013Q1
+2013-01-31,Materials & production,Contract Manufacturer 1,cogs,-105838,2013Q1
+2013-01-31,Device Strategy program cash charge,Infusion Replacement Program Admin,device_strategy,-9147,2013Q1
+2013-02-03,Materials & production,Contract Manufacturer 3,cogs,-13956,2013Q1
+2013-02-04,Trade receivables collection,Hospital Group 05,revenue,22437,2013Q1
+2013-02-06,Trade receivables collection,Hospital Group 17,revenue,67721,2013Q1
+2013-02-07,Materials & production,Contract Manufacturer 4,cogs,-70395,2013Q1
+2013-02-09,Trade receivables collection,Hospital Group 02,revenue,24255,2013Q1
+2013-02-09,Materials & production,Contract Manufacturer 1,cogs,-139096,2013Q1
+2013-02-11,Trade receivables collection,Hospital Group 20,revenue,12444,2013Q1
+2013-02-12,Trade receivables collection,Hospital Group 14,revenue,48464,2013Q1
+2013-02-12,Research & development,R&D Programs 4,rnd,-8965,2013Q1
+2013-02-13,Trade receivables collection,Hospital Group 23,revenue,43375,2013Q1
+2013-02-17,"Selling, general & administrative",Corporate Services 2,sga,-2839,2013Q1
+2013-02-18,"Selling, general & administrative",Corporate Services 4,sga,-12879,2013Q1
+2013-02-18,Research & development,R&D Programs 2,rnd,-4389,2013Q1
+2013-02-18,Device Strategy program cash charge,MedDevice Collection & Destruction Inc,device_strategy,-11001,2013Q1
+2013-02-20,Research & development,R&D Programs 1,rnd,-2648,2013Q1
+2013-02-21,Trade receivables collection,Hospital Group 26,revenue,50657,2013Q1
+2013-02-21,Materials & production,Contract Manufacturer 2,cogs,-15726,2013Q1
+2013-02-22,Trade receivables collection,Hospital Group 08,revenue,59642,2013Q1
+2013-02-23,"Selling, general & administrative",Corporate Services 1,sga,-5012,2013Q1
+2013-02-24,"Selling, general & administrative",Corporate Services 3,sga,-6519,2013Q1
+2013-02-24,Device Strategy program cash charge,Device Quality Systems Upgrade Co,device_strategy,-52217,2013Q1
+2013-02-27,Trade receivables collection,Hospital Group 11,revenue,19105,2013Q1
+2013-02-27,Trade receivables collection,Hospital Group 29,revenue,4583,2013Q1
+2013-02-27,Research & development,R&D Programs 3,rnd,-5565,2013Q1
+2013-02-28,Quality remediation cash charge,FDA Remediation Consultants Group,quality_matters,-5344,2013Q1
+2013-03-04,Trade receivables collection,Hospital Group 12,revenue,20860,2013Q1
+2013-03-08,Trade receivables collection,Hospital Group 03,revenue,33086,2013Q1
+2013-03-08,Research & development,R&D Programs 3,rnd,-4731,2013Q1
+2013-03-10,Trade receivables collection,Hospital Group 30,revenue,61354,2013Q1
+2013-03-11,Trade receivables collection,Hospital Group 06,revenue,8187,2013Q1
+2013-03-12,Materials & production,Contract Manufacturer 1,cogs,-60168,2013Q1
+2013-03-13,Trade receivables collection,Hospital Group 15,revenue,9495,2013Q1
+2013-03-13,Research & development,R&D Programs 2,rnd,-1260,2013Q1
+2013-03-14,"Selling, general & administrative",Corporate Services 1,sga,-16379,2013Q1
+2013-03-17,Materials & production,Contract Manufacturer 2,cogs,-16151,2013Q1
+2013-03-19,Materials & production,Contract Manufacturer 3,cogs,-16310,2013Q1
+2013-03-19,"Selling, general & administrative",Corporate Services 2,sga,-3009,2013Q1
+2013-03-20,"Selling, general & administrative",Corporate Services 4,sga,-10212,2013Q1
+2013-03-20,Research & development,R&D Programs 4,rnd,-17984,2013Q1
+2013-03-22,Trade receivables collection,Hospital Group 18,revenue,33888,2013Q1
+2013-03-22,Trade receivables collection,Hospital Group 24,revenue,54254,2013Q1
+2013-03-22,"Selling, general & administrative",Corporate Services 3,sga,-3825,2013Q1
+2013-03-25,Trade receivables collection,Hospital Group 21,revenue,12158,2013Q1
+2013-03-26,Trade receivables collection,Hospital Group 09,revenue,43793,2013Q1
+2013-03-26,Device Strategy program cash charge,Customer Sales Allowance - Credit Memo,device_strategy,-2378,2013Q1
+2013-03-26,Device Strategy program cash charge,Pump Retirement Logistics LLC,device_strategy,-18992,2013Q1
+2013-03-27,Trade receivables collection,Hospital Group 27,revenue,39045,2013Q1
+2013-03-30,Research & development,R&D Programs 1,rnd,-14786,2013Q1
+2013-03-31,Materials & production,Contract Manufacturer 4,cogs,-40522,2013Q1
+2013-03-31,Quality remediation cash charge,Sterile Process Validation Services,quality_matters,-3552,2013Q1
+2013-03-31,Interest payment on credit facilities,Citibank N.A. as Admin Agent,interest,-20500,2013Q1
+2013-03-31,Income tax payment/(refund),Tax Authorities,tax,2000,2013Q1
+2013-04-04,Trade receivables collection,Hospital Group 16,revenue,13528,2013Q2
+2013-04-04,Materials & production,Contract Manufacturer 2,cogs,-189519,2013Q2
+2013-04-05,Trade receivables collection,Hospital Group 19,revenue,3226,2013Q2
+2013-04-05,Trade receivables collection,Hospital Group 25,revenue,6245,2013Q2
+2013-04-06,Research & development,R&D Programs 3,rnd,-11541,2013Q2
+2013-04-07,Trade receivables collection,Hospital Group 28,revenue,875,2013Q2
+2013-04-09,Materials & production,Contract Manufacturer 4,cogs,-54253,2013Q2
+2013-04-09,Research & development,R&D Programs 2,rnd,-4221,2013Q2
+2013-04-10,Research & development,R&D Programs 1,rnd,-3314,2013Q2
+2013-04-11,Trade receivables collection,Hospital Group 04,revenue,16713,2013Q2
+2013-04-12,Trade receivables collection,Hospital Group 07,revenue,3746,2013Q2
+2013-04-12,"Selling, general & administrative",Corporate Services 1,sga,-6952,2013Q2
+2013-04-14,Materials & production,Contract Manufacturer 1,cogs,-1390,2013Q2
+2013-04-14,Research & development,R&D Programs 4,rnd,-2687,2013Q2
+2013-04-15,"Selling, general & administrative",Corporate Services 2,sga,-11394,2013Q2
+2013-04-18,Device Strategy program cash charge,Infusion Replacement Program Admin,device_strategy,-13529,2013Q2
+2013-04-20,Quality remediation cash charge,Quality Compliance Partners LLP,quality_matters,-1054,2013Q2
+2013-04-23,"Selling, general & administrative",Corporate Services 3,sga,-2392,2013Q2
+2013-04-24,Trade receivables collection,Hospital Group 01,revenue,8182,2013Q2
+2013-04-24,Quality remediation cash charge,Quality Compliance Partners LLP,quality_matters,-47,2013Q2
+2013-04-25,Trade receivables collection,Hospital Group 13,revenue,55656,2013Q2
+2013-04-25,Device Strategy program cash charge,Pump Retirement Logistics LLC,device_strategy,-9432,2013Q2
+2013-04-27,Trade receivables collection,Hospital Group 22,revenue,72779,2013Q2
+2013-04-28,Materials & production,Contract Manufacturer 3,cogs,-15343,2013Q2
+2013-04-28,"Selling, general & administrative",Corporate Services 4,sga,-9936,2013Q2
+2013-04-30,Trade receivables collection,Hospital Group 10,revenue,16139,2013Q2
+2013-05-04,Trade receivables collection,Hospital Group 02,revenue,26596,2013Q2
+2013-05-04,"Selling, general & administrative",Corporate Services 3,sga,-3901,2013Q2
+2013-05-05,Trade receivables collection,Hospital Group 08,revenue,16063,2013Q2
+2013-05-05,Research & development,R&D Programs 2,rnd,-1449,2013Q2
+2013-05-07,Research & development,R&D Programs 1,rnd,-15392,2013Q2
+2013-05-08,Trade receivables collection,Hospital Group 29,revenue,4162,2013Q2
+2013-05-10,Revolver repayment,Citibank N.A. as Admin Agent,debt_repayment,-20000,2013Q2
+2013-05-11,Trade receivables collection,Hospital Group 23,revenue,102,2013Q2
+2013-05-12,Materials & production,Contract Manufacturer 1,cogs,-64474,2013Q2
+2013-05-14,"Selling, general & administrative",Corporate Services 1,sga,-72,2013Q2
+2013-05-15,Materials & production,Contract Manufacturer 4,cogs,-24728,2013Q2
+2013-05-15,Materials & production,Contract Manufacturer 3,cogs,-2694,2013Q2
+2013-05-17,Research & development,R&D Programs 4,rnd,-16488,2013Q2
+2013-05-17,Device Strategy program cash charge,MedDevice Collection & Destruction Inc,device_strategy,-14513,2013Q2
+2013-05-18,Trade receivables collection,Hospital Group 26,revenue,26914,2013Q2
+2013-05-20,Trade receivables collection,Hospital Group 20,revenue,73635,2013Q2
+2013-05-20,Quality remediation cash charge,FDA Remediation Consultants Group,quality_matters,-2262,2013Q2
+2013-05-21,"Selling, general & administrative",Corporate Services 2,sga,-7272,2013Q2
+2013-05-22,Trade receivables collection,Hospital Group 17,revenue,82186,2013Q2
+2013-05-23,Materials & production,Contract Manufacturer 2,cogs,-9055,2013Q2
+2013-05-24,Trade receivables collection,Hospital Group 05,revenue,80730,2013Q2
+2013-05-24,Trade receivables collection,Hospital Group 11,revenue,41531,2013Q2
+2013-05-25,"Selling, general & administrative",Corporate Services 4,sga,-3301,2013Q2
+2013-05-25,Device Strategy program cash charge,Device Quality Systems Upgrade Co,device_strategy,-9368,2013Q2
+2013-05-26,Trade receivables collection,Hospital Group 14,revenue,26924,2013Q2
+2013-05-27,Research & development,R&D Programs 3,rnd,-1715,2013Q2
+2013-06-03,Trade receivables collection,Hospital Group 15,revenue,75635,2013Q2
+2013-06-04,"Selling, general & administrative",Corporate Services 3,sga,-6433,2013Q2
+2013-06-04,"Selling, general & administrative",Corporate Services 4,sga,-13586,2013Q2
+2013-06-05,Research & development,R&D Programs 2,rnd,-311,2013Q2
+2013-06-07,Trade receivables collection,Hospital Group 21,revenue,82906,2013Q2
+2013-06-07,Research & development,R&D Programs 3,rnd,-10468,2013Q2
+2013-06-11,Materials & production,Contract Manufacturer 4,cogs,-19379,2013Q2
+2013-06-14,Trade receivables collection,Hospital Group 24,revenue,12400,2013Q2
+2013-06-14,Materials & production,Contract Manufacturer 2,cogs,-119075,2013Q2
+2013-06-14,Quality remediation cash charge,Sterile Process Validation Services,quality_matters,-11637,2013Q2
+2013-06-15,Device Strategy program cash charge,Pump Retirement Logistics LLC,device_strategy,-1570,2013Q2
+2013-06-17,Trade receivables collection,Hospital Group 27,revenue,17258,2013Q2
+2013-06-18,Trade receivables collection,Hospital Group 18,revenue,46269,2013Q2
+2013-06-19,Trade receivables collection,Hospital Group 09,revenue,1192,2013Q2
+2013-06-20,"Selling, general & administrative",Corporate Services 1,sga,-3515,2013Q2
+2013-06-20,Research & development,R&D Programs 1,rnd,-1145,2013Q2
+2013-06-20,Device Strategy program cash charge,Customer Sales Allowance - Credit Memo,device_strategy,-11588,2013Q2
+2013-06-21,"Selling, general & administrative",Corporate Services 2,sga,-546,2013Q2
+2013-06-22,Materials & production,Contract Manufacturer 3,cogs,-19561,2013Q2
+2013-06-23,Trade receivables collection,Hospital Group 03,revenue,47086,2013Q2
+2013-06-23,Trade receivables collection,Hospital Group 12,revenue,128347,2013Q2
+2013-06-24,Materials & production,Contract Manufacturer 1,cogs,-122229,2013Q2
+2013-06-28,Trade receivables collection,Hospital Group 30,revenue,14414,2013Q2
+2013-06-29,Research & development,R&D Programs 4,rnd,-13269,2013Q2
+2013-06-30,Trade receivables collection,Hospital Group 06,revenue,33561,2013Q2
+2013-06-30,Interest payment on credit facilities,Citibank N.A. as Admin Agent,interest,-20300,2013Q2
+2013-06-30,Income tax payment/(refund),Tax Authorities,tax,-14400,2013Q2
+2013-07-05,Research & development,R&D Programs 2,rnd,-21652,2013Q3
+2013-07-08,Materials & production,Contract Manufacturer 3,cogs,-19440,2013Q3
+2013-07-09,Trade receivables collection,Hospital Group 04,revenue,20399,2013Q3
+2013-07-10,Trade receivables collection,Hospital Group 10,revenue,2118,2013Q3
+2013-07-11,Research & development,R&D Programs 1,rnd,-5483,2013Q3
+2013-07-11,Research & development,R&D Programs 4,rnd,-10554,2013Q3
+2013-07-12,Trade receivables collection,Hospital Group 22,revenue,7054,2013Q3
+2013-07-12,Quality remediation cash charge,Quality Compliance Partners LLP,quality_matters,-662,2013Q3
+2013-07-13,Trade receivables collection,Hospital Group 16,revenue,29006,2013Q3
+2013-07-13,Research & development,R&D Programs 3,rnd,-3953,2013Q3
+2013-07-14,Trade receivables collection,Hospital Group 19,revenue,1471,2013Q3
+2013-07-14,Trade receivables collection,Hospital Group 25,revenue,7418,2013Q3
+2013-07-17,Trade receivables collection,Hospital Group 13,revenue,73803,2013Q3
+2013-07-17,Materials & production,Contract Manufacturer 2,cogs,-26123,2013Q3
+2013-07-18,Trade receivables collection,Hospital Group 07,revenue,45321,2013Q3
+2013-07-19,Trade receivables collection,Hospital Group 01,revenue,19466,2013Q3
+2013-07-19,Trade receivables collection,Hospital Group 28,revenue,2159,2013Q3
+2013-07-19,"Selling, general & administrative",Corporate Services 1,sga,-10702,2013Q3
+2013-07-19,Device Strategy program cash charge,Infusion Replacement Program Admin,device_strategy,-1765,2013Q3
+2013-07-23,Materials & production,Contract Manufacturer 1,cogs,-23254,2013Q3
+2013-07-24,Device Strategy program cash charge,Pump Retirement Logistics LLC,device_strategy,-3867,2013Q3
+2013-07-25,Materials & production,Contract Manufacturer 4,cogs,-36742,2013Q3
+2013-07-26,Quality remediation cash charge,Quality Compliance Partners LLP,quality_matters,-3946,2013Q3
+2013-07-29,"Selling, general & administrative",Corporate Services 3,sga,-8848,2013Q3
+2013-07-29,"Selling, general & administrative",Corporate Services 2,sga,-885,2013Q3
+2013-07-31,"Selling, general & administrative",Corporate Services 4,sga,-3647,2013Q3
+2013-08-05,Materials & production,Contract Manufacturer 1,cogs,-84076,2013Q3
+2013-08-07,Trade receivables collection,Hospital Group 05,revenue,9460,2013Q3
+2013-08-08,Research & development,R&D Programs 1,rnd,-12557,2013Q3
+2013-08-09,"Selling, general & administrative",Corporate Services 3,sga,-1623,2013Q3
+2013-08-10,Trade receivables collection,Hospital Group 17,revenue,26869,2013Q3
+2013-08-10,Trade receivables collection,Hospital Group 26,revenue,54011,2013Q3
+2013-08-12,Trade receivables collection,Hospital Group 29,revenue,37368,2013Q3
+2013-08-12,"Selling, general & administrative",Corporate Services 2,sga,-6152,2013Q3
+2013-08-13,Trade receivables collection,Hospital Group 02,revenue,93597,2013Q3
+2013-08-13,Trade receivables collection,Hospital Group 14,revenue,71238,2013Q3
+2013-08-14,Trade receivables collection,Hospital Group 20,revenue,30065,2013Q3
+2013-08-15,"Selling, general & administrative",Corporate Services 4,sga,-1570,2013Q3
+2013-08-15,Revolver repayment,Citibank N.A. as Admin Agent,debt_repayment,-50000,2013Q3
+2013-08-16,Device Strategy program cash charge,MedDevice Collection & Destruction Inc,device_strategy,-11338,2013Q3
+2013-08-17,"Selling, general & administrative",Corporate Services 1,sga,-3046,2013Q3
+2013-08-17,Research & development,R&D Programs 4,rnd,-7379,2013Q3
+2013-08-18,Trade receivables collection,Hospital Group 23,revenue,10354,2013Q3
+2013-08-18,Quality remediation cash charge,FDA Remediation Consultants Group,quality_matters,-5130,2013Q3
+2013-08-19,Device Strategy program cash charge,Device Quality Systems Upgrade Co,device_strategy,-3178,2013Q3
+2013-08-21,Trade receivables collection,Hospital Group 08,revenue,39869,2013Q3
+2013-08-22,Research & development,R&D Programs 3,rnd,-11831,2013Q3
+2013-08-24,Materials & production,Contract Manufacturer 2,cogs,-42131,2013Q3
+2013-08-26,Materials & production,Contract Manufacturer 4,cogs,-36088,2013Q3
+2013-08-26,Materials & production,Contract Manufacturer 3,cogs,-85295,2013Q3
+2013-08-27,Research & development,R&D Programs 2,rnd,-2423,2013Q3
+2013-08-30,Trade receivables collection,Hospital Group 11,revenue,57227,2013Q3
+2013-09-04,Trade receivables collection,Hospital Group 27,revenue,153890,2013Q3
+2013-09-04,Research & development,R&D Programs 1,rnd,-69,2013Q3
+2013-09-07,Trade receivables collection,Hospital Group 12,revenue,9216,2013Q3
+2013-09-07,Materials & production,Contract Manufacturer 1,cogs,-5665,2013Q3
+2013-09-09,Trade receivables collection,Hospital Group 30,revenue,11987,2013Q3
+2013-09-10,Research & development,R&D Programs 3,rnd,-2440,2013Q3
+2013-09-11,Materials & production,Contract Manufacturer 3,cogs,-160065,2013Q3
+2013-09-11,Research & development,R&D Programs 2,rnd,-430,2013Q3
+2013-09-12,Trade receivables collection,Hospital Group 09,revenue,55177,2013Q3
+2013-09-13,Trade receivables collection,Hospital Group 15,revenue,12396,2013Q3
+2013-09-13,Research & development,R&D Programs 4,rnd,-229,2013Q3
+2013-09-14,"Selling, general & administrative",Corporate Services 2,sga,-2427,2013Q3
+2013-09-15,Trade receivables collection,Hospital Group 24,revenue,5681,2013Q3
+2013-09-16,"Selling, general & administrative",Corporate Services 3,sga,-14623,2013Q3
+2013-09-18,Materials & production,Contract Manufacturer 2,cogs,-14152,2013Q3
+2013-09-19,Materials & production,Contract Manufacturer 4,cogs,-93169,2013Q3
+2013-09-19,"Selling, general & administrative",Corporate Services 4,sga,-6056,2013Q3
+2013-09-21,Quality remediation cash charge,Sterile Process Validation Services,quality_matters,-262,2013Q3
+2013-09-22,Trade receivables collection,Hospital Group 18,revenue,56251,2013Q3
+2013-09-22,"Selling, general & administrative",Corporate Services 1,sga,-221,2013Q3
+2013-09-22,Device Strategy program cash charge,Customer Sales Allowance - Credit Memo,device_strategy,-14969,2013Q3
+2013-09-23,Device Strategy program cash charge,Pump Retirement Logistics LLC,device_strategy,-4883,2013Q3
+2013-09-27,Trade receivables collection,Hospital Group 03,revenue,2184,2013Q3
+2013-09-29,Trade receivables collection,Hospital Group 06,revenue,30088,2013Q3
+2013-09-30,Trade receivables collection,Hospital Group 21,revenue,34857,2013Q3
+2013-09-30,Interest payment on credit facilities,Citibank N.A. as Admin Agent,interest,-20000,2013Q3
+2013-09-30,Income tax payment/(refund),Tax Authorities,tax,-20400,2013Q3
+2013-10-04,Research & development,R&D Programs 1,rnd,-7357,2013Q4
+2013-10-06,Research & development,R&D Programs 2,rnd,-7088,2013Q4
+2013-10-07,Research & development,R&D Programs 4,rnd,-5892,2013Q4
+2013-10-08,Trade receivables collection,Hospital Group 04,revenue,17050,2013Q4
+2013-10-08,Trade receivables collection,Hospital Group 28,revenue,39322,2013Q4
+2013-10-10,Research & development,R&D Programs 3,rnd,-3841,2013Q4
+2013-10-14,Quality remediation cash charge,Quality Compliance Partners LLP,quality_matters,-958,2013Q4
+2013-10-15,"Selling, general & administrative",Corporate Services 1,sga,-4431,2013Q4
+2013-10-16,Trade receivables collection,Hospital Group 13,revenue,157761,2013Q4
+2013-10-17,Materials & production,Contract Manufacturer 3,cogs,-73095,2013Q4
+2013-10-18,Device Strategy program cash charge,Infusion Replacement Program Admin,device_strategy,-8910,2013Q4
+2013-10-18,Quality remediation cash charge,Quality Compliance Partners LLP,quality_matters,-845,2013Q4
+2013-10-19,Materials & production,Contract Manufacturer 2,cogs,-29461,2013Q4
+2013-10-19,"Selling, general & administrative",Corporate Services 3,sga,-6654,2013Q4
+2013-10-20,Trade receivables collection,Hospital Group 22,revenue,41322,2013Q4
+2013-10-20,"Selling, general & administrative",Corporate Services 4,sga,-10071,2013Q4
+2013-10-21,Trade receivables collection,Hospital Group 16,revenue,51904,2013Q4
+2013-10-21,Device Strategy program cash charge,Pump Retirement Logistics LLC,device_strategy,-1863,2013Q4
+2013-10-22,Trade receivables collection,Hospital Group 19,revenue,33768,2013Q4
+2013-10-22,Materials & production,Contract Manufacturer 1,cogs,-34344,2013Q4
+2013-10-24,Trade receivables collection,Hospital Group 07,revenue,18695,2013Q4
+2013-10-24,Trade receivables collection,Hospital Group 25,revenue,21687,2013Q4
+2013-10-24,"Selling, general & administrative",Corporate Services 2,sga,-3153,2013Q4
+2013-10-25,Trade receivables collection,Hospital Group 01,revenue,29768,2013Q4
+2013-10-27,Trade receivables collection,Hospital Group 10,revenue,27719,2013Q4
+2013-10-27,Materials & production,Contract Manufacturer 4,cogs,-65003,2013Q4
+2013-11-03,Trade receivables collection,Hospital Group 20,revenue,25487,2013Q4
+2013-11-06,Trade receivables collection,Hospital Group 05,revenue,20111,2013Q4
+2013-11-07,Trade receivables collection,Hospital Group 02,revenue,2083,2013Q4
+2013-11-07,Trade receivables collection,Hospital Group 26,revenue,3429,2013Q4
+2013-11-07,Trade receivables collection,Hospital Group 29,revenue,26935,2013Q4
+2013-11-08,"Selling, general & administrative",Corporate Services 3,sga,-1561,2013Q4
+2013-11-09,Trade receivables collection,Hospital Group 14,revenue,16842,2013Q4
+2013-11-09,Research & development,R&D Programs 2,rnd,-14175,2013Q4
+2013-11-10,Trade receivables collection,Hospital Group 23,revenue,20470,2013Q4
+2013-11-10,Device Strategy program cash charge,Device Quality Systems Upgrade Co,device_strategy,-16018,2013Q4
+2013-11-11,Device Strategy program cash charge,MedDevice Collection & Destruction Inc,device_strategy,-1907,2013Q4
+2013-11-12,Materials & production,Contract Manufacturer 2,cogs,-46535,2013Q4
+2013-11-13,Materials & production,Contract Manufacturer 4,cogs,-78538,2013Q4
+2013-11-13,Research & development,R&D Programs 4,rnd,-8153,2013Q4
+2013-11-16,"Selling, general & administrative",Corporate Services 4,sga,-3614,2013Q4
+2013-11-20,"Selling, general & administrative",Corporate Services 2,sga,-1202,2013Q4
+2013-11-20,Revolver repayment,Citibank N.A. as Admin Agent,debt_repayment,-70000,2013Q4
+2013-11-21,Trade receivables collection,Hospital Group 11,revenue,17095,2013Q4
+2013-11-21,Trade receivables collection,Hospital Group 17,revenue,19116,2013Q4
+2013-11-22,Materials & production,Contract Manufacturer 1,cogs,-7478,2013Q4
+2013-11-25,Materials & production,Contract Manufacturer 3,cogs,-181561,2013Q4
+2013-11-26,Trade receivables collection,Hospital Group 08,revenue,14862,2013Q4
+2013-11-26,Quality remediation cash charge,FDA Remediation Consultants Group,quality_matters,-6868,2013Q4
+2013-11-27,"Selling, general & administrative",Corporate Services 1,sga,-2445,2013Q4
+2013-11-27,Research & development,R&D Programs 1,rnd,-603,2013Q4
+2013-11-29,Research & development,R&D Programs 3,rnd,-3516,2013Q4
+2013-12-04,Trade receivables collection,Hospital Group 03,revenue,89386,2013Q4
+2013-12-04,Materials & production,Contract Manufacturer 1,cogs,-51639,2013Q4
+2013-12-04,"Selling, general & administrative",Corporate Services 1,sga,-837,2013Q4
+2013-12-06,"Selling, general & administrative",Corporate Services 4,sga,-12777,2013Q4
+2013-12-06,Research & development,R&D Programs 4,rnd,-19751,2013Q4
+2013-12-07,Trade receivables collection,Hospital Group 15,revenue,14805,2013Q4
+2013-12-08,Trade receivables collection,Hospital Group 24,revenue,41159,2013Q4
+2013-12-11,"Selling, general & administrative",Corporate Services 2,sga,-10704,2013Q4
+2013-12-11,Research & development,R&D Programs 3,rnd,-4953,2013Q4
+2013-12-12,Trade receivables collection,Hospital Group 27,revenue,130442,2013Q4
+2013-12-13,Trade receivables collection,Hospital Group 06,revenue,3425,2013Q4
+2013-12-14,Research & development,R&D Programs 2,rnd,-2781,2013Q4
+2013-12-15,Device Strategy program cash charge,Customer Sales Allowance - Credit Memo,device_strategy,-1196,2013Q4
+2013-12-18,Device Strategy program cash charge,Pump Retirement Logistics LLC,device_strategy,-106,2013Q4
+2013-12-19,Quality remediation cash charge,Sterile Process Validation Services,quality_matters,-1329,2013Q4
+2013-12-20,"Selling, general & administrative",Corporate Services 3,sga,-4751,2013Q4
+2013-12-21,Trade receivables collection,Hospital Group 18,revenue,12080,2013Q4
+2013-12-21,Materials & production,Contract Manufacturer 4,cogs,-2464,2013Q4
+2013-12-23,Materials & production,Contract Manufacturer 3,cogs,-64517,2013Q4
+2013-12-24,Trade receivables collection,Hospital Group 21,revenue,58612,2013Q4
+2013-12-26,Materials & production,Contract Manufacturer 2,cogs,-10165,2013Q4
+2013-12-30,Trade receivables collection,Hospital Group 12,revenue,13695,2013Q4
+2013-12-30,Trade receivables collection,Hospital Group 30,revenue,21544,2013Q4
+2013-12-31,Trade receivables collection,Hospital Group 09,revenue,49426,2013Q4
+2013-12-31,Research & development,R&D Programs 1,rnd,-4890,2013Q4
+2013-12-31,Interest payment on credit facilities,Citibank N.A. as Admin Agent,interest,-19600,2013Q4
+2013-12-31,Income tax payment/(refund),Tax Authorities,tax,-23400,2013Q4
+2014-01-06,Research & development,R&D Programs 1,rnd,-6443,2014Q1
+2014-01-06,Research & development,R&D Programs 4,rnd,-10926,2014Q1
+2014-01-07,Trade receivables collection,Hospital Group 04,revenue,24567,2014Q1
+2014-01-07,Trade receivables collection,Hospital Group 10,revenue,18452,2014Q1
+2014-01-12,Trade receivables collection,Hospital Group 01,revenue,8410,2014Q1
+2014-01-12,Device Strategy program cash charge,Infusion Replacement Program Admin,device_strategy,-8248,2014Q1
+2014-01-13,Trade receivables collection,Hospital Group 25,revenue,80545,2014Q1
+2014-01-14,Materials & production,Contract Manufacturer 3,cogs,-8553,2014Q1
+2014-01-16,"Selling, general & administrative",Corporate Services 1,sga,-1793,2014Q1
+2014-01-16,Research & development,R&D Programs 3,rnd,-2532,2014Q1
+2014-01-18,Research & development,R&D Programs 2,rnd,-5217,2014Q1
+2014-01-19,Trade receivables collection,Hospital Group 07,revenue,18588,2014Q1
+2014-01-19,"Selling, general & administrative",Corporate Services 3,sga,-2498,2014Q1
+2014-01-20,"Selling, general & administrative",Corporate Services 4,sga,-3743,2014Q1
+2014-01-22,Trade receivables collection,Hospital Group 22,revenue,83735,2014Q1
+2014-01-23,Trade receivables collection,Hospital Group 16,revenue,229,2014Q1
+2014-01-23,Trade receivables collection,Hospital Group 19,revenue,29580,2014Q1
+2014-01-24,Trade receivables collection,Hospital Group 28,revenue,4741,2014Q1
+2014-01-24,Materials & production,Contract Manufacturer 4,cogs,-27298,2014Q1
+2014-01-24,Materials & production,Contract Manufacturer 2,cogs,-28703,2014Q1
+2014-01-24,"Selling, general & administrative",Corporate Services 2,sga,-5124,2014Q1
+2014-01-28,Trade receivables collection,Hospital Group 13,revenue,8752,2014Q1
+2014-01-28,Materials & production,Contract Manufacturer 1,cogs,-33924,2014Q1
+2014-01-30,Device Strategy program cash charge,Pump Retirement Logistics LLC,device_strategy,-5867,2014Q1
+2014-01-31,Quality remediation cash charge,Quality Compliance Partners LLP,quality_matters,-6278,2014Q1
+2014-01-31,Quality remediation cash charge,Quality Compliance Partners LLP,quality_matters,-3169,2014Q1
+2014-02-01,Trade receivables collection,Hospital Group 26,revenue,213901,2014Q1
+2014-02-05,Trade receivables collection,Hospital Group 20,revenue,35337,2014Q1
+2014-02-07,Trade receivables collection,Hospital Group 11,revenue,14192,2014Q1
+2014-02-07,"Selling, general & administrative",Corporate Services 4,sga,-183,2014Q1
+2014-02-09,Trade receivables collection,Hospital Group 14,revenue,14606,2014Q1
+2014-02-09,"Selling, general & administrative",Corporate Services 3,sga,-5611,2014Q1
+2014-02-11,Trade receivables collection,Hospital Group 08,revenue,19060,2014Q1
+2014-02-13,Materials & production,Contract Manufacturer 3,cogs,-35989,2014Q1
+2014-02-13,"Selling, general & administrative",Corporate Services 1,sga,-2072,2014Q1
+2014-02-13,Research & development,R&D Programs 3,rnd,-970,2014Q1
+2014-02-14,Revolver draw - working capital,Citibank N.A. as Admin Agent,debt_draw,10000,2014Q1
+2014-02-15,Trade receivables collection,Hospital Group 05,revenue,7868,2014Q1
+2014-02-15,Materials & production,Contract Manufacturer 4,cogs,-7902,2014Q1
+2014-02-15,Research & development,R&D Programs 1,rnd,-152,2014Q1
+2014-02-15,Device Strategy program cash charge,MedDevice Collection & Destruction Inc,device_strategy,-4151,2014Q1
+2014-02-17,Research & development,R&D Programs 2,rnd,-1433,2014Q1
+2014-02-17,Device Strategy program cash charge,Device Quality Systems Upgrade Co,device_strategy,-1972,2014Q1
+2014-02-21,Trade receivables collection,Hospital Group 02,revenue,24216,2014Q1
+2014-02-21,Materials & production,Contract Manufacturer 1,cogs,-50319,2014Q1
+2014-02-25,Trade receivables collection,Hospital Group 29,revenue,56678,2014Q1
+2014-02-25,Research & development,R&D Programs 4,rnd,-1887,2014Q1
+2014-02-26,Trade receivables collection,Hospital Group 23,revenue,10062,2014Q1
+2014-02-27,Quality remediation cash charge,FDA Remediation Consultants Group,quality_matters,-34,2014Q1
+2014-02-28,Trade receivables collection,Hospital Group 17,revenue,78154,2014Q1
+2014-02-28,Materials & production,Contract Manufacturer 2,cogs,-126657,2014Q1
+2014-02-28,"Selling, general & administrative",Corporate Services 2,sga,-2604,2014Q1
+2014-03-04,Materials & production,Contract Manufacturer 3,cogs,-31128,2014Q1
+2014-03-05,Trade receivables collection,Hospital Group 09,revenue,33384,2014Q1
+2014-03-06,Trade receivables collection,Hospital Group 12,revenue,5686,2014Q1
+2014-03-06,Research & development,R&D Programs 3,rnd,-482,2014Q1
+2014-03-09,Trade receivables collection,Hospital Group 18,revenue,45670,2014Q1
+2014-03-15,Trade receivables collection,Hospital Group 27,revenue,853,2014Q1
+2014-03-15,Materials & production,Contract Manufacturer 2,cogs,-34958,2014Q1
+2014-03-15,Materials & production,Contract Manufacturer 4,cogs,-242674,2014Q1
+2014-03-17,Trade receivables collection,Hospital Group 06,revenue,34742,2014Q1
+2014-03-17,"Selling, general & administrative",Corporate Services 4,sga,-2879,2014Q1
+2014-03-21,Trade receivables collection,Hospital Group 03,revenue,26352,2014Q1
+2014-03-21,Materials & production,Contract Manufacturer 1,cogs,-7395,2014Q1
+2014-03-21,Research & development,R&D Programs 2,rnd,-14840,2014Q1
+2014-03-24,"Selling, general & administrative",Corporate Services 2,sga,-7904,2014Q1
+2014-03-25,"Selling, general & administrative",Corporate Services 3,sga,-22100,2014Q1
+2014-03-27,Research & development,R&D Programs 4,rnd,-28940,2014Q1
+2014-03-27,Device Strategy program cash charge,Customer Sales Allowance - Credit Memo,device_strategy,-1842,2014Q1
+2014-03-28,Trade receivables collection,Hospital Group 15,revenue,6178,2014Q1
+2014-03-28,Trade receivables collection,Hospital Group 30,revenue,14159,2014Q1
+2014-03-28,Device Strategy program cash charge,Pump Retirement Logistics LLC,device_strategy,-2920,2014Q1
+2014-03-29,Research & development,R&D Programs 1,rnd,-7178,2014Q1
+2014-03-31,Trade receivables collection,Hospital Group 21,revenue,81398,2014Q1
+2014-03-31,Trade receivables collection,Hospital Group 24,revenue,24905,2014Q1
+2014-03-31,"Selling, general & administrative",Corporate Services 1,sga,-3989,2014Q1
+2014-03-31,Quality remediation cash charge,Sterile Process Validation Services,quality_matters,-519,2014Q1
+2014-03-31,Interest payment on credit facilities,Citibank N.A. as Admin Agent,interest,-19600,2014Q1
+2014-03-31,Income tax payment/(refund),Tax Authorities,tax,-24200,2014Q1
+2014-04-03,Trade receivables collection,Hospital Group 19,revenue,5896,2014Q2
+2014-04-03,"Selling, general & administrative",Corporate Services 4,sga,-8503,2014Q2
+2014-04-04,Trade receivables collection,Hospital Group 07,revenue,21065,2014Q2
+2014-04-08,Trade receivables collection,Hospital Group 10,revenue,99905,2014Q2
+2014-04-10,Research & development,R&D Programs 1,rnd,-19176,2014Q2
+2014-04-10,Quality remediation cash charge,Quality Compliance Partners LLP,quality_matters,-3443,2014Q2
+2014-04-11,Trade receivables collection,Hospital Group 28,revenue,66558,2014Q2
+2014-04-11,Materials & production,Contract Manufacturer 3,cogs,-23624,2014Q2
+2014-04-11,"Selling, general & administrative",Corporate Services 2,sga,-325,2014Q2
+2014-04-12,Research & development,R&D Programs 3,rnd,-295,2014Q2
+2014-04-14,Device Strategy program cash charge,Infusion Replacement Program Admin,device_strategy,-4375,2014Q2
+2014-04-15,Materials & production,Contract Manufacturer 1,cogs,-20639,2014Q2
+2014-04-17,Trade receivables collection,Hospital Group 04,revenue,42713,2014Q2
+2014-04-18,Trade receivables collection,Hospital Group 22,revenue,42300,2014Q2
+2014-04-18,"Selling, general & administrative",Corporate Services 3,sga,-1297,2014Q2
+2014-04-18,Device Strategy program cash charge,Pump Retirement Logistics LLC,device_strategy,-3314,2014Q2
+2014-04-18,Quality remediation cash charge,Quality Compliance Partners LLP,quality_matters,-3615,2014Q2
+2014-04-19,"Selling, general & administrative",Corporate Services 1,sga,-5442,2014Q2
+2014-04-19,Research & development,R&D Programs 4,rnd,-10111,2014Q2
+2014-04-21,Materials & production,Contract Manufacturer 4,cogs,-94177,2014Q2
+2014-04-23,Trade receivables collection,Hospital Group 16,revenue,20220,2014Q2
+2014-04-25,Trade receivables collection,Hospital Group 01,revenue,43218,2014Q2
+2014-04-25,Trade receivables collection,Hospital Group 25,revenue,22296,2014Q2
+2014-04-26,Trade receivables collection,Hospital Group 13,revenue,35788,2014Q2
+2014-04-26,Research & development,R&D Programs 2,rnd,-1021,2014Q2
+2014-04-28,Materials & production,Contract Manufacturer 2,cogs,-56191,2014Q2
+2014-05-04,Trade receivables collection,Hospital Group 26,revenue,34238,2014Q2
+2014-05-04,"Selling, general & administrative",Corporate Services 4,sga,-8644,2014Q2
+2014-05-06,Trade receivables collection,Hospital Group 29,revenue,10820,2014Q2
+2014-05-06,Materials & production,Contract Manufacturer 3,cogs,-90608,2014Q2
+2014-05-07,Materials & production,Contract Manufacturer 1,cogs,-24287,2014Q2
+2014-05-11,Trade receivables collection,Hospital Group 11,revenue,24889,2014Q2
+2014-05-12,"Selling, general & administrative",Corporate Services 3,sga,-1376,2014Q2
+2014-05-14,Trade receivables collection,Hospital Group 05,revenue,1373,2014Q2
+2014-05-14,Quality remediation cash charge,FDA Remediation Consultants Group,quality_matters,-294,2014Q2
+2014-05-15,Trade receivables collection,Hospital Group 23,revenue,33618,2014Q2
+2014-05-16,Trade receivables collection,Hospital Group 14,revenue,11548,2014Q2
+2014-05-19,Revolver draw - Meridian Infusion Assets acquisition,Citibank N.A. as Admin Agent,debt_draw,460000,2014Q2
+2014-05-19,Acquisition consideration - Meridian Infusion Assets (one-time),Meridian Infusion Holdings,acquisition,-460000,2014Q2
+2014-05-20,Trade receivables collection,Hospital Group 17,revenue,25003,2014Q2
+2014-05-21,Trade receivables collection,Hospital Group 08,revenue,13976,2014Q2
+2014-05-21,Research & development,R&D Programs 3,rnd,-11096,2014Q2
+2014-05-23,"Selling, general & administrative",Corporate Services 2,sga,-7246,2014Q2
+2014-05-25,Research & development,R&D Programs 2,rnd,-2897,2014Q2
+2014-05-25,Research & development,R&D Programs 1,rnd,-2399,2014Q2
+2014-05-27,Materials & production,Contract Manufacturer 4,cogs,-45975,2014Q2
+2014-05-27,"Selling, general & administrative",Corporate Services 1,sga,-276,2014Q2
+2014-05-28,Trade receivables collection,Hospital Group 02,revenue,47943,2014Q2
+2014-05-28,Trade receivables collection,Hospital Group 20,revenue,125626,2014Q2
+2014-05-28,Materials & production,Contract Manufacturer 2,cogs,-164127,2014Q2
+2014-05-30,Device Strategy program cash charge,MedDevice Collection & Destruction Inc,device_strategy,-3450,2014Q2
+2014-05-31,Research & development,R&D Programs 4,rnd,-8246,2014Q2
+2014-05-31,Device Strategy program cash charge,Device Quality Systems Upgrade Co,device_strategy,-344,2014Q2
+2014-06-03,Trade receivables collection,Hospital Group 03,revenue,32763,2014Q2
+2014-06-03,Trade receivables collection,Hospital Group 09,revenue,17849,2014Q2
+2014-06-03,Trade receivables collection,Hospital Group 24,revenue,14861,2014Q2
+2014-06-03,Trade receivables collection,Hospital Group 27,revenue,89594,2014Q2
+2014-06-04,Materials & production,Contract Manufacturer 1,cogs,-32068,2014Q2
+2014-06-04,Research & development,R&D Programs 4,rnd,-8844,2014Q2
+2014-06-06,Trade receivables collection,Hospital Group 30,revenue,14587,2014Q2
+2014-06-06,"Selling, general & administrative",Corporate Services 4,sga,-8611,2014Q2
+2014-06-11,Research & development,R&D Programs 2,rnd,-12232,2014Q2
+2014-06-13,Trade receivables collection,Hospital Group 06,revenue,1536,2014Q2
+2014-06-13,Materials & production,Contract Manufacturer 3,cogs,-52162,2014Q2
+2014-06-16,"Selling, general & administrative",Corporate Services 2,sga,-5148,2014Q2
+2014-06-20,Research & development,R&D Programs 1,rnd,-6592,2014Q2
+2014-06-21,Materials & production,Contract Manufacturer 4,cogs,-10188,2014Q2
+2014-06-21,Quality remediation cash charge,Sterile Process Validation Services,quality_matters,-2648,2014Q2
+2014-06-22,Device Strategy program cash charge,Pump Retirement Logistics LLC,device_strategy,-3850,2014Q2
+2014-06-23,Trade receivables collection,Hospital Group 12,revenue,22225,2014Q2
+2014-06-23,Trade receivables collection,Hospital Group 18,revenue,20174,2014Q2
+2014-06-23,"Selling, general & administrative",Corporate Services 3,sga,-11087,2014Q2
+2014-06-24,Trade receivables collection,Hospital Group 21,revenue,38546,2014Q2
+2014-06-24,Research & development,R&D Programs 3,rnd,-1091,2014Q2
+2014-06-24,Device Strategy program cash charge,Customer Sales Allowance - Credit Memo,device_strategy,-19667,2014Q2
+2014-06-25,Trade receivables collection,Hospital Group 15,revenue,68872,2014Q2
+2014-06-28,Materials & production,Contract Manufacturer 2,cogs,-36954,2014Q2
+2014-06-29,"Selling, general & administrative",Corporate Services 1,sga,-5045,2014Q2
+2014-06-30,Interest payment on credit facilities,Citibank N.A. as Admin Agent,interest,-22600,2014Q2
+2014-06-30,Income tax payment/(refund),Tax Authorities,tax,-22300,2014Q2
+2014-07-04,Research & development,R&D Programs 1,rnd,-1706,2014Q3
+2014-07-05,Trade receivables collection,Hospital Group 28,revenue,54135,2014Q3
+2014-07-07,Trade receivables collection,Hospital Group 22,revenue,56313,2014Q3
+2014-07-08,Trade receivables collection,Hospital Group 01,revenue,11341,2014Q3
+2014-07-08,Trade receivables collection,Hospital Group 10,revenue,125138,2014Q3
+2014-07-08,"Selling, general & administrative",Corporate Services 4,sga,-5793,2014Q3
+2014-07-12,Materials & production,Contract Manufacturer 4,cogs,-67149,2014Q3
+2014-07-12,"Selling, general & administrative",Corporate Services 2,sga,-8463,2014Q3
+2014-07-13,"Selling, general & administrative",Corporate Services 1,sga,-1956,2014Q3
+2014-07-14,Research & development,R&D Programs 3,rnd,-12644,2014Q3
+2014-07-14,Quality remediation cash charge,Quality Compliance Partners LLP,quality_matters,-299,2014Q3
+2014-07-15,Trade receivables collection,Hospital Group 16,revenue,4030,2014Q3
+2014-07-16,Trade receivables collection,Hospital Group 07,revenue,32748,2014Q3
+2014-07-16,Materials & production,Contract Manufacturer 2,cogs,-59023,2014Q3
+2014-07-17,Research & development,R&D Programs 2,rnd,-14089,2014Q3
+2014-07-17,Quality remediation cash charge,Quality Compliance Partners LLP,quality_matters,-1990,2014Q3
+2014-07-19,Trade receivables collection,Hospital Group 04,revenue,52976,2014Q3
+2014-07-20,Device Strategy program cash charge,Infusion Replacement Program Admin,device_strategy,-523,2014Q3
+2014-07-21,Materials & production,Contract Manufacturer 3,cogs,-198951,2014Q3
+2014-07-21,Research & development,R&D Programs 4,rnd,-2221,2014Q3
+2014-07-22,Trade receivables collection,Hospital Group 13,revenue,12989,2014Q3
+2014-07-24,"Selling, general & administrative",Corporate Services 3,sga,-6177,2014Q3
+2014-07-26,Materials & production,Contract Manufacturer 1,cogs,-40495,2014Q3
+2014-07-28,Trade receivables collection,Hospital Group 19,revenue,2011,2014Q3
+2014-07-28,Trade receivables collection,Hospital Group 25,revenue,680,2014Q3
+2014-07-30,Device Strategy program cash charge,Pump Retirement Logistics LLC,device_strategy,-1273,2014Q3
+2014-08-04,"Selling, general & administrative",Corporate Services 2,sga,-3309,2014Q3
+2014-08-05,Materials & production,Contract Manufacturer 2,cogs,-31545,2014Q3
+2014-08-06,"Selling, general & administrative",Corporate Services 1,sga,-1710,2014Q3
+2014-08-09,Trade receivables collection,Hospital Group 14,revenue,2007,2014Q3
+2014-08-11,Trade receivables collection,Hospital Group 05,revenue,28203,2014Q3
+2014-08-11,Device Strategy program cash charge,MedDevice Collection & Destruction Inc,device_strategy,-4240,2014Q3
+2014-08-12,Trade receivables collection,Hospital Group 11,revenue,32156,2014Q3
+2014-08-15,Trade receivables collection,Hospital Group 08,revenue,2249,2014Q3
+2014-08-15,"Selling, general & administrative",Corporate Services 3,sga,-4369,2014Q3
+2014-08-15,Research & development,R&D Programs 1,rnd,-677,2014Q3
+2014-08-15,Research & development,R&D Programs 4,rnd,-2134,2014Q3
+2014-08-17,Research & development,R&D Programs 2,rnd,-5623,2014Q3
+2014-08-18,Device Strategy program cash charge,Device Quality Systems Upgrade Co,device_strategy,-730,2014Q3
+2014-08-19,Trade receivables collection,Hospital Group 29,revenue,21494,2014Q3
+2014-08-21,Trade receivables collection,Hospital Group 17,revenue,11173,2014Q3
+2014-08-22,Quality remediation cash charge,FDA Remediation Consultants Group,quality_matters,-1096,2014Q3
+2014-08-22,Revolver repayment,Citibank N.A. as Admin Agent,debt_repayment,-60000,2014Q3
+2014-08-23,Trade receivables collection,Hospital Group 20,revenue,3719,2014Q3
+2014-08-23,Materials & production,Contract Manufacturer 3,cogs,-14666,2014Q3
+2014-08-24,Materials & production,Contract Manufacturer 4,cogs,-1845,2014Q3
+2014-08-25,Research & development,R&D Programs 3,rnd,-1108,2014Q3
+2014-08-27,Trade receivables collection,Hospital Group 02,revenue,9896,2014Q3
+2014-08-28,Trade receivables collection,Hospital Group 23,revenue,57824,2014Q3
+2014-08-28,Trade receivables collection,Hospital Group 26,revenue,54170,2014Q3
+2014-08-28,"Selling, general & administrative",Corporate Services 4,sga,-7023,2014Q3
+2014-08-31,Materials & production,Contract Manufacturer 1,cogs,-5757,2014Q3
+2014-09-03,Trade receivables collection,Hospital Group 09,revenue,47430,2014Q3
+2014-09-04,"Selling, general & administrative",Corporate Services 4,sga,-1074,2014Q3
+2014-09-06,Trade receivables collection,Hospital Group 24,revenue,25345,2014Q3
+2014-09-06,Research & development,R&D Programs 3,rnd,-3412,2014Q3
+2014-09-10,Trade receivables collection,Hospital Group 18,revenue,18925,2014Q3
+2014-09-10,Trade receivables collection,Hospital Group 21,revenue,16547,2014Q3
+2014-09-10,Materials & production,Contract Manufacturer 3,cogs,-13081,2014Q3
+2014-09-10,Research & development,R&D Programs 4,rnd,-5845,2014Q3
+2014-09-13,Research & development,R&D Programs 2,rnd,-19669,2014Q3
+2014-09-14,Trade receivables collection,Hospital Group 27,revenue,93390,2014Q3
+2014-09-15,Trade receivables collection,Hospital Group 15,revenue,12608,2014Q3
+2014-09-18,Quality remediation cash charge,Sterile Process Validation Services,quality_matters,-6615,2014Q3
+2014-09-19,Trade receivables collection,Hospital Group 03,revenue,42157,2014Q3
+2014-09-19,Materials & production,Contract Manufacturer 4,cogs,-164153,2014Q3
+2014-09-19,Device Strategy program cash charge,Customer Sales Allowance - Credit Memo,device_strategy,-2824,2014Q3
+2014-09-21,"Selling, general & administrative",Corporate Services 3,sga,-720,2014Q3
+2014-09-21,Device Strategy program cash charge,Pump Retirement Logistics LLC,device_strategy,-410,2014Q3
+2014-09-22,Trade receivables collection,Hospital Group 12,revenue,26858,2014Q3
+2014-09-22,"Selling, general & administrative",Corporate Services 1,sga,-8367,2014Q3
+2014-09-23,Materials & production,Contract Manufacturer 2,cogs,-15772,2014Q3
+2014-09-24,"Selling, general & administrative",Corporate Services 2,sga,-19039,2014Q3
+2014-09-26,Trade receivables collection,Hospital Group 06,revenue,161615,2014Q3
+2014-09-28,Trade receivables collection,Hospital Group 30,revenue,21873,2014Q3
+2014-09-28,Research & development,R&D Programs 1,rnd,-12872,2014Q3
+2014-09-29,Materials & production,Contract Manufacturer 1,cogs,-33563,2014Q3
+2014-09-30,Interest payment on credit facilities,Citibank N.A. as Admin Agent,interest,-22200,2014Q3
+2014-09-30,Income tax payment/(refund),Tax Authorities,tax,-26200,2014Q3
+2014-10-04,Materials & production,Contract Manufacturer 3,cogs,-54245,2014Q4
+2014-10-04,Research & development,R&D Programs 1,rnd,-287,2014Q4
+2014-10-06,Trade receivables collection,Hospital Group 10,revenue,61320,2014Q4
+2014-10-06,"Selling, general & administrative",Corporate Services 4,sga,-1458,2014Q4
+2014-10-08,Trade receivables collection,Hospital Group 16,revenue,17864,2014Q4
+2014-10-08,Research & development,R&D Programs 2,rnd,-26317,2014Q4
+2014-10-11,Quality remediation cash charge,Quality Compliance Partners LLP,quality_matters,-1626,2014Q4
+2014-10-13,"Selling, general & administrative",Corporate Services 3,sga,-1934,2014Q4
+2014-10-15,Research & development,R&D Programs 4,rnd,-2571,2014Q4
+2014-10-18,Research & development,R&D Programs 3,rnd,-4607,2014Q4
+2014-10-19,"Selling, general & administrative",Corporate Services 1,sga,-6946,2014Q4
+2014-10-20,Materials & production,Contract Manufacturer 2,cogs,-3050,2014Q4
+2014-10-21,Trade receivables collection,Hospital Group 04,revenue,27819,2014Q4
+2014-10-21,Materials & production,Contract Manufacturer 4,cogs,-115125,2014Q4
+2014-10-23,Trade receivables collection,Hospital Group 19,revenue,9042,2014Q4
+2014-10-23,Device Strategy program cash charge,Pump Retirement Logistics LLC,device_strategy,-507,2014Q4
+2014-10-24,Trade receivables collection,Hospital Group 07,revenue,4403,2014Q4
+2014-10-25,Quality remediation cash charge,Quality Compliance Partners LLP,quality_matters,-3141,2014Q4
+2014-10-28,Trade receivables collection,Hospital Group 28,revenue,46314,2014Q4
+2014-10-29,Trade receivables collection,Hospital Group 13,revenue,64705,2014Q4
+2014-10-29,Trade receivables collection,Hospital Group 22,revenue,85518,2014Q4
+2014-10-29,Trade receivables collection,Hospital Group 25,revenue,34537,2014Q4
+2014-10-29,"Selling, general & administrative",Corporate Services 2,sga,-8469,2014Q4
+2014-10-30,Trade receivables collection,Hospital Group 01,revenue,31408,2014Q4
+2014-10-30,Materials & production,Contract Manufacturer 1,cogs,-73681,2014Q4
+2014-10-30,Device Strategy program cash charge,Infusion Replacement Program Admin,device_strategy,-141,2014Q4
+2014-11-03,"Selling, general & administrative",Corporate Services 2,sga,-2955,2014Q4
+2014-11-04,Materials & production,Contract Manufacturer 2,cogs,-24028,2014Q4
+2014-11-07,"Selling, general & administrative",Corporate Services 3,sga,-879,2014Q4
+2014-11-09,"Selling, general & administrative",Corporate Services 1,sga,-188,2014Q4
+2014-11-11,Trade receivables collection,Hospital Group 02,revenue,50969,2014Q4
+2014-11-11,Trade receivables collection,Hospital Group 14,revenue,39398,2014Q4
+2014-11-11,Trade receivables collection,Hospital Group 17,revenue,8864,2014Q4
+2014-11-12,Research & development,R&D Programs 2,rnd,-3209,2014Q4
+2014-11-14,Materials & production,Contract Manufacturer 1,cogs,-149711,2014Q4
+2014-11-15,Trade receivables collection,Hospital Group 05,revenue,1047,2014Q4
+2014-11-17,Trade receivables collection,Hospital Group 11,revenue,9531,2014Q4
+2014-11-17,Trade receivables collection,Hospital Group 26,revenue,63432,2014Q4
+2014-11-17,Research & development,R&D Programs 4,rnd,-1207,2014Q4
+2014-11-18,Revolver repayment,Citibank N.A. as Admin Agent,debt_repayment,-40000,2014Q4
+2014-11-22,Trade receivables collection,Hospital Group 29,revenue,25990,2014Q4
+2014-11-23,"Selling, general & administrative",Corporate Services 4,sga,-15423,2014Q4
+2014-11-23,Device Strategy program cash charge,MedDevice Collection & Destruction Inc,device_strategy,-1391,2014Q4
+2014-11-23,Quality remediation cash charge,FDA Remediation Consultants Group,quality_matters,-2076,2014Q4
+2014-11-24,Trade receivables collection,Hospital Group 20,revenue,90173,2014Q4
+2014-11-24,Trade receivables collection,Hospital Group 23,revenue,32925,2014Q4
+2014-11-25,Materials & production,Contract Manufacturer 4,cogs,-9677,2014Q4
+2014-11-25,Research & development,R&D Programs 1,rnd,-6778,2014Q4
+2014-11-26,Research & development,R&D Programs 3,rnd,-844,2014Q4
+2014-11-26,Device Strategy program cash charge,Device Quality Systems Upgrade Co,device_strategy,-779,2014Q4
+2014-11-27,Trade receivables collection,Hospital Group 08,revenue,16386,2014Q4
+2014-11-29,Materials & production,Contract Manufacturer 3,cogs,-40676,2014Q4
+2014-12-04,Trade receivables collection,Hospital Group 15,revenue,31030,2014Q4
+2014-12-06,Materials & production,Contract Manufacturer 2,cogs,-128850,2014Q4
+2014-12-08,Trade receivables collection,Hospital Group 06,revenue,25631,2014Q4
+2014-12-09,"Selling, general & administrative",Corporate Services 3,sga,-2459,2014Q4
+2014-12-11,Trade receivables collection,Hospital Group 03,revenue,65701,2014Q4
+2014-12-14,Materials & production,Contract Manufacturer 4,cogs,-6286,2014Q4
+2014-12-16,"Selling, general & administrative",Corporate Services 2,sga,-13189,2014Q4
+2014-12-16,Research & development,R&D Programs 2,rnd,-6814,2014Q4
+2014-12-17,"Selling, general & administrative",Corporate Services 4,sga,-12803,2014Q4
+2014-12-17,Research & development,R&D Programs 3,rnd,-8914,2014Q4
+2014-12-18,Trade receivables collection,Hospital Group 27,revenue,18871,2014Q4
+2014-12-18,Materials & production,Contract Manufacturer 3,cogs,-3358,2014Q4
+2014-12-18,Materials & production,Contract Manufacturer 1,cogs,-29913,2014Q4
+2014-12-19,Device Strategy program cash charge,Customer Sales Allowance - Credit Memo,device_strategy,-505,2014Q4
+2014-12-20,Trade receivables collection,Hospital Group 30,revenue,44487,2014Q4
+2014-12-22,Trade receivables collection,Hospital Group 21,revenue,30120,2014Q4
+2014-12-23,Trade receivables collection,Hospital Group 09,revenue,63061,2014Q4
+2014-12-24,Trade receivables collection,Hospital Group 24,revenue,5497,2014Q4
+2014-12-24,Research & development,R&D Programs 1,rnd,-3429,2014Q4
+2014-12-25,"Selling, general & administrative",Corporate Services 1,sga,-4697,2014Q4
+2014-12-27,Trade receivables collection,Hospital Group 12,revenue,2239,2014Q4
+2014-12-27,Research & development,R&D Programs 4,rnd,-15023,2014Q4
+2014-12-27,Device Strategy program cash charge,Pump Retirement Logistics LLC,device_strategy,-1677,2014Q4
+2014-12-28,Quality remediation cash charge,Sterile Process Validation Services,quality_matters,-3157,2014Q4
+2014-12-30,Trade receivables collection,Hospital Group 18,revenue,21718,2014Q4
+2014-12-31,Interest payment on credit facilities,Citibank N.A. as Admin Agent,interest,-22000,2014Q4
+2014-12-31,Income tax payment/(refund),Tax Authorities,tax,-26000,2014Q4
+2015-01-07,Trade receivables collection,Hospital Group 13,revenue,23559,2015Q1
+2015-01-08,Trade receivables collection,Hospital Group 16,revenue,12978,2015Q1
+2015-01-09,Trade receivables collection,Hospital Group 19,revenue,34597,2015Q1
+2015-01-09,Materials & production,Contract Manufacturer 4,cogs,-33173,2015Q1
+2015-01-09,Research & development,R&D Programs 1,rnd,-3453,2015Q1
+2015-01-11,Trade receivables collection,Hospital Group 04,revenue,11130,2015Q1
+2015-01-11,Research & development,R&D Programs 4,rnd,-16312,2015Q1
+2015-01-12,Research & development,R&D Programs 2,rnd,-958,2015Q1
+2015-01-13,Trade receivables collection,Hospital Group 07,revenue,29940,2015Q1
+2015-01-14,Research & development,R&D Programs 3,rnd,-4696,2015Q1
+2015-01-17,"Selling, general & administrative",Corporate Services 4,sga,-16154,2015Q1
+2015-01-19,"Selling, general & administrative",Corporate Services 2,sga,-11030,2015Q1
+2015-01-19,Quality remediation cash charge,Quality Compliance Partners LLP,quality_matters,-1922,2015Q1
+2015-01-20,Trade receivables collection,Hospital Group 22,revenue,92167,2015Q1
+2015-01-20,"Selling, general & administrative",Corporate Services 1,sga,-10186,2015Q1
+2015-01-23,Trade receivables collection,Hospital Group 10,revenue,91102,2015Q1
+2015-01-23,Trade receivables collection,Hospital Group 25,revenue,6683,2015Q1
+2015-01-23,Materials & production,Contract Manufacturer 1,cogs,-65494,2015Q1
+2015-01-23,Materials & production,Contract Manufacturer 2,cogs,-73291,2015Q1
+2015-01-24,Trade receivables collection,Hospital Group 28,revenue,40862,2015Q1
+2015-01-25,"Selling, general & administrative",Corporate Services 3,sga,-2483,2015Q1
+2015-01-27,Trade receivables collection,Hospital Group 01,revenue,19822,2015Q1
+2015-01-27,Quality remediation cash charge,Quality Compliance Partners LLP,quality_matters,-1630,2015Q1
+2015-01-29,Materials & production,Contract Manufacturer 3,cogs,-61770,2015Q1
+2015-02-03,"Selling, general & administrative",Corporate Services 2,sga,-1389,2015Q1
+2015-02-04,Trade receivables collection,Hospital Group 29,revenue,3721,2015Q1
+2015-02-05,Trade receivables collection,Hospital Group 02,revenue,3748,2015Q1
+2015-02-05,Materials & production,Contract Manufacturer 2,cogs,-36301,2015Q1
+2015-02-05,"Selling, general & administrative",Corporate Services 3,sga,-4566,2015Q1
+2015-02-05,Research & development,R&D Programs 4,rnd,-9807,2015Q1
+2015-02-06,Trade receivables collection,Hospital Group 14,revenue,30166,2015Q1
+2015-02-09,Trade receivables collection,Hospital Group 17,revenue,54841,2015Q1
+2015-02-10,Trade receivables collection,Hospital Group 26,revenue,61673,2015Q1
+2015-02-11,Trade receivables collection,Hospital Group 08,revenue,441,2015Q1
+2015-02-11,Trade receivables collection,Hospital Group 23,revenue,39572,2015Q1
+2015-02-12,Trade receivables collection,Hospital Group 05,revenue,12585,2015Q1
+2015-02-13,Research & development,R&D Programs 2,rnd,-1618,2015Q1
+2015-02-15,Materials & production,Contract Manufacturer 1,cogs,-37904,2015Q1
+2015-02-17,"Selling, general & administrative",Corporate Services 4,sga,-2395,2015Q1
+2015-02-20,Revolver repayment,Citibank N.A. as Admin Agent,debt_repayment,-25000,2015Q1
+2015-02-22,Trade receivables collection,Hospital Group 11,revenue,14440,2015Q1
+2015-02-22,Materials & production,Contract Manufacturer 3,cogs,-18739,2015Q1
+2015-02-22,Quality remediation cash charge,FDA Remediation Consultants Group,quality_matters,-4851,2015Q1
+2015-02-24,"Selling, general & administrative",Corporate Services 1,sga,-1060,2015Q1
+2015-02-25,Materials & production,Contract Manufacturer 4,cogs,-11190,2015Q1
+2015-02-25,Research & development,R&D Programs 1,rnd,-1387,2015Q1
+2015-02-26,Research & development,R&D Programs 3,rnd,-20179,2015Q1
+2015-02-28,Trade receivables collection,Hospital Group 20,revenue,91889,2015Q1
+2015-03-04,Materials & production,Contract Manufacturer 4,cogs,-190617,2015Q1
+2015-03-04,"Selling, general & administrative",Corporate Services 4,sga,-1954,2015Q1
+2015-03-05,Trade receivables collection,Hospital Group 21,revenue,8778,2015Q1
+2015-03-05,Trade receivables collection,Hospital Group 24,revenue,5038,2015Q1
+2015-03-07,Trade receivables collection,Hospital Group 27,revenue,49571,2015Q1
+2015-03-07,"Selling, general & administrative",Corporate Services 2,sga,-15603,2015Q1
+2015-03-08,Trade receivables collection,Hospital Group 12,revenue,60898,2015Q1
+2015-03-08,Trade receivables collection,Hospital Group 30,revenue,34209,2015Q1
+2015-03-10,Research & development,R&D Programs 1,rnd,-4151,2015Q1
+2015-03-13,"Selling, general & administrative",Corporate Services 1,sga,-955,2015Q1
+2015-03-13,Research & development,R&D Programs 3,rnd,-2287,2015Q1
+2015-03-13,Research & development,R&D Programs 2,rnd,-2979,2015Q1
+2015-03-14,Materials & production,Contract Manufacturer 1,cogs,-41725,2015Q1
+2015-03-14,Quality remediation cash charge,Sterile Process Validation Services,quality_matters,-1597,2015Q1
+2015-03-17,Trade receivables collection,Hospital Group 03,revenue,73766,2015Q1
+2015-03-18,Materials & production,Contract Manufacturer 3,cogs,-23237,2015Q1
+2015-03-23,Trade receivables collection,Hospital Group 09,revenue,3820,2015Q1
+2015-03-24,Trade receivables collection,Hospital Group 15,revenue,41048,2015Q1
+2015-03-26,Trade receivables collection,Hospital Group 18,revenue,10114,2015Q1
+2015-03-27,Materials & production,Contract Manufacturer 2,cogs,-35859,2015Q1
+2015-03-29,Trade receivables collection,Hospital Group 06,revenue,51842,2015Q1
+2015-03-30,Research & development,R&D Programs 4,rnd,-11173,2015Q1
+2015-03-31,"Selling, general & administrative",Corporate Services 3,sga,-3925,2015Q1
+2015-03-31,Interest payment on credit facilities,Citibank N.A. as Admin Agent,interest,-21800,2015Q1
+2015-03-31,Income tax payment/(refund),Tax Authorities,tax,-26300,2015Q1

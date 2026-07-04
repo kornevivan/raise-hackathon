@@ -26,3 +26,9 @@ RAISE HACKATHON TRACK_ Agentic Intelligence with the Vultron Retriever.pdf
 
 # runtime uploads (regenerated)
 backend/data/uploads/
+
+# rework intake (large source zips kept local)
+_incoming/
+testing-data.zip
+rework-instructions-v2.md
+backend/data/uploads/
