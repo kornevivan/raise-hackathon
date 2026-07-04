@@ -173,10 +173,25 @@ class AdHocRun:
         net_debt = vals["net_debt"]
         naive_ebitda = vals["naive_ebitda"]
         yield self.ev("tool", "EVIDENCE", "Tool · extract_financials",
-                      f"Net Debt = {net_debt} · EBITDA (reported) = {naive_ebitda} (USD millions)",
+                      "Net Debt = %s · EBITDA (reported) = %s (USD millions)"
+                      % (net_debt if net_debt is not None else "not found",
+                         naive_ebitda if naive_ebitda is not None else "not found"),
                       payload={"tool": "extract_financials", "result": vals}, mode="code")
         for lbl in ["Consolidated Total Net Debt", "Consolidated EBITDA (as reported)"]:
             self.cite_value(lbl)
+
+        # graceful stop when the documents don't contain the figures we need
+        if not net_debt or not naive_ebitda:
+            missing = [n for n, v in (("Consolidated Total Net Debt", net_debt),
+                                      ("Consolidated EBITDA", naive_ebitda)) if not v]
+            self.facts = {"net_debt": net_debt, "naive_ebitda": naive_ebitda, "calc": None,
+                          "applied_addbacks": [], "vals": vals, "insufficient": True,
+                          "missing": missing, "confidence": 0.4}
+            yield self.ev("decision", "EVIDENCE", "Insufficient data",
+                          "Could not locate: " + ", ".join(missing)
+                          + ". Upload the financial statements / compliance certificate that "
+                            "report these figures.", payload={"missing": missing})
+            return
 
         applied_addbacks = []
         calc = tools.ratio_calculator(net_debt, naive_ebitda,
@@ -197,9 +212,10 @@ class AdHocRun:
             yield self._retrieval_event(ahits, 2,
                 "Amendment No. 1 acquisition addback clause (d) cap", "prime",
                 "Gap-check flagged the amended definition; re-retrieving the amendment.")
-            cap = vals["addback_cap"] or 10.0
-            addback = min(vals["acquisition_costs"] or 0.0, cap)
-            if addback > 0:
+            cap = vals["addback_cap"]       # the amendment's stated cap (None if not uploaded)
+            acq = vals["acquisition_costs"]  # the one-time costs (from the financials footnote)
+            if cap and acq:
+                addback = min(acq, cap)
                 yield self.ev("tool", "EVIDENCE", "Tool · extract_financials",
                               f"Amendment addback: one-time acquisition costs ${addback:.1f}M "
                               f"(cap ${cap:.0f}M).",
@@ -212,6 +228,14 @@ class AdHocRun:
                 calc = tools.ratio_calculator(net_debt, naive_ebitda,
                     "Consolidated Total Net Debt", "Consolidated EBITDA (LTM)", applied_addbacks)
                 yield self._calc_event(calc, cov, applied_addbacks)
+            else:
+                # amendment is referenced but its terms aren't in the uploaded documents —
+                # never fabricate the cap; report the naive result and ask for the amendment.
+                self.facts_note = ("Amendment No. 1 is referenced but was not uploaded (or its "
+                                   "addback cap/eligible costs weren't found), so no addback was "
+                                   "applied. Upload the amendment to confirm whether the breach is cured.")
+                yield self.ev("decision", "EVIDENCE", "Amendment referenced but not provided",
+                              self.facts_note, payload={}, mode="code")
 
         self.facts = {"net_debt": net_debt, "naive_ebitda": naive_ebitda, "calc": calc,
                       "applied_addbacks": applied_addbacks, "vals": vals}
@@ -300,7 +324,9 @@ class AdHocRun:
         # deterministic values win when present (audited > extracted)
         nd = net_debt if net_debt is not None else _num(d.get("consolidated_total_net_debt"))
         eb = naive_ebitda if naive_ebitda is not None else _num(d.get("consolidated_ebitda_reported"))
-        return {"net_debt": nd or 0.0, "naive_ebitda": eb or 0.0,
+        # keep None when a figure genuinely isn't present — downstream reports
+        # "insufficient data" rather than fabricating a zero and dividing by it.
+        return {"net_debt": nd, "naive_ebitda": eb,
                 "addback_cap": cap or _num(d.get("amendment_addback_cap")),
                 "acquisition_costs": acq or _num(d.get("acquisition_one_time_costs")),
                 "components": {"net_income": ni, "interest": inte, "taxes": tax, "da": da}}
@@ -308,6 +334,13 @@ class AdHocRun:
     # [3] VERIFY
     def _verify(self, cov):
         f = self.facts
+        if f.get("insufficient"):
+            yield self.ev("verify", "VERIFY", "Verifier",
+                          "Not enough grounded figures to compute the ratio — no claim to verify.",
+                          payload={"verify": {"verified_fraction": 0, "notes": "insufficient data"},
+                                   "confidence": f["confidence"]},
+                          tier="prime", model=config.MODEL_PRIME, mode="code")
+            return
         calc = f["calc"]
         claims = [
             {"text": f"Consolidated Total Net Debt is {f['net_debt']}.", "has_citation": True,
@@ -336,9 +369,49 @@ class AdHocRun:
                       payload={"verify": res.data, "confidence": self.facts["confidence"]},
                       tier=res.tier, model=res.model, mode=res.mode, latency_ms=res.latency_ms)
 
+    def _memo_insufficient(self, cov):
+        f = self.facts
+        found = []
+        if f.get("net_debt"):
+            found.append(f"Consolidated Total Net Debt = {f['net_debt']}")
+        if f.get("naive_ebitda"):
+            found.append(f"Consolidated EBITDA = {f['naive_ebitda']}")
+        S = lambda t, cs=(): {"text": t, "citations": [c for c in cs if c]}
+        headline = ("Could not complete the covenant check — the uploaded documents don't clearly "
+                    "report " + " and ".join(f["missing"]) + ".")
+        sections = [
+            {"heading": "What the agent found", "sentences":
+                [S(f"Detected covenant: {cov['name']} (limit {cov['operator']} "
+                   f"{cov['threshold']:.2f}x).", [next(iter(self.citations), None)])]
+                 + ([S("Extracted: " + "; ".join(found) + ".")] if found else
+                    [S("No leverage figures could be extracted from the uploaded pages.")])},
+            {"heading": "What's missing", "sentences":
+                [S("Missing: " + ", ".join(f["missing"]) + ".")]},
+            {"heading": "Recommendation", "sentences":
+                [S("Upload the financial statements / compliance certificate that report Consolidated "
+                   "Total Net Debt and Consolidated EBITDA (with the EBITDA build), then re-run. The "
+                   "agent computes every ratio itself and will not guess missing figures.")]},
+        ]
+        memo = {"recommendation": "insufficient_data", "confidence": f["confidence"],
+                "headline": headline, "sections": sections}
+        payload = {"memo": memo, "recommendation": "insufficient_data", "confidence": f["confidence"],
+                   "headline": headline, "ratio_naive": None, "ratio_final": None,
+                   "threshold": cov["threshold"], "headroom": None,
+                   "citations": list(self.citations.values()),
+                   "borrower": self.up["documents"][0]["title"] if self.up["documents"] else "Uploaded",
+                   "period": "uploaded documents", "covenant": cov, "llm_calls": self.llm.calls}
+        yield self.ev("memo", "MEMO", "Analysis incomplete", headline, payload=payload,
+                      tier="prime", model=config.MODEL_PRIME, mode="code")
+        yield self.ev("done", "MEMO", "Run complete",
+                      f"{self.llm.calls} LLM call(s) · recommendation: insufficient_data",
+                      payload={"llm_calls": self.llm.calls})
+
     # [4] MEMO
     def _memo(self, cov):
         f = self.facts
+        if f.get("insufficient"):
+            yield from self._memo_insufficient(cov)
+            return
         naive = tools.ratio_calculator(f["net_debt"], f["naive_ebitda"])["ratio"]
         final = f["calc"]["ratio"]
         thr = cov["threshold"]
@@ -356,7 +429,7 @@ class AdHocRun:
         c_eb = C("Consolidated EBITDA (as reported)", "means, for any period")
         c_am = C("Permitted Acquisition", "Project Atlas", "Amendment No. 1")
 
-        S = lambda t, cs: {"text": t, "citations": [c for c in cs if c]}
+        S = lambda t, cs=(): {"text": t, "citations": [c for c in cs if c]}
         if applied:
             rec = "false_positive"
             headline = (f"Naive leverage of {naive:.2f}x is a FALSE POSITIVE. After the "
@@ -384,7 +457,9 @@ class AdHocRun:
                 (f"NO BREACH — the naive breach was a false positive; headroom {headroom:.2f}x, "
                  "escalate for monitoring." if applied else
                  ("BREACH — escalate for a waiver discussion." if final > thr else
-                  f"IN COMPLIANCE — {headroom:.2f}x of headroom.")), [])]},
+                  f"IN COMPLIANCE — {headroom:.2f}x of headroom.")), [])]
+                + ([S(getattr(self, "facts_note", ""))] if getattr(self, "facts_note", None)
+                   and final > thr else [])},
         ]
 
         def offline():
