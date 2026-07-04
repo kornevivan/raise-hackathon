@@ -1,0 +1,32 @@
+services:
+  app:
+    build: .
+    restart: unless-stopped
+    environment:
+      # --- set these after you verify your Vultr email + create an inference sub ---
+      - VULTR_INFERENCE_API_KEY=${VULTR_INFERENCE_API_KEY:-}
+      - VULTR_MODEL_PRIME=${VULTR_MODEL_PRIME:-qwen2.5-72b-instruct}
+      - VULTR_MODEL_CORE=${VULTR_MODEL_CORE:-qwen2.5-32b-instruct}
+      - VULTR_MODEL_FLASH=${VULTR_MODEL_FLASH:-qwen2.5-7b-instruct}
+      - VULTR_RETRIEVER_PRIME=${VULTR_RETRIEVER_PRIME:-VultronRetrieverPrime-Qwen3.5-8B}
+      - VULTR_RETRIEVER_CORE=${VULTR_RETRIEVER_CORE:-VultronRetrieverCore-Qwen3.5-4.5B}
+      - VULTR_RETRIEVER_FLASH=${VULTR_RETRIEVER_FLASH:-VultronRetrieverFlash-Qwen3.5-0.8B}
+      - DEMO_PACE_MS=${DEMO_PACE_MS:-420}
+    expose:
+      - "8000"
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on: [app]
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  caddy_data:
+  caddy_config:

@@ -1,0 +1,7 @@
+# Set SITE_ADDRESS to your domain for automatic HTTPS, e.g.:
+#   SITE_ADDRESS=covenant.example.com docker compose up -d
+# Leave unset to serve over plain HTTP on the instance's public IP (:80).
+{$SITE_ADDRESS::80} {
+	encode gzip
+	reverse_proxy app:8000
+}
