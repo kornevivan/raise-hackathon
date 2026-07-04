@@ -123,6 +123,21 @@ class LocalRetriever:
 _MARK = re.compile(r"\[\[(.+?)\]\]")
 
 
+def hit_from_page(p: dict, query: str, rank: int) -> Hit:
+    """Build a Hit from a page + query, choosing the best matching blocks as the
+    citation candidates. Shared by the live and uploaded retrievers."""
+    q_tokens = set(_tok(query))
+    scored = sorted(
+        ((sum(1 for t in q_tokens if len(t) > 2 and t in b["text"].lower())
+          + (2 if b.get("kind") == "table" else 0), b) for b in p["blocks"]),
+        key=lambda x: x[0], reverse=True)
+    top = [b for s, b in scored[:3] if s > 0] or [scored[0][1]] if scored else []
+    return Hit(page_uid=p["page_uid"], doc_id=p["doc_id"], doc_title=p["doc_title"],
+               kind=p["kind"], page=p["page"], image=p["image"], width=p["width"],
+               height=p["height"], scanned=p.get("scanned", False),
+               score=round(1.0 / (rank + 1), 3), blocks=top)
+
+
 class VultrVectorStore:
     """Thin client for the Vultr Serverless Inference Vector Store (the service
     that fronts the VultronRetriever models)."""
@@ -181,18 +196,6 @@ class VultrRetriever:
         self._vs.ensure_collection(self.collection, len(items), items)
         self._ready = True
 
-    def _hit_from_page(self, p: dict, query: str, rank: int) -> Hit:
-        q_tokens = set(_tok(query))
-        scored = sorted(
-            ((sum(1 for t in q_tokens if len(t) > 2 and t in b["text"].lower())
-              + (2 if b.get("kind") == "table" else 0), b) for b in p["blocks"]),
-            key=lambda x: x[0], reverse=True)
-        top = [b for s, b in scored[:3] if s > 0] or [scored[0][1]]
-        return Hit(page_uid=p["page_uid"], doc_id=p["doc_id"], doc_title=p["doc_title"],
-                   kind=p["kind"], page=p["page"], image=p["image"], width=p["width"],
-                   height=p["height"], scanned=p["scanned"],
-                   score=round(1.0 / (rank + 1), 3), blocks=top)
-
     def retrieve(self, query: str, tier: str = "core", k: int = 4,
                  restrict_kind: str | None = None) -> list[Hit]:
         try:
@@ -203,7 +206,7 @@ class VultrRetriever:
                 p = self.by_uid.get(uid)
                 if not p or (restrict_kind and p["kind"] != restrict_kind):
                     continue
-                hits.append(self._hit_from_page(p, query, rank))
+                hits.append(hit_from_page(p, query, rank))
                 if len(hits) >= k:
                     break
             if hits:
