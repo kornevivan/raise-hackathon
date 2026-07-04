@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { getSuggested, getChatHistory, chatStream } from './api.js'
 import { Icon, TierBadge } from './ui.jsx'
 
-function Bubble({ turn, onCite, onAction }) {
+export function Bubble({ turn, onCite, onAction }) {
   const isUser = turn.role === 'user'
   if (isUser) {
     return <div className="flex justify-end"><div className="max-w-[85%] rounded-2xl rounded-br-sm bg-sky-500/90 px-3 py-1.5 text-[12.5px] text-slate-950">{turn.text}</div></div>

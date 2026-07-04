@@ -24,7 +24,12 @@ SCENARIO_S0 = {"id": "S0", "test_quarter": "2015Q1",
                "label": "S0 · Quarter closed — review the portfolio",
                "blurb": "Rank the book by risk before any deep check. Hospira surfaces #1 — its "
                         "scanned 2014Q4 certificate reads 3.59x, already above the 3.50x step-down "
-                        "that hits next quarter.", "kind": "triage"}
+                        "that hits next quarter.", "kind": "triage",
+               "prompt": "The quarter just closed — review the portfolio and tell me which borrower "
+                         "needs attention first.",
+               "doc_labels": ["Borrower profiles (Hospira, Atlantic, Cascadia)",
+                              "Latest 2014Q4 certificates (Hospira's is scanned)",
+                              "Amendment No. 1 (§6.6A step-down)"]}
 
 _corpus_id = None
 
@@ -190,6 +195,7 @@ class TriageRun:
                    "threshold": ce.THRESHOLD_AFTER, "headroom": None,
                    "citations": list(self.citations.values()), "borrower": "Portfolio (3 borrowers)",
                    "period": "quarter close", "ranking": ranking,
+                   "documents": [d["title"] for d in self.corpus["documents"]],
                    "next_action": {"run": ranking[0]["deep_run"], "borrower": ranking[0]["borrower"]},
                    "covenant": {"name": "Maximum Leverage Ratio"}, "llm_calls": self.llm.calls}
         yield self.ev("memo", "MEMO", "Triage complete", memo["headline"], payload=payload,

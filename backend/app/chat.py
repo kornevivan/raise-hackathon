@@ -74,30 +74,26 @@ class ChatSession:
         handler = {
             "what_if": self._what_if, "cap": self._cap, "next_quarter": self._next_quarter,
             "precedents": self._precedents, "smalltalk": self._smalltalk,
-        }.get(kind, self._lookup)
+            "documents": self._documents,
+        }.get(kind, self._analytical)
         yield from handler(message)
 
     def _classify(self, message: str) -> str:
         m = message.lower()
         if re.search(r"\bwhat if\b|\bif we\b|\bsuppose\b|\brepay|\bwere\b.*\d|\brecover", m):
             return "what_if"
-        if "cap" in m or "capped" in m or "addback" in m and ("why" in m or "disallow" in m):
+        if re.search(r"\bwhat (docs|documents)\b|which (docs|documents)|documents did|"
+                     r"docs (do|have)|what.*analyz|sources did", m):
+            return "documents"
+        if ("cap" in m or "capped" in m or "addback" in m) and ("why" in m or "disallow" in m or "cap" in m):
             return "cap"
         if "next quarter" in m or "step-down" in m or "step down" in m or "changes next" in m:
             return "next_quarter"
-        if "precedent" in m or "comparable" in m or "case" in m or "waiver" in m and "support" in m:
+        if "precedent" in m or "comparable" in m or ("waiver" in m and "support" in m):
             return "precedents"
-        if re.search(r"\b(hi|hello|thanks|thank you|who are you|help)\b", m):
+        if re.fullmatch(r"\s*(hi|hello|hey|thanks|thank you|who are you|help|ok)\s*[.!?]*", m):
             return "smalltalk"
-        # let Flash disambiguate the rest
-        def offline():
-            return {"type": "lookup"}
-        res = self.llm.json_call(tier=FLASH, system=(
-            "Classify the user's question about a covenant run into exactly one of: "
-            "lookup, analytical, what_if, cap, next_quarter, precedents, smalltalk. Return JSON."),
-            user=message, schema={"type": "string"}, offline_fn=offline)
-        t = (res.data.get("type") if isinstance(res.data, dict) else "lookup") or "lookup"
-        return t if t in ("what_if", "cap", "next_quarter", "precedents", "smalltalk") else "lookup"
+        return "analytical"   # everything else → a real, evidence-grounded LLM answer
 
     # ---- handlers (numbers are tool-sourced) ----
     def _cap(self, message):
@@ -179,17 +175,58 @@ class ChatSession:
         yield from self._final(text, [("C", c)], "what_if", hypothetical=True,
                                action={"label": "Re-run with these figures", "run": self.sc.get("id")})
 
-    def _lookup(self, message):
+    def _digest(self) -> str:
         r = self.r
-        c_debt = self._cite("consolidated total debt")
-        c_thr = self._cite("3.75 to 1.00") or self._cite("6.6A")
-        text = (f"For {self.tq}: Consolidated Total Debt {r.consolidated_total_debt:.0f}, "
-                f"Adjusted EBITDA {r.ebitda_correct:.1f}, Leverage Ratio {r.ratio_correct:.3f}x "
-                f"vs the {r.threshold:.2f}x §6.6A threshold → "
-                f"{'compliant' if r.compliant else 'BREACH'} (headroom {r.headroom_x:+.3f}x) "
-                f"[C1][C2]. The naive ratio without capped addbacks was {r.ratio_naive:.3f}x. "
-                "Ask about the cap math, the step-down, precedents, or a what-if.")
-        yield from self._final(text, [("C1", c_debt), ("C2", c_thr)], "lookup")
+        return (f"Borrower: Hospira, Inc. Test quarter {self.tq} (period end {r.period_end}). "
+                f"Trailing window {r.window[0]}–{r.window[-1]}. "
+                f"Consolidated Total Debt {r.consolidated_total_debt:.0f}. "
+                f"EBITDA before addbacks {r.ebitda_naive:.1f} (naive ratio {r.ratio_naive:.3f}x). "
+                f"Device Strategy addback {r.device.allowed:.0f} of {r.device.charges_in_window:.0f} "
+                f"charges (lifetime cap {ce.DEVICE_CAP:.0f}; {r.device.disallowed:.0f} disallowed). "
+                f"Quality addback {r.quality.allowed:.0f}. Adjusted EBITDA {r.ebitda_correct:.1f}. "
+                f"Leverage Ratio {r.ratio_correct:.3f}x vs §6.6A threshold {r.threshold:.2f}x → "
+                f"{'COMPLIANT' if r.compliant else 'BREACH'} (headroom {r.headroom_x:+.3f}x).")
+
+    def _doc_titles(self):
+        docs = self.memo.get("documents")
+        if docs:
+            return docs
+        return sorted({c["doc_title"] for c in self.cites.values()})
+
+    def _documents(self, message):
+        docs = self._doc_titles()
+        pretty = "; ".join(docs)
+        text = (f"I analyzed {len(docs)} document(s) for {self.tq}: {pretty}. "
+                "That covers the Credit Agreement definitions, Amendment No. 1 (the addback caps "
+                "and the §6.6A threshold step-down), the quarterly financial reports, and the "
+                "compliance certificates. Ask about any figure, the cap math, precedents, or a what-if.")
+        yield from self._final(text, [], "documents")
+
+    def _analytical(self, message):
+        """Open questions → a real answer grounded ONLY in the run's evidence, cited, with the
+        numbers quoted from the deterministic engine (no model arithmetic)."""
+        items = list(self.cites.items())[:10]
+        numbered = [(i + 1, cid, o) for i, (cid, o) in enumerate(items)]
+        ctx = "\n".join(f"[{i}] {o['doc_title']} p{o.get('page')}: {o['text'][:150]}"
+                        for i, cid, o in numbered)
+        yield self.ev("chat_step", label="grounding in run evidence", tier="core",
+                      model=config.MODEL_CORE, detail=f"{len(numbered)} cited sources")
+        system = ("You are the covenant analyst chat for a completed run. Answer the user's "
+                  "question ONLY from the DIGEST and CONTEXT. Quote figures from the digest — never "
+                  "compute new numbers yourself. Cite sources inline as [n] using the provided "
+                  "numbers. If the answer is not in the evidence, say you don't have it in the "
+                  "documents and name what's missing. 2–4 sentences, concrete.")
+        user = (f"DIGEST: {self._digest()}\nDOCUMENTS: {'; '.join(self._doc_titles())}\n"
+                f"CONTEXT:\n{ctx}\n\nQUESTION: {message}")
+
+        def offline():
+            return {"answer": self._digest() + " (Ask about the cap math, the step-down, "
+                    "precedents, or a what-if.)"}
+        res = self.llm.json_call(tier=CORE, system=system, user=user,
+                                 schema={"answer": "string"}, offline_fn=offline)
+        answer = (res.data.get("answer") if isinstance(res.data, dict) else None) or offline()["answer"]
+        referenced = [(str(i), cid) for i, cid, o in numbered if f"[{i}]" in answer]
+        yield from self._final(answer, referenced, "analytical")
 
     def _smalltalk(self, message):
         yield from self._final("I'm the covenant chat for this run — ask me why a number is what "

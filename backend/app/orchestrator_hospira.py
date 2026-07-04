@@ -18,19 +18,29 @@ from .gapcheck import detect_instrument
 from .llm import LLM, PRIME, CORE, FLASH
 from .retriever import TIER_MODEL
 
+DOC_LABELS = ["Credit Agreement (2011) §1.1/§6.6", "Amendment No. 1 (2013) §1(d)/§6.6A",
+              "Financial reports 2013Q3–2015Q1", "Compliance certificates (incl. scanned 2014Q4)"]
 SCENARIOS = {
     "S3": {"id": "S3", "test_quarter": "2014Q1",
            "label": "S3 · All clear — watch the cap",
            "blurb": "Naive 3.847x looks like a breach; with capped addbacks it's 3.066x vs "
-                    "3.75x. Compliant — but Device Strategy cap is 285/290, thin future room."},
+                    "3.75x. Compliant — but Device Strategy cap is 285/290, thin future room.",
+           "prompt": "Review Hospira's leverage covenant for Q1 2014 and flag any forward-looking risks.",
+           "doc_labels": DOC_LABELS},
     "S1": {"id": "S1", "test_quarter": "2014Q2",
            "label": "S1 · False breach & capped addback",
            "blurb": "Naive 4.218x prints a BREACH. The addback is capped (min → 30 disallowed), "
-                    "recomputing 3.606x vs 3.75x. Debt jumped on a $460M acquisition draw."},
+                    "recomputing 3.606x vs 3.75x. Debt jumped on a $460M acquisition draw.",
+           "prompt": "Analyze Hospira's Maximum Leverage Ratio covenant for Q2 2014 (period ending "
+                     "2014-06-30). Is the borrower in breach?",
+           "doc_labels": DOC_LABELS},
     "S2": {"id": "S2", "test_quarter": "2015Q1",
            "label": "S2 · Step-down trap — real breach",
            "blurb": "3.615x. The §6.6A step-down to 3.50x (after 2014-12-31) turns a would-be "
-                    "pass into an Event of Default. Escalate."},
+                    "pass into an Event of Default. Escalate.",
+           "prompt": "Check Hospira's Q1 2015 covenant compliance — does the §6.6A step-down change "
+                     "the outcome?",
+           "doc_labels": DOC_LABELS},
 }
 
 
@@ -406,7 +416,8 @@ class HospiraRun:
                    "threshold": r.threshold, "headroom": r.headroom_x,
                    "citations": list(self.citations.values()), "borrower": "Hospira, Inc.",
                    "period": self.tq, "covenant": {"name": "Maximum Leverage Ratio",
-                   "threshold": r.threshold, "operator": "<="}, "llm_calls": self.llm.calls}
+                   "threshold": r.threshold, "operator": "<="}, "llm_calls": self.llm.calls,
+                   "documents": [d["title"] for d in self.corpus["documents"]]}
         yield self.ev("memo", "MEMO", "Escalation memo ready", headline, payload=payload,
                       tier=res.tier, model=res.model, mode=res.mode, latency_ms=res.latency_ms)
         yield self.ev("done", "MEMO", "Run complete",
