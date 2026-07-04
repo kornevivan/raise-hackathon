@@ -1,0 +1,24 @@
+# python
+backend/.venv/
+__pycache__/
+*.pyc
+backend/.llm_cache/
+
+# node
+frontend/node_modules/
+frontend/dist/
+
+# env / secrets
+.env
+backend/.env
+
+# os
+.DS_Store
+
+# keep the deterministic corpus + sqlite committed (they ARE the demo data):
+# backend/data/corpus/**, backend/data/*.json, backend/data/*.csv, backend/data/*.sqlite
+
+# hackathon source briefs (kept locally, not part of the shipped repo)
+Details _ RAISE Summit Hackathon.html
+RAISE HACKATHON TRACK_ Agentic Intelligence with the Vultron Retriever.pdf
+
