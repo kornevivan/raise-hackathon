@@ -159,12 +159,14 @@ class TriageRun:
             cids = [self._reg_hit(h, b) for b in h.blocks]
             hd = h.to_dict(); hd["citation_ids"] = cids
             payload.append(hd)
-        yield self.ev("retrieve", "PLAN", "Retrieval · scanned certificate",
-                      "Hospira 2014Q4 compliance certificate — an image-only scan. VultronRetriever "
-                      "surfaces it visually; we do not OCR it.",
+        self.scan_read = bool(linker.find_block(self.pages, value=3.59, doc_substr="SCANNED")[1])
+        reason = ("Hospira 2014Q4 compliance certificate — a scan. OCR reads 3.59x off the table; "
+                  "our recomputation confirms it." if self.scan_read else
+                  "Hospira 2014Q4 compliance certificate — an image-only scan (no OCR available); "
+                  "surfaced visually, figure recomputed from financial data.")
+        yield self.ev("retrieve", "PLAN", "Retrieval · scanned certificate", reason,
                       payload={"iteration": 1, "hits": payload,
-                               "query": "Hospira 2014Q4 compliance certificate",
-                               "reason": "Latest certificate is a scan — surfaced as evidence."},
+                               "query": "Hospira 2014Q4 compliance certificate", "reason": reason},
                       tier="prime", model=TIER_MODEL["prime"], mode=self.retriever.backend)
 
         # non-numeric obligation: filing-deadline check over the filing log
@@ -177,7 +179,8 @@ class TriageRun:
                       payload={"tool": "filing_query", "result": fq}, mode="code")
 
         ranking = self._ranking()
-        c_scan = self._cite_scanned_page()   # page-level (no fabricated cell)
+        # cite the 3.59x CELL when OCR read it off the scan; else page-level (no fabricated cell)
+        c_scan = self._cite_value(3.59, "SCANNED") or self._cite_scanned_page()
         c_step = self._cite_value(3.50, "amendment") or self.cite_text("6.6A", "amendment")
 
         # LLM writes the reasons; the ORDER is deterministic

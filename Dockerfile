@@ -10,7 +10,7 @@ RUN npm run build            # -> /web/dist
 FROM python:3.12-slim AS app
 # fonts so the (optional) corpus regeneration renders identically on Linux
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    fonts-dejavu-core fonts-liberation && rm -rf /var/lib/apt/lists/*
+    fonts-dejavu-core fonts-liberation tesseract-ocr && rm -rf /var/lib/apt/lists/*
 WORKDIR /srv/backend
 COPY backend/requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt

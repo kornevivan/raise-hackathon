@@ -56,12 +56,13 @@ def _pdf_pages(upload_id: str, doc_id: str, title: str, data: bytes, out_dir: st
             })
         scanned = not blocks   # image-only PDF page → no text layer (a real scan)
         if scanned:
-            # We do NOT OCR and do NOT fabricate row text/positions. The page is a real
-            # scan: VultronRetriever surfaces it visually; we expose only a page-level
-            # reference so a citation shows the document, never a made-up cell.
-            blocks = [{"id": f"{doc_id}-p{i}-b1", "bbox": None,
-                       "text": "[scanned page — image only; retrieved visually by VultronRetriever]",
-                       "kind": "scanned"}]
+            # B5: OCR the scan when Tesseract is available (prod) → real word text + bboxes, so a
+            # citation can highlight the actual cell. When it isn't (local/CI), degrade honestly to
+            # a page-level reference (never fabricate row text/positions).
+            ocr = _ocr_blocks(pix, doc_id, i)
+            blocks = ocr or [{"id": f"{doc_id}-p{i}-b1", "bbox": None,
+                              "text": "[scanned page — image only; retrieved visually by VultronRetriever]",
+                              "kind": "scanned"}]
         pages.append({
             "doc_id": doc_id, "doc_title": title, "kind": "uploaded",
             "borrower_id": None, "scanned": scanned, "page": i,
@@ -71,6 +72,39 @@ def _pdf_pages(upload_id: str, doc_id: str, title: str, data: bytes, out_dir: st
         })
     pdf.close()
     return pages
+
+
+def _ocr_blocks(pix, doc_id: str, page: int):
+    """OCR an image-only page with Tesseract, returning line-level blocks with real bboxes.
+    Returns None if pytesseract/Tesseract is unavailable (honest page-level fallback)."""
+    try:
+        import pytesseract
+        from PIL import Image
+    except Exception:
+        return None
+    try:
+        img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
+        d = pytesseract.image_to_data(img, output_type=pytesseract.Output.DICT)
+    except Exception:
+        return None
+    lines: dict = {}
+    for j in range(len(d["text"])):
+        w = (d["text"][j] or "").strip()
+        if not w or int(d.get("conf", ["-1"])[j] or -1) < 30:
+            continue
+        key = (d["block_num"][j], d["par_num"][j], d["line_num"][j])
+        x, y, ww, hh = d["left"][j], d["top"][j], d["width"][j], d["height"][j]
+        L = lines.setdefault(key, {"words": [], "x0": x, "y0": y, "x1": x + ww, "y1": y + hh})
+        L["words"].append(w)
+        L["x0"], L["y0"] = min(L["x0"], x), min(L["y0"], y)
+        L["x1"], L["y1"] = max(L["x1"], x + ww), max(L["y1"], y + hh)
+    blocks = []
+    for k, (key, L) in enumerate(sorted(lines.items()), 1):
+        txt = " ".join(L["words"])
+        blocks.append({"id": f"{doc_id}-p{page}-b{k}",
+                       "bbox": [L["x0"], L["y0"], L["x1"] - L["x0"], L["y1"] - L["y0"]],
+                       "text": txt, "kind": "table" if any(c.isdigit() for c in txt) else "paragraph"})
+    return blocks or None
 
 
 def _txt_page(doc_id: str, title: str, data: bytes) -> list[dict]:

@@ -36,3 +36,35 @@ steps, the Vultr chat model on reasoning steps, each labeled Vultr vs determinis
 Vultr exposes a chat endpoint for those models. We will switch the moment it exists — the router
 is one config change (`backend/app/config.py` MODEL_PRIME/CORE/FLASH). This note + the probe are
 our due-diligence record.
+
+---
+
+## Probe transcript (reproducible)
+
+`python backend/probe_vultr.py` against `https://api.vultrinference.com/v1`, all three flavors,
+POST `/v1/chat/completions` and `/v1/completions`:
+
+```
+POST /v1/chat/completions  model=vultr/VultronRetrieverPrime-Qwen3.5-8B   -> 404 {"detail":"Not Found"}
+POST /v1/completions       model=vultr/VultronRetrieverPrime-Qwen3.5-8B   -> 404 Not found
+POST /v1/chat/completions  model=vultr/VultronRetrieverCore-Qwen3.5-4.5B  -> 404 {"detail":"Not Found"}
+POST /v1/completions       model=vultr/VultronRetrieverCore-Qwen3.5-4.5B  -> 404 Not found
+POST /v1/chat/completions  model=vultr/VultronRetrieverFlash-Qwen3.5-0.8B -> 404 {"detail":"Not Found"}
+POST /v1/completions       model=vultr/VultronRetrieverFlash-Qwen3.5-0.8B -> 404 Not found
+```
+
+The same models ARE reachable through the **Vector Store** API (`/v1/vector_store/*/search` with
+`model=vultr/VultronRetriever*`), confirming they are served as retrievers, not chat models. The
+embeddings endpoint (`/v1/embeddings`) also 404s for them (they are multi-vector / late-interaction).
+
+## Fallback logic (what actually runs)
+- **Retrieval** → VultronRetriever flavors (Flash/Core/Prime), via the Vultr Vector Store.
+- **Reasoning** → `deepseek-ai/DeepSeek-V4-Flash`, a Vultr-hosted open-source chat model.
+- **Both** run on **Vultr Serverless Inference** (the platform requirement). Switching reasoning to
+  a Vultron chat model is a one-line change in `backend/app/config.py` if/when such an endpoint ships.
+
+## Organizer confirmation
+Question posted to the track channel: *"VultronRetriever chat/completions return 404 — is reasoning
+expected on a Vultr-hosted OSS chat model with VultronRetriever for retrieval?"*  — **[record the
+partner rep's answer + date/link here].** Until answered, the routing above is our good-faith reading
+of the brief ("Open source LLMs served over an OpenAI-compatible API … for core LLM reasoning").
