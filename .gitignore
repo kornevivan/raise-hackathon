@@ -34,3 +34,6 @@ rework-instructions-v2.md
 backend/data/uploads/
 
 backend/data/runs.sqlite
+
+# real SEC filings (reproducible via deploy/fetch_real_docs.py; large)
+backend/data/real/

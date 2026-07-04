@@ -46,10 +46,15 @@ def corpus():
     global _corpus_id
     if _corpus_id and _corpus_id in ingest.UPLOADS:
         return ingest.UPLOADS[_corpus_id]
+    # By default index the faithful, source-linked EXCERPTS (reliable page-level
+    # citations; the real 98-page filing would swamp retrieval and its wording differs
+    # from the exact clauses we cite). Set USE_REAL_DOCS=1 to index the real SEC PDFs
+    # from data/real/ instead — see deploy/fetch_real_docs.py and docs/COMPLIANCE_NOTE.md.
+    use_real = os.getenv("USE_REAL_DOCS", "").strip() in ("1", "true", "yes")
     files = []
     for name in DEEP_DOCS:
         real = os.path.join(REAL_DIR, REAL_MAP.get(name, ""))
-        p = real if (name in REAL_MAP and os.path.exists(real)) else os.path.join(DOCS, name)
+        p = real if (use_real and name in REAL_MAP and os.path.exists(real)) else os.path.join(DOCS, name)
         if os.path.exists(p):
             assert "golden" not in os.path.basename(p).lower(), "ingest leakage: golden file"
             files.append((os.path.basename(p), open(p, "rb").read()))
