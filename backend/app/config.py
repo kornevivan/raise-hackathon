@@ -26,7 +26,7 @@ _load_dotenv()
 # in the Vultr portal (requires a verified account email). It is DIFFERENT from
 # the account API key used to manage resources.
 # bump on every deploy-relevant change so /api/health confirms what's running
-APP_VERSION = "2.4.0-derived-spec"
+APP_VERSION = "2.5.0-real-docs-default"
 
 VULTR_BASE_URL = os.getenv("VULTR_BASE_URL", "https://api.vultrinference.com/v1")
 VULTR_INFERENCE_KEY = os.getenv("VULTR_INFERENCE_API_KEY", "").strip()

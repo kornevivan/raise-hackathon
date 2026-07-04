@@ -24,9 +24,10 @@ FIXTURE = {
 
 def _spec_from(use_real: bool):
     hospira._corpus_id = None
-    os.environ["USE_REAL_DOCS"] = "1" if use_real else ""
+    os.environ["USE_EXCERPTS"] = "" if use_real else "1"   # real is the default
     pages = hospira.corpus()["pages"]
     hospira._corpus_id = None
+    os.environ["USE_EXCERPTS"] = ""
     return se.build_spec(pages)
 
 

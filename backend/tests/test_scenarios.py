@@ -72,6 +72,19 @@ def test_s0_scanned_thumbnail():
     assert all(len(r.get("checks", [])) >= 2 for r in memo["ranking"])
 
 
+def test_live_doc_set_is_real_no_excerpts():
+    """A0-A1: the live deep corpus indexes the REAL EDGAR PDFs (no `_excerpt`) and all 9
+    financial reports; the clean 2014Q4 certificate is excluded."""
+    os.environ["USE_EXCERPTS"] = ""
+    hospira._corpus_id = None
+    docs = [d["doc_id"] for d in hospira.corpus()["documents"]]
+    assert any("2011_10_28" in d for d in docs), "real credit agreement not indexed"
+    assert any("2013_04_30" in d for d in docs), "real amendment not indexed"
+    assert not any("excerpt" in d for d in docs), f"_excerpt in live index: {docs}"
+    assert sum("financial_report" in d for d in docs) == 9, "need all 9 financial reports"
+    assert not any(d == "compliance_certificate_2014Q4" for d in docs), "clean 2014Q4 must be excluded"
+
+
 def test_no_golden_leakage_in_ingest():
     """CI guard: no ingested document may reference a golden file (guide §2)."""
     for entry in (hospira.corpus(), tr._corpus(), precedents._corpus()):

@@ -13,7 +13,7 @@ import json
 import os
 from datetime import datetime, timezone
 
-from . import config, covenant_engine as ce, ingest, hospira
+from . import config, covenant_engine as ce, ingest, hospira, linker
 from .llm import LLM, PRIME
 from .retriever import TIER_MODEL
 
@@ -43,10 +43,14 @@ def _corpus():
     for name in sorted(os.listdir(PORT_DIR)):
         if name.endswith(".pdf"):
             files.append((name, open(os.path.join(PORT_DIR, name), "rb").read()))
-    for extra in ("compliance_certificate_2014Q4_SCANNED.pdf", "amendment_no1_excerpt.pdf"):
-        p = os.path.join(DATASET, "documents", extra)
+    # Hospira's scanned certificate + the base agreement AND amendment (real by default) —
+    # triage must be able to cite the base definition and the §6.6A step-down.
+    extras = [os.path.join(DATASET, "documents", "compliance_certificate_2014Q4_SCANNED.pdf"),
+              hospira.resolve_doc("credit_agreement_excerpt.pdf"),
+              hospira.resolve_doc("amendment_no1_excerpt.pdf")]
+    for p in extras:
         if os.path.exists(p):
-            files.append((extra, open(p, "rb").read()))
+            files.append((os.path.basename(p), open(p, "rb").read()))
     res = ingest.ingest(files, collection="triage")
     _corpus_id = res["upload_id"]
     return ingest.UPLOADS[_corpus_id]
@@ -174,7 +178,7 @@ class TriageRun:
 
         ranking = self._ranking()
         c_scan = self._cite_scanned_page()   # page-level (no fabricated cell)
-        c_step = self.cite_text("3.50 to 1.00", "amendment") or self.cite_text("6.6A", "amendment")
+        c_step = self._cite_value(3.50, "amendment") or self.cite_text("6.6A", "amendment")
 
         # LLM writes the reasons; the ORDER is deterministic
         system = ("You are a credit portfolio planner. Given the ranked borrowers and facts, write "
@@ -235,6 +239,14 @@ class TriageRun:
         yield self.ev("done", "MEMO", "Run complete",
                       f"{self.llm.calls} LLM call(s) · top risk: {ranking[0]['borrower']}",
                       payload={"llm_calls": self.llm.calls, "next_action": payload["next_action"]})
+
+    def _cite_value(self, value, doc_substr=None):
+        p, b = linker.find_block(self.pages, value=value, doc_substr=doc_substr)
+        if not b:
+            return None
+        return self._reg_hit(type("H", (), {
+            "doc_id": p["doc_id"], "doc_title": p["doc_title"], "page": p["page"],
+            "image": p["image"], "width": p["width"], "height": p["height"]})(), b)
 
     def _scanned_page(self):
         return next((p for p in self.pages if "SCANNED" in p["doc_id"]), None)

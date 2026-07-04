@@ -328,12 +328,19 @@ class HospiraRun:
         # has not yet been applied in this run → gap. The LLM only writes the explanation.
         base_text = " ".join(c["text"] for c in self.citations.values())
         instrument = detect_instrument(base_text)
+        if not instrument:
+            # the base agreement may not self-reference the amendment (real filings don't) —
+            # the trigger is that an amending instrument is PRESENT in the corpus and modifies
+            # the covenant (its terms fed the derived spec). Registry/corpus-aware, not text-only.
+            amend_pages = [p for p in self.pages if "amend" in p["doc_id"].lower()]
+            if amend_pages:
+                instrument = detect_instrument(amend_pages[0]["text"]) or "an amendment on file"
         gap = bool(instrument)
 
         def offline():
-            return {"reason": (f"The EBITDA definition and Section 6.6 reference {instrument}, "
-                    "which amends the Permitted Addbacks and the threshold but has not yet been "
-                    "applied. The current ratio uses the base definition and may be wrong.")
+            return {"reason": (f"The corpus contains {instrument}, which amends the Permitted "
+                    "Addbacks and the leverage threshold. The base-definition ratio may be wrong "
+                    "until the amendment is applied — retrieving it.")
                     if gap else "Evidence is complete.", "instrument": instrument}
         res = self.llm.json_call(tier=CORE, system=(
             "Given the retrieved covenant text and the current calculation, decide if a governing "

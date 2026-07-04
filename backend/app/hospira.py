@@ -24,18 +24,33 @@ DOCS = os.path.join(DATASET, "documents")
 DEEP_DOCS = [
     "credit_agreement_excerpt.pdf",
     "amendment_no1_excerpt.pdf",
+    # ALL 9 quarters — S3's window starts 2013Q2 and the lifetime-cap history needs 2013Q1-Q2
+    "financial_report_2013Q1.pdf", "financial_report_2013Q2.pdf",
     "financial_report_2013Q3.pdf", "financial_report_2013Q4.pdf",
     "financial_report_2014Q1.pdf", "financial_report_2014Q2.pdf",
     "financial_report_2014Q3.pdf", "financial_report_2014Q4.pdf",
     "financial_report_2015Q1.pdf",
+    "compliance_certificate_2013Q4.pdf",
     "compliance_certificate_2014Q1.pdf", "compliance_certificate_2014Q3.pdf",
     "compliance_certificate_2014Q4_SCANNED.pdf",   # scanned only; clean 2014Q4 excluded
-    "borrower_submitted_certificate_2014Q2.pdf",   # S4 cross-check source
+    "borrower_submitted_certificate_2014Q2.pdf",   # indexed for all deep runs (S4 differs by trigger)
 ]
 
-REAL_DIR = os.path.join(config.DATA_DIR, "real")   # optional real SEC PDFs (guide §1)
+REAL_DIR = os.path.join(config.DATA_DIR, "real")   # real SEC PDFs (guide §1) — the DEFAULT
 REAL_MAP = {"credit_agreement_excerpt.pdf": "credit_agreement_2011-10-28.pdf",
             "amendment_no1_excerpt.pdf": "amendment_no1_2013-04-30.pdf"}
+
+
+def resolve_doc(name: str) -> str:
+    """Prefer the real EDGAR filing; fall back to the excerpt only when the real PDF is
+    absent (offline CI fixture). USE_EXCERPTS=1 forces excerpts for deterministic CI."""
+    force_excerpt = os.getenv("USE_EXCERPTS", "").strip() in ("1", "true", "yes")
+    real = REAL_MAP.get(name)
+    if real and not force_excerpt:
+        rp = os.path.join(REAL_DIR, real)
+        if os.path.exists(rp):
+            return rp
+    return os.path.join(DOCS, name)
 
 _corpus_id: str | None = None
 
@@ -46,15 +61,11 @@ def corpus():
     global _corpus_id
     if _corpus_id and _corpus_id in ingest.UPLOADS:
         return ingest.UPLOADS[_corpus_id]
-    # By default index the faithful, source-linked EXCERPTS (reliable page-level
-    # citations; the real 98-page filing would swamp retrieval and its wording differs
-    # from the exact clauses we cite). Set USE_REAL_DOCS=1 to index the real SEC PDFs
-    # from data/real/ instead — see deploy/fetch_real_docs.py and docs/COMPLIANCE_NOTE.md.
-    use_real = os.getenv("USE_REAL_DOCS", "").strip() in ("1", "true", "yes")
+    # DEFAULT: index the REAL EDGAR filings (spec_extractor derives the rules from them and
+    # the B3 linker cites them). Excerpts are used only when the real PDFs are absent (CI).
     files = []
     for name in DEEP_DOCS:
-        real = os.path.join(REAL_DIR, REAL_MAP.get(name, ""))
-        p = real if (use_real and name in REAL_MAP and os.path.exists(real)) else os.path.join(DOCS, name)
+        p = resolve_doc(name)
         if os.path.exists(p):
             assert "golden" not in os.path.basename(p).lower(), "ingest leakage: golden file"
             files.append((os.path.basename(p), open(p, "rb").read()))
