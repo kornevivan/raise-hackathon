@@ -73,8 +73,9 @@ def retrieve_for(scenario_id: str, verdict: str, run) -> tuple[list[dict], dict]
         meta = idx.get(pid, {})
         # find the precedent's page in the ingested corpus and cite it
         cid = None
+        _n = lambda s: __import__("re").sub(r"[^a-z0-9]", "", s.lower())
         for p in corpus["pages"]:
-            if pid.replace("-", "") in p["doc_id"].replace("-", "") or pid in p["text"]:
+            if _n(pid) in _n(p["doc_id"]) or pid in p["text"]:
                 b = p["blocks"][0]
                 cid = run._register({**b, "doc_id": p["doc_id"], "page": p["page"],
                                      "doc_title": p["doc_title"], "image": p["image"],

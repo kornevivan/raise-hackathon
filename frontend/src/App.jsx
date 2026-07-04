@@ -3,6 +3,7 @@ import { getHealth, getScenarios, runScenario, runUpload, uploadDocuments, getSa
 import Trace from './Trace.jsx'
 import { Memo, DocViewer, RatioBanner } from './Memo.jsx'
 import UploadPanel from './UploadPanel.jsx'
+import Chat from './Chat.jsx'
 import { Icon } from './ui.jsx'
 
 export default function App() {
@@ -44,6 +45,12 @@ export default function App() {
 
   function start(sc) {
     beginRun(sc.id, (h) => runScenario(sc.id, h))
+  }
+
+  function handleAction(action) {
+    if (!action?.run) return
+    const sc = scenarios.find((s) => s.id === action.run)
+    if (sc) start(sc)
   }
 
   async function analyze(files) {
@@ -156,6 +163,7 @@ export default function App() {
             <div className="flex gap-1 rounded-lg border border-slate-800 bg-slate-900/50 p-0.5 text-[12px]">
               <TabBtn on={tab === 'memo'} onClick={() => setTab('memo')} label="Memo" />
               <TabBtn on={tab === 'source'} onClick={() => setTab('source')} label="Source document" />
+              <TabBtn on={tab === 'chat'} onClick={() => setTab('chat')} label="Chat" />
             </div>
           </div>
 
@@ -165,12 +173,16 @@ export default function App() {
 
           {tab === 'memo' ? (
             memo ? (
-              <Memo memo={memo} decision={decision} onCite={openSource} onDecision={decide} />
+              <Memo memo={memo} decision={decision} onCite={openSource} onDecision={decide} onAction={handleAction} />
             ) : (
               <Empty text={running ? 'Analyzing… the memo appears when the agent finishes.' : 'Run a scenario to generate a decision-ready memo.'} />
             )
-          ) : (
+          ) : tab === 'source' ? (
             <DocViewer source={source} />
+          ) : (
+            <div className="h-[calc(100vh-230px)]">
+              <Chat runId={runId} scenarioId={(active || '').replace('upload:', '')} onCite={openSource} onAction={handleAction} />
+            </div>
           )}
         </section>
       </div>
@@ -182,10 +194,12 @@ function HealthBadge({ health }) {
   if (!health) return null
   const live = health.live_inference
   return (
-    <span className={`chip border px-2.5 py-1 ${live ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300' : 'border-amber-500/40 bg-amber-500/10 text-amber-300'}`}
-      title={live ? 'Reasoning + retrieval on Vultr Serverless Inference' : 'Deterministic offline mode — set VULTR_INFERENCE_API_KEY'}>
+    <span className={`chip border px-2.5 py-1 font-semibold ${live ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300' : 'border-amber-500/40 bg-amber-500/10 text-amber-300'}`}
+      title={live ? 'LIVE — reasoning on Vultr Serverless Inference, retrieval on VultronRetriever'
+                  : 'REPLAY — deterministic offline mode (set VULTR_INFERENCE_API_KEY for live)'}>
       <span className={`h-1.5 w-1.5 rounded-full ${live ? 'bg-emerald-400' : 'bg-amber-400'}`} />
-      {live ? 'Vultr inference live' : 'Offline demo mode'}
+      {live ? 'LIVE · Vultr' : 'REPLAY · offline'}
+      {health.version && <span className="ml-1 font-normal opacity-60">{health.version}</span>}
     </span>
   )
 }

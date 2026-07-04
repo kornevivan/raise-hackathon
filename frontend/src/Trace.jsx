@@ -41,6 +41,21 @@ function StepBody({ ev, onOpen }) {
   const p = ev.payload || {}
   switch (ev.kind) {
     case 'plan':
+      if (p.ranking) return (
+        <div className="mt-1.5 space-y-1">
+          {p.ranking.map((rr, i) => (
+            <div key={rr.borrower} className="card p-2 text-[12px]">
+              <div className="flex items-center justify-between">
+                <span className="font-semibold text-slate-100">#{i + 1} {rr.borrower}</span>
+                <span className={`chip border ${rr.forward_headroom < 0 ? 'border-rose-500/40 bg-rose-500/10 text-rose-200' : rr.forward_headroom < 0.25 ? 'border-amber-500/40 bg-amber-500/10 text-amber-200' : 'border-emerald-500/40 bg-emerald-500/10 text-emerald-200'} mono`}>
+                  {rr.ratio_2014q4}x · headroom {rr.forward_headroom > 0 ? '+' : ''}{rr.forward_headroom}x
+                </span>
+              </div>
+              {rr.reason && <div className="mt-0.5 text-[11px] leading-tight text-slate-400">{rr.reason}</div>}
+            </div>
+          ))}
+        </div>
+      )
       return (
         <div className="mt-1.5 space-y-1.5">
           {p.checks?.map((c) => (
@@ -77,16 +92,22 @@ function StepBody({ ev, onOpen }) {
           )}
           {r.rows && r.rows.length > 0 && (
             <div className="mt-1.5 space-y-0.5">
-              {r.rows.slice(0, 4).map((row) => (
-                <div key={row.txn_id} className="flex justify-between gap-2 text-[11px]">
-                  <span className="truncate text-slate-400">{row.vendor} · {row.memo}</span>
-                  <span className="mono text-slate-300">${(row.amount_usd_000/1000).toFixed(1)}M</span>
+              {r.rows.slice(0, 4).map((row, i) => {
+                const amt = row.amount_usd_millions ?? (row.amount_usd_000 != null ? row.amount_usd_000 / 1000 : null)
+                const label = row.description || [row.vendor, row.memo].filter(Boolean).join(' · ')
+                return (
+                  <div key={row.txn_id || i} className="flex justify-between gap-2 text-[11px]">
+                    <span className="truncate text-slate-400">{row.date ? row.date + ' · ' : ''}{label}</span>
+                    <span className="mono text-slate-300">{amt != null ? `$${amt.toFixed(1)}M` : '—'}</span>
+                  </div>
+                )
+              })}
+              {r.total_usd_millions != null && (
+                <div className="flex justify-between border-t border-slate-800 pt-1 text-[11px] font-semibold">
+                  <span className="text-slate-300">total</span>
+                  <span className="mono text-amber-300">${r.total_usd_millions}M</span>
                 </div>
-              ))}
-              <div className="flex justify-between border-t border-slate-800 pt-1 text-[11px] font-semibold">
-                <span className="text-slate-300">total</span>
-                <span className="mono text-amber-300">${r.total_usd_millions}M</span>
-              </div>
+              )}
             </div>
           )}
         </div>

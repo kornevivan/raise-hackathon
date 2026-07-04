@@ -32,3 +32,5 @@ _incoming/
 testing-data.zip
 rework-instructions-v2.md
 backend/data/uploads/
+
+backend/data/runs.sqlite

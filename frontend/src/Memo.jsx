@@ -34,9 +34,10 @@ function RatioTile({ label, value, over, strike, flip }) {
   )
 }
 
-export function Memo({ memo, onCite, onDecision, decision }) {
+export function Memo({ memo, onCite, onDecision, decision, onAction }) {
   if (!memo) return null
   const m = memo.memo
+  const nextAction = memo.next_action
   // number citations by first appearance in the memo
   const order = []
   m.sections.forEach((s) => s.sentences.forEach((sn) => sn.citations.forEach((c) => {
@@ -56,6 +57,12 @@ export function Memo({ memo, onCite, onDecision, decision }) {
           <span className="text-[11px] text-slate-500">{memo.borrower} · {memo.period}</span>
         </div>
         <h2 className="mt-2 text-[15px] font-semibold leading-snug text-slate-100">{m.headline}</h2>
+        {nextAction?.run && (
+          <button onClick={() => onAction?.(nextAction)}
+            className="btn mt-2 bg-sky-500 px-3 py-1.5 text-[12px] text-slate-950 hover:bg-sky-400">
+            Deep-run {nextAction.borrower || nextAction.run} ({nextAction.run}) →
+          </button>
+        )}
       </div>
 
       <div className="space-y-3">

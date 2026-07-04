@@ -13,7 +13,9 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from sse_starlette.sse import EventSourceResponse
 
-from . import config, orchestrator_adhoc, ingest, orchestrator_hospira, orchestrator_triage
+import sqlite3
+
+from . import config, orchestrator_adhoc, ingest, orchestrator_hospira, orchestrator_triage, chat
 
 app = FastAPI(title="Covenant Sentinel", version="1.0")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"],
@@ -113,6 +115,65 @@ def samples():
     d = os.path.join(config.DATA_DIR, "samples")
     files = sorted(os.listdir(d)) if os.path.isdir(d) else []
     return {"files": [{"name": f, "url": f"/samples/{f}"} for f in files if f.endswith(".pdf")]}
+
+
+CHAT_DB = os.path.join(config.DATA_DIR, "runs.sqlite")
+
+
+def _chat_db():
+    con = sqlite3.connect(CHAT_DB)
+    con.execute("CREATE TABLE IF NOT EXISTS chats(run_id TEXT, idx INT, role TEXT, payload TEXT)")
+    return con
+
+
+def _persist_chat(run_id: str, history: list[dict]):
+    con = _chat_db()
+    con.execute("DELETE FROM chats WHERE run_id = ?", (run_id,))
+    con.executemany("INSERT INTO chats VALUES (?,?,?,?)",
+                    [(run_id, i, h.get("role", "assistant"), json.dumps(h)) for i, h in enumerate(history)])
+    con.commit(); con.close()
+
+
+@app.get("/api/suggested/{scenario_id}")
+def suggested(scenario_id: str):
+    return {"questions": chat.SUGGESTED.get(scenario_id, [])}
+
+
+@app.get("/api/chat/{run_id}")
+def chat_history(run_id: str):
+    run = RUNS.get(run_id)
+    if run and run.get("chat"):
+        return {"history": run["chat"]}
+    con = _chat_db()
+    rows = con.execute("SELECT payload FROM chats WHERE run_id=? ORDER BY idx", (run_id,)).fetchall()
+    con.close()
+    return {"history": [json.loads(r[0]) for r in rows]}
+
+
+@app.post("/api/chat/{run_id}")
+async def chat_turn(run_id: str, body: dict):
+    run = RUNS.get(run_id)
+    if not run:
+        raise HTTPException(404, "run not found (re-run the scenario)")
+    message = (body.get("message") or "").strip()
+    if not message:
+        raise HTTPException(400, "empty message")
+    session = chat.ChatSession(run)
+    history = run.setdefault("chat", [])
+
+    async def gen():
+        answer = None
+        for ev in session.answer(message):
+            if ev["kind"] == "chat_answer":
+                answer = ev
+            yield {"event": "chat", "data": json.dumps(ev)}
+            await asyncio.sleep(min(DEMO_PACE_MS, 200) / 1000.0)
+        history.append({"role": "user", "text": message})
+        history.append({"role": "assistant", **(answer or {"text": "(no answer)", "citations": []})})
+        _persist_chat(run_id, history)
+        yield {"event": "end", "data": "{}"}
+
+    return EventSourceResponse(gen())
 
 
 @app.post("/api/decision")
