@@ -18,40 +18,6 @@ from .gapcheck import detect_instrument
 from .llm import LLM, PRIME, CORE, FLASH
 from .retriever import TIER_MODEL
 
-DOC_LABELS = ["Credit Agreement (2011) §1.1/§6.6", "Amendment No. 1 (2013) §1(d)/§6.6A",
-              "Financial reports 2013Q3–2015Q1", "Compliance certificates (incl. scanned 2014Q4)"]
-SCENARIOS = {
-    "S3": {"id": "S3", "test_quarter": "2014Q1",
-           "label": "S3 · All clear — watch the cap",
-           "blurb": "Naive 3.847x looks like a breach; with capped addbacks it's 3.066x vs "
-                    "3.75x. Compliant — but Device Strategy cap is 285/290, thin future room.",
-           "prompt": "Review Hospira's leverage covenant for Q1 2014 and flag any forward-looking risks.",
-           "doc_labels": DOC_LABELS},
-    "S1": {"id": "S1", "test_quarter": "2014Q2",
-           "label": "S1 · False breach & capped addback",
-           "blurb": "Naive 4.218x prints a BREACH. The addback is capped (min → 30 disallowed), "
-                    "recomputing 3.606x vs 3.75x. Debt jumped on a $460M acquisition draw.",
-           "prompt": "Analyze Hospira's Maximum Leverage Ratio covenant for Q2 2014 (period ending "
-                     "2014-06-30). Is the borrower in breach?",
-           "doc_labels": DOC_LABELS},
-    "S2": {"id": "S2", "test_quarter": "2015Q1",
-           "label": "S2 · Step-down trap — real breach",
-           "blurb": "3.615x. The §6.6A step-down to 3.50x (after 2014-12-31) turns a would-be "
-                    "pass into an Event of Default. Escalate.",
-           "prompt": "Check Hospira's Q1 2015 covenant compliance — does the §6.6A step-down change "
-                     "the outcome?",
-           "doc_labels": DOC_LABELS},
-    "S4": {"id": "S4", "test_quarter": "2014Q2", "crosscheck": True,
-           "label": "S4 · Certificate cross-check",
-           "blurb": "The borrower's submitted certificate claims 3.50x (EBITDA 995). Recomputed "
-                    "correctly it's 3.606x — they applied the full addback, ignoring the $290M cap "
-                    "(30 over-added). Not a breach, but a misstated certificate.",
-           "prompt": "Verify the borrower-submitted compliance certificate for Q2 2014 against our "
-                     "own recomputation.",
-           "doc_labels": DOC_LABELS + ["Borrower-submitted certificate 2014Q2"]},
-}
-
-
 def _now():
     return datetime.now(timezone.utc).isoformat()
 
@@ -129,6 +95,24 @@ class HospiraRun:
     def _device_cite(self):
         a = next((a for a in self.spec.addbacks if "Device" in a.category), None)
         return a.cite if a else None
+
+    # ---- derived triggers (B6): behavior follows the DATA, not the scenario id ----
+    def _debt_jumped(self, threshold=200.0):
+        order, by_q = hospira.financials()
+        i = order.index(self.tq)
+        if i == 0:
+            return False
+        f = self.spec.numerator_field
+        return (by_q[self.tq].get(f, 0) - by_q[order[i - 1]].get(f, 0)) >= threshold
+
+    def _prior_scanned_page(self):
+        """A scanned certificate for the quarter immediately before the test quarter."""
+        order, _ = hospira.financials()
+        i = order.index(self.tq)
+        if i == 0:
+            return None
+        prior = order[i - 1]                      # e.g. "2014Q4"
+        return next((p for p in self.pages if p.get("scanned") and prior in p["doc_id"]), None)
 
     def _threshold_cite(self):
         s = next((s for s in self.spec.threshold_schedule if s.max_ratio == self.r.threshold), None)
@@ -256,10 +240,10 @@ class HospiraRun:
                                          "and the §6.6A step-down threshold."},
                       tier="prime", model=TIER_MODEL["prime"], mode=self.retriever.backend)
 
-        # --- S2: cross-check the prior-quarter SCANNED certificate (messy-doc beat) ---
-        if self.sc["id"] == "S2":
-            sh, sp = self.retrieve("Compliance Certificate leverage ratio fiscal quarter 2014Q4 "
-                                   "officer certification", tier="prime", k=1, doc_substr="SCANNED")
+        # --- cross-check the prior-quarter SCANNED certificate when one is on file (messy-doc) ---
+        if self._prior_scanned_page():
+            sh, sp = self.retrieve("prior quarter Compliance Certificate leverage ratio officer "
+                                   "certification", tier="prime", k=1, doc_substr="SCANNED")
             if sh:
                 yield self.ev("retrieve", "EVIDENCE", "Retrieval · scanned certificate",
                               "Cross-checking the prior-quarter compliance certificate — a "
@@ -280,8 +264,8 @@ class HospiraRun:
                           "ebitda_correct": r.ebitda_correct},
                           "threshold": r.threshold, "over": not r.compliant}, mode="code")
 
-        # --- S1: transaction cause of the debt jump ---
-        if self.sc["id"] == "S1":
+        # --- investigate the cause when total debt jumped materially this quarter ---
+        if self._debt_jumped():
             yield from self._cause_debt_jump()
 
         # --- S4: cross-check the borrower-submitted certificate ---

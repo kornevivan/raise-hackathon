@@ -16,7 +16,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from app import covenant_engine as ce           # noqa: E402
 from app import orchestrator_hospira as oh       # noqa: E402
 from app import orchestrator_triage as tr        # noqa: E402
-from app import hospira, precedents              # noqa: E402
+from app import hospira, precedents, scenarios as scen  # noqa: E402
 
 REVIEW = json.load(open(os.path.join(ce.DATASET_DIR, "golden_review_checks.json")))
 
@@ -26,7 +26,7 @@ def _run(scenario):
 
 
 def test_s4_certificate_crosscheck():
-    memo = next(e["payload"] for e in _run(oh.SCENARIOS["S4"]) if e["kind"] == "memo")
+    memo = next(e["payload"] for e in _run(scen.cfg("S4")) if e["kind"] == "memo")
     cc, g = memo["crosscheck"], REVIEW["S4_certificate_crosscheck_2014Q2"]
     assert cc["claimed_ebitda"] == g["borrower_claimed_ebitda"]
     assert cc["claimed_ratio"] == g["borrower_claimed_ratio"]      # 3.497
@@ -38,7 +38,7 @@ def test_s4_certificate_crosscheck():
 
 def test_s1_trace_assertions():
     """The S1 trace must show real agentic behavior in order (guide §3.2 a–e)."""
-    evs = _run(oh.SCENARIOS["S1"])
+    evs = _run(scen.cfg("S1"))
     order, seen = [], {}
     for e in evs:
         p = e.get("payload", {})

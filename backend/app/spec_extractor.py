@@ -20,9 +20,13 @@ DENOMINATOR = [
     ("income taxes", "income_tax_expense"),
     ("depreciation", "depreciation_amortization"),
 ]
-ADDBACK_BINDINGS = [
-    ("Device Strategy", "device_strategy_cash_charges", "2012-12-31"),
-    ("quality", "quality_matters_cash_charges", "2013-01-01"),
+# addback category ANCHOR (as it appears in the agreement) -> (canonical label, data-store field,
+# fallback incurred-after date). A data-store schema registry, not covenant rules: it only says
+# which store column backs a category the DOCUMENT names, so the cap VALUE can be read next to it.
+# A category the store doesn't track (third-party doc) falls through to generic discovery below.
+_CATEGORY_REGISTRY = [
+    ("Device Strategy", "Device Strategy", "device_strategy_cash_charges", "2012-12-31"),
+    ("quality", "Quality matters", "quality_matters_cash_charges", "2013-01-01"),
 ]
 
 _MONTHS = {m: i for i, m in enumerate(
@@ -69,6 +73,17 @@ def _cite(page, span):
                page=page["page"] if page else None, text=span)
 
 
+def _join(pages):
+    """Concatenate pages into one searchable string + a per-char page owner, so a clause that
+    straddles a page break (e.g. '...not to exceed' | '$110,000,000...') is read as one."""
+    text, owner = "", []
+    for p in pages:
+        t = p["text"] + "\n"
+        text += t
+        owner += [p] * len(t)
+    return text, owner
+
+
 def build_spec(pages: list[dict]) -> CovenantSpec:
     spec = CovenantSpec()
     amend = _pages_of(pages, "amendment")
@@ -88,29 +103,32 @@ def build_spec(pages: list[dict]) -> CovenantSpec:
     # --- threshold schedule (prefer the amendment's §6.6A step-down) ---
     steps: list[ThresholdStep] = []
     if amend:
-        # Work inside the leverage-covenant CLAUSE itself: the window starting at "3.75 to 1".
-        # The step-down pivot is the date object of "through / prior to / on or before" within
-        # that window (not some unrelated date elsewhere in the amendment).
+        # Value-AGNOSTIC: locate the leverage-covenant clause, read whatever ratio value(s) it
+        # states and the step-down pivot date. No hardcoded thresholds.
         date_rx = (r"((?:January|February|March|April|May|June|July|August|September|October|"
                    r"November|December)\s+\d{1,2},?\s+\d{4})")
-        p1 = s1 = None
+        ratio_rx = re.compile(r"(\d\.\d{1,2})\s*(?:to|:)\s*1\b", re.I)
         for p in amend:
-            m = re.search(r"3\.75\s*(?:to|:)\s*1", p["text"], re.I)
-            if m:
-                clause = p["text"][m.start():m.start() + 500]
-                p1, s1 = p, " ".join(clause[:120].split())
-                mp = re.search(r"(?:through|prior to|on or (?:before|prior to))\s+"
-                               r"(?:the last day of (?:the|any) [Ff]iscal [Qq]uarter ending )?"
-                               + date_rx, clause, re.I)
-                pivot = _iso_date(mp.group(1)) if mp else "2014-12-31"
-                break
-        else:
-            pivot = "2014-12-31"
-        p2, s2 = _find(amend, r"3\.50\s*(?:to|:)\s*1")
-        if p1:
-            steps.append(ThresholdStep(3.75, applies_through=pivot, cite=_cite(p1, s1)))
-        if p2:
-            steps.append(ThresholdStep(3.50, applies_after=pivot, cite=_cite(p2, s2)))
+            anchor = re.search(r"Leverage Ratio[^.]{0,220}?(?:exceed|greater than)", p["text"], re.I)
+            if not anchor:
+                continue
+            clause = p["text"][anchor.start():anchor.start() + 450]
+            ratios = [float(m.group(1)) for m in ratio_rx.finditer(clause)]
+            if not ratios:
+                continue
+            mp = re.search(r"(?:through|prior to|on or (?:before|prior to))\s+"
+                           r"(?:the last day of (?:the|any) [Ff]iscal [Qq]uarter ending )?"
+                           + date_rx, clause, re.I)
+            pivot = _iso_date(mp.group(1)) if mp else None
+            if len(ratios) >= 2 and pivot:            # step-down: [before, after] in text order
+                steps.append(ThresholdStep(ratios[0], applies_through=pivot,
+                                           cite=_cite(p, f"{ratios[0]:.2f} to 1")))
+                steps.append(ThresholdStep(ratios[1], applies_after=pivot,
+                                           cite=_cite(p, f"{ratios[1]:.2f} to 1")))
+            else:                                     # single amended threshold
+                steps.append(ThresholdStep(ratios[0], applies_through="2999-12-31",
+                                           cite=_cite(p, f"{ratios[0]:.2f} to 1")))
+            break
     if not steps:  # no amendment in corpus -> base covenant single threshold
         pb, sb = _find(base or pages, r"(\d\.\d\d)\s*(?:to|:)\s*1")
         if pb:
@@ -120,33 +138,52 @@ def build_spec(pages: list[dict]) -> CovenantSpec:
             spec.gaps.append("Leverage threshold not found in documents")
     spec.threshold_schedule = steps
 
-    # --- permitted addbacks with lifetime caps: find a cap-sized money value ($>=100M)
-    #     within a window of the category mention (works for "$290,000,000" and "$290.0 million") ---
+    # --- permitted addbacks with lifetime caps ---
     money_rx = re.compile(r"\$\s?([\d,]+)(?:\.(\d+))?\s*(million)?", re.I)
-    for label, store_field, after in ADDBACK_BINDINGS:
-        found = None
-        for p in (amend or []):
-            cat_positions = [mm.start() for mm in re.finditer(re.escape(label), p["text"], re.I)]
-            if not cat_positions:
+    jt, owner = _join(amend or [])
+
+    # Primary: caps for the categories the DATA STORE tracks — value read next to the anchor.
+    matched_anchor = False
+    for anchor, label, field, after in _CATEGORY_REGISTRY:
+        pos = [mm.start() for mm in re.finditer(re.escape(anchor), jt, re.I)]
+        if not pos:
+            continue
+        best = None
+        for m in money_rx.finditer(jt):
+            val = _money_millions(m.group(0))
+            if not val or val < 100:
                 continue
-            best = None
-            for m in money_rx.finditer(p["text"]):
-                val = _money_millions(m.group(0))
-                if not val or val < 100:            # caps are hundreds of $M
-                    continue
-                dist = min(abs(m.start() - c) for c in cat_positions)
-                if dist <= 200 and (best is None or dist < best[0]):
-                    best = (dist, p, m.group(0), val,
-                            p["text"][max(0, m.start() - 140):m.end() + 140])
-            if best:
-                found = best[1:]
-                break
-        if found:
-            p, span, cap, ctx = found
-            spec.addbacks.append(Addback(
-                category="Device Strategy" if "device" in label.lower() else "Quality matters",
-                store_field=store_field, cap=cap,
-                incurred_after=_iso_date(ctx) or after, cite=_cite(p, span)))
+            pre = jt[max(0, m.start() - 22):m.start()]         # a cap, not a narrative figure
+            if not re.search(r"up to|not to exceed", pre, re.I):
+                continue
+            d = min(abs(m.start() - c) for c in pos)
+            if d <= 200 and (best is None or d < best[0]):
+                best = (d, m.start(), m.group(0), val)
+        if best:
+            matched_anchor = True
+            _, off, span, cap = best
+            ctx = jt[max(0, off - 160):off + 160]
+            spec.addbacks.append(Addback(category=label, store_field=field, cap=cap,
+                                         incurred_after=_iso_date(ctx) or after,
+                                         cite=_cite(owner[off], span)))
+    # Fallback (third-party doc naming a category the store doesn't track): DISCOVER one cap in an
+    # addback/cap context and derive the category name + a slug store-field from the text.
+    if amend and not matched_anchor:
+        for m in money_rx.finditer(jt):
+            cap = _money_millions(m.group(0))
+            if not cap or cap < 100:
+                continue
+            ctx = jt[max(0, m.start() - 170):m.end() + 170]
+            if not re.search(r"addback|not to exceed|aggregate amount|lifetime|cap\b", ctx, re.I):
+                continue
+            mm = re.search(r"([A-Z][A-Za-z]+(?:\s+[A-Z][A-Za-z]+){0,3}\s+"
+                           r"(?:Program|Strategy|Matters|Charges|Costs|Initiative))", ctx)
+            category = mm.group(1) if mm else "Permitted Addback"
+            field = re.sub(r"[^a-z]+", "_", category.lower()).strip("_") + "_cash_charges"
+            spec.addbacks.append(Addback(category=category, store_field=field, cap=cap,
+                                         incurred_after=_iso_date(ctx) or "1900-01-01",
+                                         cite=_cite(owner[m.start()], m.group(0))))
+            break
     if amend and not spec.addbacks:
         spec.gaps.append("Permitted Addback caps referenced but not extracted")
     return spec

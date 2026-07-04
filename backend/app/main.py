@@ -15,7 +15,8 @@ from sse_starlette.sse import EventSourceResponse
 
 import sqlite3
 
-from . import config, orchestrator_adhoc, ingest, orchestrator_hospira, orchestrator_triage, chat
+from . import (config, orchestrator_adhoc, ingest, orchestrator_hospira, orchestrator_triage,
+               chat, scenarios as scen)
 
 app = FastAPI(title="Covenant Sentinel", version="1.0")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"],
@@ -43,21 +44,21 @@ def health():
 
 @app.get("/api/scenarios")
 def scenarios():
-    return {"scenarios": [orchestrator_triage.SCENARIO_S0]
-            + [orchestrator_hospira.SCENARIOS[k] for k in ("S3", "S1", "S2", "S4")]}
+    return {"scenarios": scen.all_views()}
 
 
 @app.get("/api/run/{scenario_id}")
 async def run(scenario_id: str):
-    is_triage = scenario_id == "S0"
-    sc = orchestrator_triage.SCENARIO_S0 if is_triage else orchestrator_hospira.SCENARIOS.get(scenario_id)
-    if not sc:
+    cfg = scen.SCENARIOS.get(scenario_id)
+    if not cfg:
         raise HTTPException(404, f"scenario {scenario_id} not found")
+    derived = scen.derive(cfg)           # everything is DERIVED from the pure config
+    is_triage = cfg["corpus"] == "portfolio"
     run_id = uuid.uuid4().hex[:12]
     events: list[dict] = []
-    RUNS[run_id] = {"events": events, "scenario": sc, "memo": None, "decision": None}
+    RUNS[run_id] = {"events": events, "scenario": derived, "memo": None, "decision": None}
     gen_events = (orchestrator_triage.run_triage() if is_triage
-                  else orchestrator_hospira.run_scenario(sc))
+                  else orchestrator_hospira.run_scenario(derived))
 
     async def gen():
         yield {"event": "run_id", "data": json.dumps({"run_id": run_id})}

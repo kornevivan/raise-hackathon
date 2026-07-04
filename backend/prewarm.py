@@ -5,7 +5,7 @@ the deployed demo replays instantly and live. Requires VULTR_INFERENCE_API_KEY.
 """
 import time
 
-from app import chat, orchestrator_hospira as oh, orchestrator_triage as tr
+from app import chat, orchestrator_hospira as oh, orchestrator_triage as tr, scenarios as scen
 
 # S0 triage (indexes the 'triage' collection)
 print("S0 triage…", flush=True)
@@ -15,7 +15,7 @@ for _ in tr.run_triage():
 # deep runs + their suggested chat questions (indexes 'hospira' + 'precedents')
 for sid in ("S3", "S1", "S2", "S4"):
     t0 = time.time()
-    sc = oh.SCENARIOS[sid]
+    sc = scen.cfg(sid)
     memo = None
     for ev in oh.run_scenario(sc):
         if ev["kind"] == "memo":
