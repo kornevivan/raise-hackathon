@@ -12,6 +12,8 @@ Built for the **RAISE Summit Hackathon — Vultr track: "Agentic Intelligence wi
 
 ## What it does
 
+> **Scope & honesty (read first):** the sample scenarios **S0–S4** are a *scripted, dataset‑bound* demo — numbers come from structured stores + a Hospira‑specific engine, citations are attached by deterministic lookup, and the scan is not OCR'd. The **Upload** path is the general one for arbitrary documents. Exactly what is genuine vs scenario‑scripted, and **why**, is in **[docs/LIMITATIONS.md](docs/LIMITATIONS.md)** (+ file/tool mapping in **[docs/SCENARIO_DOCUMENTS.md](docs/SCENARIO_DOCUMENTS.md)**).
+
 - **Portfolio triage (S0)** — "quarter closed, review the book": the planner ranks all borrowers by risk with stated reasons. It surfaces Hospira's latest certificate — a **scanned, image‑only page** — via VultronRetriever (visual retrieval), and flags Hospira #1 because our **recomputed** 2014Q4 leverage (3.59×) is already above the 3.50× threshold the §6.6A **step‑down** brings next quarter. (We don't OCR the scan — the number is engine‑computed; the scan is cited at the page level. See `docs/SCENARIO_DOCUMENTS.md`.) One click deep‑runs the top borrower.
 - **Deep covenant run (S1/S2/S3)** — plan → retrieve (>1, motivated) → deterministic tools → verify → cited memo. The engine implements the *real* mechanics: trailing‑four‑quarter Adjusted EBITDA, **Permitted Addbacks with lifetime caps** ($290M Device Strategy / $110M quality), and the **date‑dependent threshold** (3.75× → 3.50× after 2014‑12‑31).
 - **Precedents** — before the memo, one more VultronRetriever pass over 7 credit‑committee case histories; the memo cites 2–3 comparables (S2 cites the *real* Hospira waiver, the Novaline step‑down analog, and the negative Gulfport case).
