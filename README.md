@@ -30,7 +30,9 @@ VultronRetriever is a **layout‑aware visual page retriever** (ColPali / late�
 - **Core‑4.5B** → standard evidence retrieval.
 - **Prime‑8B** → hard / ambiguous / layout‑heavy pages. When the gap‑check flags the amended definition, retrieval **escalates Flash → Prime** to pull the amendment carefully.
 
-Reasoning runs on **Vultr Serverless Inference** chat models, also in three cognitive tiers (planner/verifier/memo on the strongest model; gap‑checks and extraction on lighter ones). The trace shows, per step, *which tier thought and why* — e.g. “Flash classified → Prime reasoned.”
+Retrieval is **genuinely live**: each document page is indexed into a **Vultr Vector Store** collection (the service that fronts the VultronRetriever models) and every retrieval is a real `vector_store/search` call with the chosen VultronRetriever flavor. Results map back to local page blocks so citations stay pixel‑precise.
+
+Reasoning runs on **Vultr Serverless Inference** chat models, routed by task complexity across three tiers. From the live `/v1/models` we selected **`deepseek-ai/DeepSeek-V4-Flash`** for its consistent low latency and reliable JSON (the probe script compares the alternatives). The trace shows, per step, which tier and model produced it, and whether it came from Vultr or the deterministic fallback.
 
 > **Messy‑document bonus:** the Q4 compliance certificate is a **scanned, skewed, noisy image‑PDF**. In the demo the agent pulls a number **from a table on that scanned page**, and clicking the citation highlights the exact cell — VultronRetriever’s advertised strength.
 
@@ -90,7 +92,9 @@ npm run dev                        # :5173  (proxies /api + /corpus to :8000)
 
 Open http://localhost:5173, pick a borrower, watch the agent run.
 
-**Offline vs live Vultr.** With no key the app runs a **deterministic offline engine** — the full pipeline, trace, tools and memo behave identically, so the demo never fails and you can develop before credentials are ready. Set `VULTR_INFERENCE_API_KEY` (from a Serverless Inference subscription) to route reasoning + retrieval through Vultr; the header badge and every trace step show which backend produced them. Use `python backend/probe_vultr.py` to list the exact served model ids and lock them in `.env`.
+**Offline vs live Vultr.** Set `VULTR_INFERENCE_API_KEY` (from a Serverless Inference subscription) to route reasoning + retrieval through Vultr — the header badge reads *“Vultr inference live”* and every trace step shows its model and latency. With no key the app runs a **deterministic offline engine**: the full pipeline, trace, tools and memo behave identically, so the demo never fails and you can develop before credentials are ready. A **pre‑warmed response cache** (`backend/.llm_cache`, committed) makes the live demo replay instantly; a cache miss simply calls Vultr again. Any per‑call failure degrades to the deterministic result, so a run can never break mid‑demo. Use `python backend/probe_vultr.py` to list served model ids and lock them in `.env`.
+
+**Design integrity:** the recommendation, confidence and every number are deterministic functions of the tool‑verified calculation — never an LLM opinion. The model *plans, judges gaps, and writes prose*; the audited math decides the outcome.
 
 > One activation step: Vultr requires a **verified account email** before it will create a Serverless Inference subscription. Verify the email, add the subscription, copy its key into `.env`, run `probe_vultr.py`, and the app flips to live Vultr with no code changes.
 

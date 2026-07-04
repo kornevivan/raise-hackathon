@@ -2,7 +2,8 @@
 backend/.venv/
 __pycache__/
 *.pyc
-backend/.llm_cache/
+# NOTE: backend/.llm_cache is intentionally COMMITTED — pre-warmed Vultr responses
+# so the demo replays instantly and live (see README "Offline vs live Vultr").
 
 # node
 frontend/node_modules/

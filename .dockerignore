@@ -1,0 +1,10 @@
+**/__pycache__/
+backend/.venv/
+frontend/node_modules/
+frontend/dist/
+.git/
+.env
+*.md
+!README.md
+# NOTE: backend/.llm_cache IS included on purpose — it is the pre-warmed
+# Vultr response cache so the deployed demo replays instantly and live.
