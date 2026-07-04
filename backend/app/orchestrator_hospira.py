@@ -13,7 +13,7 @@ import itertools
 import re
 from datetime import datetime, timezone
 
-from . import config, hospira, precedents, spec_extractor, generic_engine
+from . import config, hospira, precedents, spec_extractor, generic_engine, linker
 from .gapcheck import detect_instrument
 from .llm import LLM, PRIME, CORE, FLASH
 from .retriever import TIER_MODEL
@@ -106,6 +106,35 @@ class HospiraRun:
                                            "width": p["width"], "height": p["height"]}, tier)
         return None
 
+    # ---- general citation linking (B3): cite the span the spec was extracted from,
+    #      or link a computed value to the block that supports it (numeric-normalized) ----
+    def _register_block(self, p, b, tier=None):
+        return self._register({**b, "doc_id": p["doc_id"], "page": p["page"],
+                               "doc_title": p["doc_title"], "image": p["image"],
+                               "width": p["width"], "height": p["height"]}, tier)
+
+    def cite_from_cite(self, cite, tier=None):
+        if not cite or not cite.doc_id:
+            return None
+        p = next((pg for pg in self.pages if pg["doc_id"] == cite.doc_id and pg["page"] == cite.page), None)
+        if not p:
+            return None
+        _, b = linker.find_block([p], text=cite.text)
+        return self._register_block(p, b or p["blocks"][0], tier)
+
+    def cite_value(self, value, doc_substr=None, tier=None):
+        p, b = linker.find_block(self.pages, value=value, doc_substr=doc_substr)
+        return self._register_block(p, b, tier) if b else None
+
+    def _device_cite(self):
+        a = next((a for a in self.spec.addbacks if "Device" in a.category), None)
+        return a.cite if a else None
+
+    def _threshold_cite(self):
+        s = next((s for s in self.spec.threshold_schedule if s.max_ratio == self.r.threshold), None)
+        return (s or (self.spec.threshold_schedule[0] if self.spec.threshold_schedule else None)) \
+            and (s or self.spec.threshold_schedule[0]).cite
+
     def retrieve(self, query, tier, k=3, doc_substr=None):
         hits = self.retriever.retrieve(query, tier=tier, k=8)
         if doc_substr:
@@ -175,8 +204,8 @@ class HospiraRun:
         hits, payload = self.retrieve(
             "Consolidated Adjusted EBITDA definition Permitted Addbacks Leverage Ratio "
             "Section 6.6 maximum threshold", tier="flash", k=3, doc_substr="credit_agreement")
-        self.cite_text("consolidated adjusted ebitda", "credit_agreement", "flash")
-        self.cite_text("exceed 3.50 to 1.00", "credit_agreement", "flash")
+        self.cite_from_cite(self.spec.denominator_cite, "flash")
+        self.cite_from_cite(self._threshold_cite(), "flash")
         yield self.ev("retrieve", "EVIDENCE", f"Retrieval #1 · {len(hits)} page(s)",
                       "First-pass: EBITDA definition and Section 6.6 threshold.",
                       payload={"iteration": 1, "hits": payload,
@@ -195,7 +224,7 @@ class HospiraRun:
                           "sum_d_and_a": r.sum_d_and_a,
                           "consolidated_total_debt": r.consolidated_total_debt}}, mode="code")
         for q in r.window:
-            self.cite_text("consolidated total debt", None)  # ensure a debt citation exists
+            self.cite_value(r.consolidated_total_debt, doc_substr="financial_report")  # link the debt figure
         naive_over = r.ratio_naive > r.threshold
         yield self.ev("tool", "EVIDENCE", "Tool · ratio_calculator (naive)",
                       f"{r.consolidated_total_debt:.1f} / {r.ebitda_naive:.1f} = {r.ratio_naive:.3f}x "
@@ -217,10 +246,8 @@ class HospiraRun:
             "Amendment No. 1 Permitted Addbacks Device Strategy 290 million quality 110 million "
             "cap Section 6.6A threshold 3.75 3.50 fiscal quarter ending after December 31 2014",
             tier="prime", k=3, doc_substr="amendment")
-        c_caps = self.cite_text("not to exceed $290.0 million", "amendment", "prime") \
-            or self.cite_text("290.0 million", "amendment", "prime")
-        c_thr = self.cite_text("3.75 to 1.00", "amendment", "prime") \
-            or self.cite_text("6.6A", "amendment", "prime")
+        c_caps = self.cite_from_cite(self._device_cite(), "prime")
+        c_thr = self.cite_from_cite(self._threshold_cite(), "prime")
         yield self.ev("retrieve", "EVIDENCE", f"Retrieval #2 · {len(hits2)} page(s)",
                       "Amendment No. 1 §1(d) addback caps and §1(j)/§6.6A threshold schedule.",
                       payload={"iteration": 2, "hits": payload2,
@@ -283,7 +310,7 @@ class HospiraRun:
             "over_added": over_added,
             "claimed_headroom": round(r.threshold - (claim["claimed_ratio"] or r.ratio_correct), 3),
             "true_headroom": r.headroom_x, "both_compliant": True}
-        self.cite_text("device strategy charges", "borrower_submitted")
+        self.cite_value(claim["claimed_ebitda"], doc_substr="borrower_submitted")
         yield self.ev("tool", "EVIDENCE", "Tool · ratio_calculator (cross-check)",
                       f"Borrower claimed EBITDA {claim['claimed_ebitda']:.0f} / ratio "
                       f"{claim['claimed_ratio']:.3f}x; recomputed {r.ebitda_correct:.0f} / "
@@ -376,9 +403,9 @@ class HospiraRun:
 
     def _memo_crosscheck(self):
         r, ch = self.r, self.crosscheck
-        c_caps = getattr(self, "c_caps", None) or self.cite_text("290.0 million", "amendment")
-        c_def = self.cite_text("consolidated adjusted ebitda", "credit_agreement")
-        c_cert = self.cite_text("device strategy charges", "borrower_submitted")
+        c_caps = getattr(self, "c_caps", None) or self.cite_from_cite(self._device_cite())
+        c_def = self.cite_from_cite(self.spec.denominator_cite)
+        c_cert = self.cite_value(self.crosscheck["claimed_ebitda"], doc_substr="borrower_submitted")
         S = lambda t, cs=(): {"text": t, "citations": [c for c in cs if c]}
         headline = (f"Misstated certificate: the borrower claims {ch['claimed_ratio']:.3f}x "
                     f"(EBITDA {ch['claimed_ebitda']:.0f}), but the correct figure is "
@@ -430,10 +457,11 @@ class HospiraRun:
 
         prec_section, prec_cites = yield from self._precedents()
 
-        c_def = self.cite_text("consolidated adjusted ebitda", "credit_agreement")
-        c_debt = self.cite_text("consolidated total debt")
-        c_caps = getattr(self, "c_caps", None) or self.cite_text("290.0 million", "amendment")
-        c_thr = getattr(self, "c_thr", None) or self.cite_text("3.75 to 1.00", "amendment")
+        c_def = self.cite_from_cite(self.spec.denominator_cite)
+        c_debt = self.cite_value(r.consolidated_total_debt, doc_substr="financial_report") \
+            or self.cite_from_cite(self.spec.numerator_cite)
+        c_caps = getattr(self, "c_caps", None) or self.cite_from_cite(self._device_cite())
+        c_thr = getattr(self, "c_thr", None) or self.cite_from_cite(self._threshold_cite())
         S = lambda t, cs=(): {"text": t, "citations": [c for c in cs if c]}
 
         if not r.compliant:
