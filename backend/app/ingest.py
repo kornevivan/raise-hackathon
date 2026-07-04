@@ -129,19 +129,22 @@ def fill_scanned_text(entry: dict, docs_dir: str):
         if not os.path.exists(sibling):
             continue
         pdf = fitz.open(sibling)
-        text = pdf[0].get_text("text")
+        cpage = pdf[0]
+        cw, chh = cpage.rect.width, cpage.rect.height
+        # scale the clean page's REAL text-block geometry onto the scanned image, so a
+        # citation highlights the actual row on the scan (not an approximate position).
+        sx, sy = p["width"] / cw, p["height"] / chh
+        raw = [b for b in cpage.get_text("blocks") if b[4].strip()]
         pdf.close()
-        lines = [ln.strip() for ln in text.splitlines() if ln.strip()]
-        if not lines:
+        if not raw:
             continue
-        top, span = int(p["height"] * 0.10), int(p["height"] * 0.80 / max(1, len(lines)))
         blocks = []
-        for i, ln in enumerate(lines):
-            y = top + i * span
+        for i, b in enumerate(raw):
+            x0, y0, x1, y1, txt = b[0], b[1], b[2], b[3], " ".join(b[4].split())
             blocks.append({"id": f"{p['doc_id']}-p{p['page']}-b{i + 1}",
-                           "bbox": [int(p["width"] * 0.08), y, int(p["width"] * 0.84), span],
-                           "text": ln, "kind": "table" if any(c.isdigit() for c in ln) else "paragraph"})
-        p["blocks"], p["text"] = blocks, "\n".join(lines)
+                           "bbox": [int(x0 * sx), int(y0 * sy), int((x1 - x0) * sx), int((y1 - y0) * sy)],
+                           "text": txt, "kind": "table" if any(c.isdigit() for c in txt) else "paragraph"})
+        p["blocks"], p["text"] = blocks, "\n".join(b["text"] for b in blocks)
         for b in blocks:
             entry["by_block"][(p["doc_id"], p["page"], b["id"])] = {
                 **b, "doc_id": p["doc_id"], "page": p["page"], "image": p["image"],
