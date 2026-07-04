@@ -25,6 +25,9 @@ _load_dotenv()
 # The inference key is issued when you create a Serverless Inference subscription
 # in the Vultr portal (requires a verified account email). It is DIFFERENT from
 # the account API key used to manage resources.
+# bump on every deploy-relevant change so /api/health confirms what's running
+APP_VERSION = "1.1.0-upload-fix"
+
 VULTR_BASE_URL = os.getenv("VULTR_BASE_URL", "https://api.vultrinference.com/v1")
 VULTR_INFERENCE_KEY = os.getenv("VULTR_INFERENCE_API_KEY", "").strip()
 

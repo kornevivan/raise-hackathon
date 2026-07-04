@@ -27,6 +27,7 @@ RUNS: dict[str, dict] = {}   # run_id -> {events, memo, decision}
 def health():
     return {
         "ok": True,
+        "version": config.APP_VERSION,
         "live_inference": config.LIVE,
         "backend": "vultr" if config.LIVE else "offline",
         "reasoning_models": {"prime": config.MODEL_PRIME, "core": config.MODEL_CORE,
