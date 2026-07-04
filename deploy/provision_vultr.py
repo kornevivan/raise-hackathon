@@ -92,6 +92,7 @@ runcmd:
   - [ bash, -lc, "curl -fsSL https://get.docker.com | sh" ]
   - [ bash, -lc, "git clone {REPO} /opt/cs && cp /root/app.env /opt/cs/.env" ]
   - [ bash, -lc, "cd /opt/cs && docker compose up -d --build > /var/log/cs-deploy.log 2>&1" ]
+  - [ bash, -lc, "chmod +x /opt/cs/deploy/autoupdate.sh && (crontab -l 2>/dev/null; echo '*/2 * * * * /opt/cs/deploy/autoupdate.sh') | crontab -" ]
 """
 
 
