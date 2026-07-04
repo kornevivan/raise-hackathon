@@ -13,7 +13,7 @@ import itertools
 import re
 from datetime import datetime, timezone
 
-from . import config, hospira, precedents, spec_extractor, generic_engine, linker
+from . import config, hospira, precedents, spec_extractor, generic_engine, linker, docroles
 from .gapcheck import detect_instrument
 from .llm import LLM, PRIME, CORE, FLASH
 from .retriever import TIER_MODEL
@@ -56,14 +56,14 @@ class HospiraRun:
             "page": block.get("page"), "block_id": block["id"], "bbox": block.get("bbox"),
             "image": block.get("image"), "width": block.get("width", 1000),
             "height": block.get("height", 1400), "text": block["text"],
-            "kind": block.get("kind"), "scanned": "SCANNED" in block.get("doc_id", ""),
+            "kind": block.get("kind"), "scanned": docroles.is_scanned(block.get("doc_id", "")),
             "retriever_tier": tier}
         return cid
 
-    def cite_text(self, substr: str, doc_substr: str | None = None, tier=None) -> str | None:
+    def cite_text(self, substr: str, role: str | None = None, tier=None) -> str | None:
         s = substr.lower()
         for p in self.pages:
-            if doc_substr and doc_substr not in p["doc_id"]:
+            if role and not docroles.matches(p["doc_id"], role):
                 continue
             for b in p["blocks"]:
                 if s in b["text"].lower():
@@ -88,8 +88,9 @@ class HospiraRun:
         _, b = linker.find_block([p], text=cite.text)
         return self._register_block(p, b or p["blocks"][0], tier)
 
-    def cite_value(self, value, doc_substr=None, tier=None):
-        p, b = linker.find_block(self.pages, value=value, doc_substr=doc_substr)
+    def cite_value(self, value, role=None, tier=None):
+        pages = docroles.pages_with_role(self.pages, role) if role else self.pages
+        p, b = linker.find_block(pages, value=value)
         return self._register_block(p, b, tier) if b else None
 
     def _device_cite(self):
@@ -112,17 +113,18 @@ class HospiraRun:
         if i == 0:
             return None
         prior = order[i - 1]                      # e.g. "2014Q4"
-        return next((p for p in self.pages if p.get("scanned") and prior in p["doc_id"]), None)
+        return next((p for p in self.pages
+                     if docroles.is_scanned(p["doc_id"]) and prior in p["doc_id"]), None)
 
     def _threshold_cite(self):
         s = next((s for s in self.spec.threshold_schedule if s.max_ratio == self.r.threshold), None)
         return (s or (self.spec.threshold_schedule[0] if self.spec.threshold_schedule else None)) \
             and (s or self.spec.threshold_schedule[0]).cite
 
-    def retrieve(self, query, tier, k=3, doc_substr=None):
+    def retrieve(self, query, tier, k=3, role=None):
         hits = self.retriever.retrieve(query, tier=tier, k=8)
-        if doc_substr:
-            filt = [h for h in hits if doc_substr in h.doc_id]
+        if role:
+            filt = [h for h in hits if docroles.matches(h.doc_id, role)]
             hits = (filt or hits)[:k]
         else:
             hits = hits[:k]
@@ -187,7 +189,7 @@ class HospiraRun:
                       tier="flash", model=TIER_MODEL["flash"])
         hits, payload = self.retrieve(
             "Consolidated Adjusted EBITDA definition Permitted Addbacks Leverage Ratio "
-            "Section 6.6 maximum threshold", tier="flash", k=3, doc_substr="credit_agreement")
+            "Section 6.6 maximum threshold", tier="flash", k=3, role="base_agreement")
         self.cite_from_cite(self.spec.denominator_cite, "flash")
         self.cite_from_cite(self._threshold_cite(), "flash")
         yield self.ev("retrieve", "EVIDENCE", f"Retrieval #1 · {len(hits)} page(s)",
@@ -208,7 +210,7 @@ class HospiraRun:
                           "sum_d_and_a": r.sum_d_and_a,
                           "consolidated_total_debt": r.consolidated_total_debt}}, mode="code")
         for q in r.window:
-            self.cite_value(r.consolidated_total_debt, doc_substr="financial_report")  # link the debt figure
+            self.cite_value(r.consolidated_total_debt, role="financial_report")  # link the debt figure
         naive_over = r.ratio_naive > r.threshold
         yield self.ev("tool", "EVIDENCE", "Tool · ratio_calculator (naive)",
                       f"{r.consolidated_total_debt:.1f} / {r.ebitda_naive:.1f} = {r.ratio_naive:.3f}x "
@@ -229,7 +231,7 @@ class HospiraRun:
         hits2, payload2 = self.retrieve(
             "Amendment No. 1 Permitted Addbacks Device Strategy 290 million quality 110 million "
             "cap Section 6.6A threshold 3.75 3.50 fiscal quarter ending after December 31 2014",
-            tier="prime", k=3, doc_substr="amendment")
+            tier="prime", k=3, role="amendment")
         c_caps = self.cite_from_cite(self._device_cite(), "prime")
         c_thr = self.cite_from_cite(self._threshold_cite(), "prime")
         yield self.ev("retrieve", "EVIDENCE", f"Retrieval #2 · {len(hits2)} page(s)",
@@ -243,7 +245,7 @@ class HospiraRun:
         # --- cross-check the prior-quarter SCANNED certificate when one is on file (messy-doc) ---
         if self._prior_scanned_page():
             sh, sp = self.retrieve("prior quarter Compliance Certificate leverage ratio officer "
-                                   "certification", tier="prime", k=1, doc_substr="SCANNED")
+                                   "certification", tier="prime", k=1, role="scanned_certificate")
             if sh:
                 yield self.ev("retrieve", "EVIDENCE", "Retrieval · scanned certificate",
                               "Cross-checking the prior-quarter compliance certificate — a "
@@ -278,7 +280,7 @@ class HospiraRun:
         r = self.r
         ch, cp = self.retrieve("borrower submitted compliance certificate Consolidated Adjusted "
                                "EBITDA Permitted Addbacks Device Strategy", tier="prime", k=1,
-                               doc_substr="borrower_submitted")
+                               role="borrower_certificate")
         if ch:
             yield self.ev("retrieve", "EVIDENCE", "Retrieval · borrower certificate",
                           "Reading the borrower-submitted certificate to compare its claim.",
@@ -294,7 +296,7 @@ class HospiraRun:
             "over_added": over_added,
             "claimed_headroom": round(r.threshold - (claim["claimed_ratio"] or r.ratio_correct), 3),
             "true_headroom": r.headroom_x, "both_compliant": True}
-        self.cite_value(claim["claimed_ebitda"], doc_substr="borrower_submitted")
+        self.cite_value(claim["claimed_ebitda"], role="borrower_certificate")
         yield self.ev("tool", "EVIDENCE", "Tool · ratio_calculator (cross-check)",
                       f"Borrower claimed EBITDA {claim['claimed_ebitda']:.0f} / ratio "
                       f"{claim['claimed_ratio']:.3f}x; recomputed {r.ebitda_correct:.0f} / "
@@ -316,7 +318,7 @@ class HospiraRun:
             # the base agreement may not self-reference the amendment (real filings don't) —
             # the trigger is that an amending instrument is PRESENT in the corpus and modifies
             # the covenant (its terms fed the derived spec). Registry/corpus-aware, not text-only.
-            amend_pages = [p for p in self.pages if "amend" in p["doc_id"].lower()]
+            amend_pages = docroles.pages_with_role(self.pages, "amendment")
             if amend_pages:
                 instrument = detect_instrument(amend_pages[0]["text"]) or "an amendment on file"
         gap = bool(instrument)
@@ -396,7 +398,7 @@ class HospiraRun:
         r, ch = self.r, self.crosscheck
         c_caps = getattr(self, "c_caps", None) or self.cite_from_cite(self._device_cite())
         c_def = self.cite_from_cite(self.spec.denominator_cite)
-        c_cert = self.cite_value(self.crosscheck["claimed_ebitda"], doc_substr="borrower_submitted")
+        c_cert = self.cite_value(self.crosscheck["claimed_ebitda"], role="borrower_certificate")
         S = lambda t, cs=(): {"text": t, "citations": [c for c in cs if c]}
         headline = (f"Misstated certificate: the borrower claims {ch['claimed_ratio']:.3f}x "
                     f"(EBITDA {ch['claimed_ebitda']:.0f}), but the correct figure is "
@@ -449,7 +451,7 @@ class HospiraRun:
         prec_section, prec_cites = yield from self._precedents()
 
         c_def = self.cite_from_cite(self.spec.denominator_cite)
-        c_debt = self.cite_value(r.consolidated_total_debt, doc_substr="financial_report") \
+        c_debt = self.cite_value(r.consolidated_total_debt, role="financial_report") \
             or self.cite_from_cite(self.spec.numerator_cite)
         c_caps = getattr(self, "c_caps", None) or self.cite_from_cite(self._device_cite())
         c_thr = getattr(self, "c_thr", None) or self.cite_from_cite(self._threshold_cite())

@@ -36,16 +36,14 @@ def value_variants(value: float) -> list[str]:
     return [s for s in out if s]
 
 
-def find_block(pages, value=None, text=None, doc_substr=None):
+def find_block(pages, value=None, text=None):
     """Return (page, block) whose text supports `value` (any variant) or contains `text`.
-    Prefers table blocks / shorter blocks for a tighter highlight."""
+    Prefers table blocks / shorter blocks for a tighter highlight. Callers scope the document
+    set by ROLE (docroles) before calling — the linker itself does no filename matching."""
     variants = [v.lower() for v in value_variants(value)] if value is not None else []
     needle = (text or "").lower().strip()
     best = None
-    ds = doc_substr.lower() if doc_substr else None
     for p in pages:
-        if ds and ds not in p["doc_id"].lower():
-            continue
         for b in p["blocks"]:
             t = b["text"].lower()
             hit = (needle and needle[:40] in t) or any(v in t for v in variants)

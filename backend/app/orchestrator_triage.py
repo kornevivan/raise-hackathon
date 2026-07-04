@@ -13,7 +13,7 @@ import json
 import os
 from datetime import datetime, timezone
 
-from . import config, covenant_engine as ce, ingest, hospira, linker
+from . import config, covenant_engine as ce, ingest, hospira, linker, docroles
 from .llm import LLM, PRIME
 from .retriever import TIER_MODEL
 
@@ -77,10 +77,10 @@ class TriageRun:
                 "detail": detail, "tier": tier, "model": model, "mode": mode,
                 "latency_ms": latency_ms, "payload": payload or {}}
 
-    def cite_text(self, substr, doc_substr=None, tier=None):
+    def cite_text(self, substr, role=None, tier=None):
         s = substr.lower()
         for p in self.pages:
-            if doc_substr and doc_substr not in p["doc_id"]:
+            if role and not docroles.matches(p["doc_id"], role):
                 continue
             for b in p["blocks"]:
                 if s in b["text"].lower():
@@ -93,7 +93,7 @@ class TriageRun:
                         "page": p["page"], "block_id": b["id"], "bbox": b["bbox"],
                         "image": p["image"], "width": p["width"], "height": p["height"],
                         "text": b["text"], "kind": b["kind"],
-                        "scanned": "SCANNED" in p["doc_id"], "retriever_tier": tier}
+                        "scanned": docroles.is_scanned(p["doc_id"]), "retriever_tier": tier}
                     return cid
         return None
 
@@ -151,7 +151,7 @@ class TriageRun:
         # the borrower's latest 2014Q4 certificate is a registry fact; VultronRetriever also
         # ranks it live. Present it deterministically so the messy-doc page always shows.
         scan_hit = self.retriever.retrieve("Hospira 2014Q4 compliance certificate", tier="prime", k=6)
-        scan = [h for h in scan_hit if "SCANNED" in h.doc_id][:1]
+        scan = [h for h in scan_hit if docroles.is_scanned(h.doc_id)][:1]
         if not scan:
             scan = self._scanned_hit_from_corpus()
         payload = []
@@ -165,7 +165,7 @@ class TriageRun:
         self.hq4 = ce.compute("2014Q4")
         self._scan_read_value = next(
             (v for v in (self.hq4.ebitda_correct, self.hq4.ratio_correct, 3.59)
-             if linker.find_block(self.pages, value=v, doc_substr="SCANNED")[1]), None)
+             if linker.find_block(docroles.pages_with_role(self.pages, "scanned_certificate"), value=v)[1]), None)
         self.scan_read = self._scan_read_value is not None
         reason = (f"Hospira 2014Q4 compliance certificate — a scan. OCR read {self._scan_read_value} "
                   f"off the table; our recomputation confirms the 3.59x leverage."
@@ -188,7 +188,7 @@ class TriageRun:
 
         ranking = self._ranking()
         # cite the CELL OCR read off the scan (read+verify); else page-level (no fabricated cell)
-        c_scan = (self._cite_value(self._scan_read_value, "SCANNED") if self.scan_read
+        c_scan = (self._cite_value(self._scan_read_value, "scanned_certificate") if self.scan_read
                   else self._cite_scanned_page())
         c_step = self._cite_value(3.50, "amendment") or self.cite_text("6.6A", "amendment")
 
@@ -252,8 +252,9 @@ class TriageRun:
                       f"{self.llm.calls} LLM call(s) · top risk: {ranking[0]['borrower']}",
                       payload={"llm_calls": self.llm.calls, "next_action": payload["next_action"]})
 
-    def _cite_value(self, value, doc_substr=None):
-        p, b = linker.find_block(self.pages, value=value, doc_substr=doc_substr)
+    def _cite_value(self, value, role=None):
+        pages = docroles.pages_with_role(self.pages, role) if role else self.pages
+        p, b = linker.find_block(pages, value=value)
         if not b:
             return None
         return self._reg_hit(type("H", (), {
@@ -261,7 +262,7 @@ class TriageRun:
             "image": p["image"], "width": p["width"], "height": p["height"]})(), b)
 
     def _scanned_page(self):
-        return next((p for p in self.pages if "SCANNED" in p["doc_id"]), None)
+        return next((p for p in self.pages if docroles.is_scanned(p["doc_id"])), None)
 
     def _scanned_hit_from_corpus(self):
         from .retriever import hit_from_page
@@ -287,7 +288,7 @@ class TriageRun:
                                "page": h.page, "block_id": b["id"], "bbox": b["bbox"],
                                "image": h.image, "width": h.width, "height": h.height,
                                "text": b["text"], "kind": b.get("kind"),
-                               "scanned": "SCANNED" in h.doc_id, "retriever_tier": "prime"}
+                               "scanned": docroles.is_scanned(h.doc_id), "retriever_tier": "prime"}
         return cid
 
 
