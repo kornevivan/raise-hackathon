@@ -40,14 +40,20 @@ c = httpx.Client(base_url=API, headers=H, timeout=60)
 
 
 def read_pubkey():
-    """Public SSH key from SSH_PUBKEY env, or the user's default ~/.ssh key."""
+    """Public SSH key from SSH_PUBKEY env, or any *.pub in ~/.ssh (preferring the
+    usual names). Set SSH_PUBKEY=/path/to/key.pub to force a specific one."""
     v = os.getenv("SSH_PUBKEY", "").strip()
     if v:
-        return v
-    for name in ("id_ed25519.pub", "id_rsa.pub"):
-        p = os.path.expanduser(f"~/.ssh/{name}")
-        if os.path.exists(p):
-            return open(p).read().strip()
+        return open(os.path.expanduser(v)).read().strip() if os.path.exists(os.path.expanduser(v)) else v
+    ssh = os.path.expanduser("~/.ssh")
+    prefer = ["id_ed25519.pub", "id_rsa.pub", "id_ecdsa.pub"]
+    found = [f for f in prefer if os.path.exists(os.path.join(ssh, f))]
+    if not found and os.path.isdir(ssh):
+        found = sorted(f for f in os.listdir(ssh) if f.endswith(".pub"))
+    if found:
+        p = os.path.join(ssh, found[0])
+        print(f"using SSH public key {p}")
+        return open(p).read().strip()
     return ""
 
 
@@ -129,7 +135,11 @@ def main():
     ip = ""
     for _ in range(60):
         time.sleep(10)
-        d = c.get(f"/instances/{iid}").json()["instance"]
+        try:
+            d = c.get(f"/instances/{iid}").json().get("instance") or {}
+        except Exception as e:
+            print(f"  (poll retry: {str(e)[:50]})")
+            continue
         ip = d.get("main_ip", "")
         if ip and ip != "0.0.0.0" and d.get("status") == "active":
             break
