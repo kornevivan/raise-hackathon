@@ -159,9 +159,17 @@ class TriageRun:
             cids = [self._reg_hit(h, b) for b in h.blocks]
             hd = h.to_dict(); hd["citation_ids"] = cids
             payload.append(hd)
-        self.scan_read = bool(linker.find_block(self.pages, value=3.59, doc_substr="SCANNED")[1])
-        reason = ("Hospira 2014Q4 compliance certificate — a scan. OCR reads 3.59x off the table; "
-                  "our recomputation confirms it." if self.scan_read else
+        # read + verify: if OCR read a figure off the scan that our recomputation confirms,
+        # cite that cell; otherwise page-level. (On a noisy scan OCR may miss the ratio cell but
+        # still read EBITDA — we link whichever confirming value it got.)
+        self.hq4 = ce.compute("2014Q4")
+        self._scan_read_value = next(
+            (v for v in (self.hq4.ebitda_correct, self.hq4.ratio_correct, 3.59)
+             if linker.find_block(self.pages, value=v, doc_substr="SCANNED")[1]), None)
+        self.scan_read = self._scan_read_value is not None
+        reason = (f"Hospira 2014Q4 compliance certificate — a scan. OCR read {self._scan_read_value} "
+                  f"off the table; our recomputation confirms the 3.59x leverage."
+                  if self.scan_read else
                   "Hospira 2014Q4 compliance certificate — an image-only scan (no OCR available); "
                   "surfaced visually, figure recomputed from financial data.")
         yield self.ev("retrieve", "PLAN", "Retrieval · scanned certificate", reason,
@@ -179,8 +187,9 @@ class TriageRun:
                       payload={"tool": "filing_query", "result": fq}, mode="code")
 
         ranking = self._ranking()
-        # cite the 3.59x CELL when OCR read it off the scan; else page-level (no fabricated cell)
-        c_scan = self._cite_value(3.59, "SCANNED") or self._cite_scanned_page()
+        # cite the CELL OCR read off the scan (read+verify); else page-level (no fabricated cell)
+        c_scan = (self._cite_value(self._scan_read_value, "SCANNED") if self.scan_read
+                  else self._cite_scanned_page())
         c_step = self._cite_value(3.50, "amendment") or self.cite_text("6.6A", "amendment")
 
         # LLM writes the reasons; the ORDER is deterministic

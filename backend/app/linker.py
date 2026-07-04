@@ -42,8 +42,9 @@ def find_block(pages, value=None, text=None, doc_substr=None):
     variants = [v.lower() for v in value_variants(value)] if value is not None else []
     needle = (text or "").lower().strip()
     best = None
+    ds = doc_substr.lower() if doc_substr else None
     for p in pages:
-        if doc_substr and doc_substr not in p["doc_id"].lower():
+        if ds and ds not in p["doc_id"].lower():
             continue
         for b in p["blocks"]:
             t = b["text"].lower()
