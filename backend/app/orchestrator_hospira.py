@@ -554,20 +554,36 @@ class HospiraRun:
                       f"{self.llm.calls} LLM call(s) · recommendation: {rec}",
                       payload={"llm_calls": self.llm.calls})
 
+    def _cause_tags(self):
+        r = self.r
+        tags = []
+        stepped = any(s.applies_after for s in self.spec.threshold_schedule
+                      if s.max_ratio == r.threshold)
+        if not r.compliant:
+            tags.append("step-down" if stepped else "breach")
+        if r.device.disallowed > 0:
+            tags += ["addback", "cap", "disallowed"]
+        if r.ratio_naive is not None and r.ratio_naive > r.threshold and r.compliant:
+            tags += ["false positive", "reversed"]
+        if getattr(self, "cause_note", "") and "acquisition" in getattr(self, "cause_note", "").lower():
+            tags.append("acquisition")
+        return tags
+
     def _precedents(self):
-        """Precedent retrieval (P1-A) — one extra VultronRetriever pass over the committee
-        memos; cite 2–3 relevant cases."""
+        """Precedent RETRIEVAL (B4) — build a query from verdict + cause tags, retrieve top-3
+        from the precedent corpus, let the memo cite the comparables."""
         verdict = "breach" if not self.r.compliant else (
-            "false_positive" if self.r.ratio_naive > self.r.threshold else "compliant")
-        cases, cites = precedents.retrieve_for(self.sc["id"], verdict, self)
+            "false_positive" if (self.r.ratio_naive or 0) > self.r.threshold else "compliant")
+        tags = self._cause_tags()
+        cases, cites = precedents.retrieve_for(verdict, tags, run=self)
         if not cases:
             return None, []
         yield self.ev("retrieve", "MEMO", f"Precedents · {len(cases)} case(s)",
                       "Comparable committee decisions (VultronRetriever over the precedent corpus).",
-                      payload={"iteration": 4, "hits": [], "query": f"{verdict} leverage covenant",
-                               "cases": [{"id": c["id"], "borrower": c["borrower"],
-                                          "relevance": c["relevance"]} for c in cases],
-                               "reason": "Retrieving comparable case histories before the memo."},
+                      payload={"iteration": 4, "hits": [], "cases": cases,
+                               "query": precedents._query(verdict, tags),
+                               "reason": f"Retrieving comparables for a {verdict} verdict "
+                                         f"({', '.join(tags)})."},
                       tier="core", model=TIER_MODEL["core"], mode=self.retriever.backend)
         S = lambda t, cs=(): {"text": t, "citations": [c for c in cs if c]}
         sentences = [S(f"{c['borrower']} ({c['id']}): {c['relevance']}", [cites.get(c["id"])])

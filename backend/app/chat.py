@@ -128,19 +128,20 @@ class ChatSession:
     def _precedents(self, message):
         yield self.ev("chat_step", label="retrieve: precedents", tier="core",
                       model=config.MODEL_CORE, detail="comparable committee cases")
-        required = precedents.REQUIRED.get(self.sc.get("id", ""), [])
-        if not required:
-            yield from self._final("No comparable precedents are indexed for this scenario.", [], "precedents")
+        r = self.r
+        verdict = "breach" if not r.compliant else (
+            "false_positive" if (r.ratio_naive or 0) > r.threshold else "compliant")
+        tags = ["step-down", "threshold"] if not r.compliant else ["addback", "reversed"]
+        cases, _ = precedents.retrieve_for(verdict, tags, run=None, k=3)
+        if not cases:
+            yield from self._final("No comparable precedents retrieved for this run.", [], "precedents")
             return
-        idx = precedents._load_index()
+        _n = lambda s: re.sub(r"[^a-z0-9]", "", s.lower())
         parts, cmap = [], []
-        for i, (pid, relevance) in enumerate(required):
+        for i, cse in enumerate(cases):
             key = chr(ord("A") + i)
-            borrower = idx.get(pid, {}).get("borrower", pid)
-            # cite the precedent already in the run's evidence (registered during the deep run)
-            _n = lambda s: re.sub(r"[^a-z0-9]", "", s.lower())
-            cid = next((c for c, o in self.cites.items() if _n(pid) in _n(o["doc_id"])), None)
-            parts.append(f"{borrower} ({pid}): {relevance} [{key}]")
+            cid = next((c for c, o in self.cites.items() if _n(cse["id"]) in _n(o["doc_id"])), None)
+            parts.append(f"{cse['borrower']} ({cse['id']}): {cse['relevance']} [{key}]")
             cmap.append((key, cid))
         yield from self._final("Comparable cases — " + "  ".join(parts), cmap, "precedents")
 

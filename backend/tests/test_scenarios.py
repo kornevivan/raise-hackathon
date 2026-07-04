@@ -99,6 +99,17 @@ def test_atlantic_coverage_and_filing():
     assert len(late) == 1 and late[0]["borrower"].startswith("Cascadia") and late[0]["days_late"] == 3
 
 
+def test_precedent_retrieval_top3():
+    """B4: precedents are RETRIEVED (no hardcoded list). Expected IDs must appear in top-3."""
+    from app import precedents
+    assert not hasattr(precedents, "REQUIRED"), "precedents.REQUIRED must be deleted"
+    breach, _ = precedents.retrieve_for("breach", ["step-down", "threshold"], k=3)
+    ids = {c["id"] for c in breach}
+    assert {"PRECEDENT-2013-04", "PRECEDENT-2014-08", "PRECEDENT-2015-01"} <= ids, ids
+    fp, _ = precedents.retrieve_for("false_positive", ["addback", "reversed"], k=3)
+    assert "PRECEDENT-2013-09" in {c["id"] for c in fp}
+
+
 def test_negative_only_agreement_no_financials():
     """Upload path, no financial figures present → honest 'insufficient data', no invented
     numbers (guide §3.4.2)."""
@@ -129,6 +140,7 @@ def test_negative_amendment_referenced_but_absent():
 
 if __name__ == "__main__":
     for fn in (test_s4_certificate_crosscheck, test_s1_trace_assertions, test_s0_scanned_thumbnail,
+               test_live_doc_set_is_real_no_excerpts, test_precedent_retrieval_top3,
                test_no_golden_leakage_in_ingest, test_atlantic_coverage_and_filing,
                test_negative_only_agreement_no_financials, test_negative_amendment_referenced_but_absent):
         fn(); print("ok:", fn.__name__)
