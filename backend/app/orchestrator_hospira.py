@@ -13,7 +13,7 @@ import itertools
 import re
 from datetime import datetime, timezone
 
-from . import config, covenant_engine as ce, hospira, precedents
+from . import config, hospira, precedents, spec_extractor, generic_engine
 from .gapcheck import detect_instrument
 from .llm import LLM, PRIME, CORE, FLASH
 from .retriever import TIER_MODEL
@@ -60,8 +60,12 @@ class HospiraRun:
     def __init__(self, scenario: dict):
         self.sc = scenario
         self.tq = scenario["test_quarter"]
-        self.r = ce.compute(self.tq)              # deterministic ground truth
         self.corpus = hospira.corpus()
+        # DERIVE the covenant rules from the indexed documents at runtime (not hardcoded),
+        # then compute with the generic engine over the structured financials tool store.
+        order, by_q = hospira.financials()
+        self.spec = spec_extractor.build_spec(self.corpus["pages"])
+        self.r = generic_engine.legacy_result(self.spec, order, by_q, self.tq)
         self.retriever = self.corpus["retriever"]
         self.pages = self.corpus["pages"]
         self.llm = LLM()
@@ -422,7 +426,7 @@ class HospiraRun:
         r = self.r
         # forward-looking device cap headroom
         dev_cum_through = round(r.device.cumulative_before_window + r.device.charges_in_window, 1)
-        dev_remaining = round(ce.DEVICE_CAP - dev_cum_through, 1)
+        dev_remaining = round(self.r.device_cap - dev_cum_through, 1)
 
         prec_section, prec_cites = yield from self._precedents()
 
@@ -467,7 +471,7 @@ class HospiraRun:
             cause.append(S(self.cause_note, [c_debt]))
         if dev_remaining <= 10:
             cause.append(S(f"Forward-looking risk: cumulative Device Strategy charges are "
-                           f"{dev_cum_through:.0f} of the {ce.DEVICE_CAP:.0f} lifetime cap — only "
+                           f"{dev_cum_through:.0f} of the {self.r.device_cap:.0f} lifetime cap — only "
                            f"{dev_remaining:.0f} of addback capacity remains for future quarters.",
                            [c_caps]))
 

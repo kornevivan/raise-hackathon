@@ -35,5 +35,5 @@ backend/data/uploads/
 
 backend/data/runs.sqlite
 
-# real SEC filings (reproducible via deploy/fetch_real_docs.py; large)
-backend/data/real/
+# real SEC filings are committed (public; A0). HTML intermediates ignored:
+backend/data/real/*.html
