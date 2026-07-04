@@ -19,10 +19,10 @@ All dollar figures in $ millions. Exact machine-checkable numbers: `golden_coven
 | Step | Expected value |
 |---|---|
 | Trailing window | 2013Q2–2014Q1 |
-| ΣNet income / ΣFinancing exp. / Σtaxes / ΣD&A | 468.7 / 79.4 / 124.6 / 313.0 |
+| ΣNet income / ΣFinancing exp. / Σtaxes / ΣD&A | 310.1 / 79.5 / 82.4 / 313.0 |
 | Device charges in window / cum before window / **addback allowed** | 155.0 / 130.0 / **155.0** (cap headroom 160.0 → full) |
 | Quality charges in window / **addback allowed** | 45.0 / **45.0** (cum well under 110) |
-| **Adjusted EBITDA** | **985.7** |
+| **Adjusted EBITDA** | **985.0** |
 | Consolidated Total Debt (2014-03-31) | 3,020.0 |
 | **Leverage Ratio** | **3.066x** vs threshold 3.75x |
 | Verdict | **COMPLIANT**, headroom 0.684x |
@@ -35,13 +35,13 @@ Naive trap: without addbacks the ratio looks like **3.847x → false breach**.
 | Step | Expected value |
 |---|---|
 | Trailing window | 2013Q3–2014Q2 |
-| ΣNI / ΣFin.exp. / Σtaxes / ΣD&A | 483.4 / 84.9 / 128.5 / 314.0 |
-| Naive EBITDA (no addbacks) | 825.1 → naive ratio **4.218x → "BREACH"** |
+| ΣNI / ΣFin.exp. / Σtaxes / ΣD&A | 339.9 / 81.8 / 90.3 / 313.0 |
+| Naive EBITDA (no addbacks) | 825.0 → naive ratio **4.218x → "BREACH"** |
 | Device charges in window | 130.0 |
 | Device cum before window (2013Q1+Q2) | 190.0 → remaining cap = 290.0 − 190.0 = **100.0** |
 | **Device addback allowed** | **100.0** (NOT 130.0 — $30.0M disallowed by the cap) |
 | Quality addback | 40.0 (fully allowed) |
-| **Adjusted EBITDA** | **965.1** |
+| **Adjusted EBITDA** | **965.0** |
 | Consolidated Total Debt (2014-06-30) | 3,480.0 |
 | **Leverage Ratio** | **3.606x** vs threshold 3.75x |
 | Verdict | **COMPLIANT**, but thin headroom **0.144x** → recommend enhanced monitoring |
@@ -114,3 +114,43 @@ is a weaker answer.
 
 - **PRECEDENT-2013-09 (TriState)** — the false-positive-from-missed-addback case; the agent
   should note its own definition-first recalculation mirrors that committee protocol.
+
+---
+
+# v3 addendum — heterogeneous review checks (see golden_review_checks.json for exact numbers)
+
+## Scenario S4 — Borrower certificate cross-check (2014Q2)
+
+Input: `documents/borrower_submitted_certificate_2014Q2.pdf` (as submitted to the Agent).
+Borrower claims: Adjusted EBITDA **995.0**, Leverage Ratio **3.50x**, headroom 0.253x.
+Agent recomputation (same window, correct cap logic): EBITDA **965.0**, ratio **3.606x**.
+Expected finding: borrower applied the full 130.0 Device Strategy addback, ignoring the
+$290.0M lifetime cap (remaining capacity at window start: 100.0) — **30.0 over-added**.
+Both figures are compliant vs 3.75x, so this is NOT a breach — it is a **misstated
+certificate overstating headroom ~2.5x**. Expected action: notify borrower, request a
+corrected certificate; cite base agreement §1.1 (Permitted Addbacks as amended) and
+Amendment No. 1 §1(d). A weaker agent that only checks the claimed ratio against the
+threshold ("3.50 ≤ 3.75, fine") misses the entire point of the check.
+
+## Atlantic Beverage — second covenant (interest coverage, min 3.00x)
+
+2015Q1: coverage **3.21x**, headroom 0.21x, fifth consecutive quarter of decline
+(3.52 → 3.21). Verdict: compliant + monitoring flag. The review plan for Atlantic must now
+contain TWO computation checks (leverage AND coverage) — a plan listing only leverage is
+incomplete.
+
+## Filing-deadline check (reporting obligation, 45 days)
+
+`documents/portfolio/filing_log.csv`. For the 2015Q1 review: **Cascadia certificate received
+3 days late** (due 2015-05-15, received 2015-05-18). Expected: low-severity reporting-covenant
+flag with cure path; all other filings timely. A review that skips non-numeric obligations
+misses this.
+
+## Updated S0 triage expectation (review matrix)
+
+The planner output is now a **matrix, not a list**: per borrower, the set of applicable
+checks — Hospira: leverage (§6.6A, amended definitions) + addback-capacity tracker +
+certificate cross-check when a borrower-submitted certificate exists; Atlantic: leverage +
+interest coverage + trend flags; Cascadia: leverage (light) + filing timeliness (LATE).
+Priority order unchanged (Hospira → Atlantic → Cascadia), but each line must carry its own
+check list and reasons.

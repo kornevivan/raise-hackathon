@@ -41,6 +41,14 @@ SCENARIOS = {
            "prompt": "Check Hospira's Q1 2015 covenant compliance — does the §6.6A step-down change "
                      "the outcome?",
            "doc_labels": DOC_LABELS},
+    "S4": {"id": "S4", "test_quarter": "2014Q2", "crosscheck": True,
+           "label": "S4 · Certificate cross-check",
+           "blurb": "The borrower's submitted certificate claims 3.50x (EBITDA 995). Recomputed "
+                    "correctly it's 3.606x — they applied the full addback, ignoring the $290M cap "
+                    "(30 over-added). Not a breach, but a misstated certificate.",
+           "prompt": "Verify the borrower-submitted compliance certificate for Q2 2014 against our "
+                     "own recomputation.",
+           "doc_labels": DOC_LABELS + ["Borrower-submitted certificate 2014Q2"]},
 }
 
 
@@ -245,7 +253,43 @@ class HospiraRun:
         if self.sc["id"] == "S1":
             yield from self._cause_debt_jump()
 
+        # --- S4: cross-check the borrower-submitted certificate ---
+        if self.sc.get("crosscheck"):
+            yield from self._crosscheck()
+
         self.c_caps, self.c_thr = c_caps, c_thr
+
+    def _crosscheck(self):
+        r = self.r
+        ch, cp = self.retrieve("borrower submitted compliance certificate Consolidated Adjusted "
+                               "EBITDA Permitted Addbacks Device Strategy", tier="prime", k=1,
+                               doc_substr="borrower_submitted")
+        if ch:
+            yield self.ev("retrieve", "EVIDENCE", "Retrieval · borrower certificate",
+                          "Reading the borrower-submitted certificate to compare its claim.",
+                          payload={"iteration": 3, "hits": cp,
+                                   "query": "borrower-submitted certificate figures",
+                                   "reason": "Compare the borrower's claimed EBITDA/ratio to our recompute."},
+                          tier="prime", model=TIER_MODEL["prime"], mode=self.retriever.backend)
+        claim = hospira.read_borrower_certificate()
+        over_added = round((claim["claimed_device_addback"] or 0) - r.device.allowed, 1)
+        self.crosscheck = {
+            "claimed_ebitda": claim["claimed_ebitda"], "claimed_ratio": claim["claimed_ratio"],
+            "recomputed_ebitda": r.ebitda_correct, "recomputed_ratio": r.ratio_correct,
+            "over_added": over_added,
+            "claimed_headroom": round(r.threshold - (claim["claimed_ratio"] or r.ratio_correct), 3),
+            "true_headroom": r.headroom_x, "both_compliant": True}
+        self.cite_text("device strategy charges", "borrower_submitted")
+        yield self.ev("tool", "EVIDENCE", "Tool · ratio_calculator (cross-check)",
+                      f"Borrower claimed EBITDA {claim['claimed_ebitda']:.0f} / ratio "
+                      f"{claim['claimed_ratio']:.3f}x; recomputed {r.ebitda_correct:.0f} / "
+                      f"{r.ratio_correct:.3f}x — they over-added {over_added:.0f} (ignored the cap).",
+                      payload={"tool": "ratio_calculator", "result": {"steps": [
+                          f"borrower applied Device addback {claim['claimed_device_addback']:.0f}, "
+                          f"cap allowed only {r.device.allowed:.0f} → {over_added:.0f} over-added",
+                          f"claimed EBITDA {claim['claimed_ebitda']:.0f} vs correct {r.ebitda_correct:.0f}",
+                          f"claimed ratio {claim['claimed_ratio']:.3f}x vs correct {r.ratio_correct:.3f}x"],
+                          "ratio": r.ratio_correct}, "crosscheck": self.crosscheck}, mode="code")
 
     def _gap_check(self):
         # Deterministic, GENERALIZED trigger: the retrieved base-agreement text references an
@@ -326,8 +370,55 @@ class HospiraRun:
                       payload={"verify": res.data, "confidence": self.confidence},
                       tier=res.tier, model=res.model, mode=res.mode, latency_ms=res.latency_ms)
 
+    def _memo_crosscheck(self):
+        r, ch = self.r, self.crosscheck
+        c_caps = getattr(self, "c_caps", None) or self.cite_text("290.0 million", "amendment")
+        c_def = self.cite_text("consolidated adjusted ebitda", "credit_agreement")
+        c_cert = self.cite_text("device strategy charges", "borrower_submitted")
+        S = lambda t, cs=(): {"text": t, "citations": [c for c in cs if c]}
+        headline = (f"Misstated certificate: the borrower claims {ch['claimed_ratio']:.3f}x "
+                    f"(EBITDA {ch['claimed_ebitda']:.0f}), but the correct figure is "
+                    f"{ch['recomputed_ratio']:.3f}x (EBITDA {ch['recomputed_ebitda']:.0f}). Both are "
+                    f"within the 3.75x covenant — this is NOT a breach, but the certificate "
+                    f"overstates headroom.")
+        sections = [
+            {"heading": "The claim", "sentences": [
+                S(f"The borrower-submitted certificate reports Consolidated Adjusted EBITDA "
+                  f"{ch['claimed_ebitda']:.0f} and a Leverage Ratio of {ch['claimed_ratio']:.3f}x "
+                  f"(headroom {ch['claimed_headroom']:.3f}x).", [c_cert])]},
+            {"heading": "The discrepancy", "sentences": [
+                S(f"They applied the full {r.device.charges_in_window:.0f} Device Strategy addback, "
+                  f"but Amendment No. 1 §1(d) caps it at the remaining {r.device.remaining_cap:.0f} — "
+                  f"so {ch['over_added']:.0f} was over-added.", [c_caps]),
+                S(f"Correctly, Adjusted EBITDA is {r.ebitda_correct:.0f} and the ratio "
+                  f"{r.ratio_correct:.3f}x (true headroom {r.headroom_x:.3f}x, ~2.5x thinner than "
+                  f"claimed).", [c_def])]},
+            {"heading": "Recommendation", "sentences": [
+                S("No Event of Default (both figures are ≤ 3.75x), but the certificate is "
+                  "misstated. Notify the borrower and request a corrected certificate applying the "
+                  "§1(d) addback cap.")]}]
+        memo = {"recommendation": "misstated_certificate", "confidence": self.confidence,
+                "headline": headline, "sections": sections}
+        payload = {"memo": memo, "recommendation": "misstated_certificate",
+                   "confidence": self.confidence, "headline": headline,
+                   "ratio_naive": ch["claimed_ratio"], "ratio_final": ch["recomputed_ratio"],
+                   "threshold": r.threshold, "headroom": r.headroom_x,
+                   "citations": list(self.citations.values()), "borrower": "Hospira, Inc.",
+                   "period": self.tq, "covenant": {"name": "Maximum Leverage Ratio",
+                   "threshold": r.threshold, "operator": "<="}, "crosscheck": ch,
+                   "llm_calls": self.llm.calls,
+                   "documents": [d["title"] for d in self.corpus["documents"]]}
+        yield self.ev("memo", "MEMO", "Cross-check complete", headline, payload=payload,
+                      tier="prime", model=config.MODEL_PRIME, mode="offline")
+        yield self.ev("done", "MEMO", "Run complete",
+                      f"{self.llm.calls} LLM call(s) · recommendation: misstated_certificate",
+                      payload={"llm_calls": self.llm.calls})
+
     # [4] MEMO (+ precedents)
     def _memo(self):
+        if self.sc.get("crosscheck"):
+            yield from self._memo_crosscheck()
+            return
         r = self.r
         # forward-looking device cap headroom
         dev_cum_through = round(r.device.cumulative_before_window + r.device.charges_in_window, 1)

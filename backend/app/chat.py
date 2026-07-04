@@ -30,6 +30,10 @@ SUGGESTED = {
            "What if debt rises $150M next quarter?",
            "Why isn't this a breach at 3.85x naive?",
            "Show comparable precedents"],
+    "S4": ["Where did the borrower over-add?",
+           "What's the correct ratio?",
+           "Is this a breach?",
+           "What should we tell the borrower?"],
 }
 
 

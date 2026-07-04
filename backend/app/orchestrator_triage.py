@@ -13,7 +13,7 @@ import json
 import os
 from datetime import datetime, timezone
 
-from . import config, covenant_engine as ce, ingest
+from . import config, covenant_engine as ce, ingest, hospira
 from .llm import LLM, PRIME
 from .retriever import TIER_MODEL
 
@@ -95,28 +95,42 @@ class TriageRun:
         return None
 
     def _ranking(self):
-        """Deterministic risk ranking against each borrower's FORWARD threshold."""
-        hosp_2014q4 = ce.compute("2014Q4")           # 3.592x
-        hosp_fwd_threshold = ce.THRESHOLD_AFTER       # 3.50 steps in for FQ after 2014-12-31
+        """Deterministic risk ranking + per-borrower CHECK MATRIX (review checks, not a bare list)."""
+        cov = hospira.interest_coverage_from_cert("atlantic", "2015Q1")   # 3.21x vs 3.00x
+        late = {x["borrower"]: x for x in hospira.filing_query("2015Q1")["late"]}
+
+        hosp = ce.compute("2014Q4")                   # 3.592x
+        fwd = ce.THRESHOLD_AFTER                       # 3.50 steps in for FQ after 2014-12-31
         rows = [{
-            "borrower": "Hospira, Inc.", "ratio_2014q4": round(hosp_2014q4.ratio_correct, 2),
-            "forward_threshold": hosp_fwd_threshold,
-            "forward_headroom": round(hosp_fwd_threshold - hosp_2014q4.ratio_correct, 3),
+            "borrower": "Hospira, Inc.", "ratio_2014q4": round(hosp.ratio_correct, 2),
+            "forward_threshold": fwd, "forward_headroom": round(fwd - hosp.ratio_correct, 3),
             "trend": "thin & shrinking", "cap": "Device Strategy addback cap nearly exhausted",
-            "deep_run": "S2"}]
+            "deep_run": "S2",
+            "checks": ["Leverage §6.6A (amended definitions)",
+                       "Device Strategy addback capacity (285/290 — nearly exhausted)",
+                       "Certificate cross-check (borrower-submitted 2014Q2 → S4)"]}]
         for name in ("Atlantic Beverage Partners Inc", "Cascadia Medical Supply Corp"):
             d = self.port["borrower_data"][name]
-            ratios = d["ratios"]
-            r14q4 = ratios["2014Q4"]
+            ratios = d["ratios"]; r14q4 = ratios["2014Q4"]
             drift = ratios["2015Q1"] - ratios["2014Q1"]
+            checks = [f"Leverage {r14q4:.2f}x vs {d['covenant_max']:.2f}x"]
+            if "Atlantic" in name:
+                if cov.get("ok"):
+                    checks.append(f"Interest coverage {cov['coverage']:.2f}x vs {cov['min']:.2f}x min "
+                                  f"(headroom {cov['headroom']:.2f}x)")
+                checks.append(f"Upward drift {drift:+.2f}x over 5 quarters")
+            else:
+                checks[0] += " (light)"
+                lt = late.get(name)
+                checks.append("Filing timeliness: LATE by %d days (reporting-covenant flag)"
+                              % lt["days_late"] if lt else "Filing timeliness: timely")
             rows.append({
-                "borrower": name, "ratio_2014q4": r14q4,
-                "forward_threshold": d["covenant_max"],
+                "borrower": name, "ratio_2014q4": r14q4, "forward_threshold": d["covenant_max"],
                 "forward_headroom": round(d["covenant_max"] - r14q4, 3),
                 "trend": ("upward drift " + f"{drift:+.2f}x/5Q" if drift > 0.05 else "stable"),
                 "cap": "no addback capacity" if "Atlantic" in name else "no one-time charges",
-                "deep_run": None})
-        rows.sort(key=lambda x: x["forward_headroom"])   # smallest (worst) first
+                "deep_run": None, "checks": checks})
+        rows.sort(key=lambda x: x["forward_headroom"])
         return rows
 
     def stream(self):
@@ -144,6 +158,15 @@ class TriageRun:
                                "query": "Hospira 2014Q4 compliance certificate leverage ratio",
                                "reason": "Read the latest certificate ratio from a scanned page."},
                       tier="prime", model=TIER_MODEL["prime"], mode=self.retriever.backend)
+
+        # non-numeric obligation: filing-deadline check over the filing log
+        fq = hospira.filing_query("2015Q1")
+        yield self.ev("tool", "PLAN", "Tool · filing_query",
+                      (f"{len(fq['late'])} late filing(s): "
+                       + ", ".join(f"{x['borrower'].split()[0]} +{x['days_late']}d" for x in fq["late"])
+                       if fq["late"] else "all certificates filed on time")
+                      + f" ({fq['timely_count']} timely, 45-day deadline).",
+                      payload={"tool": "filing_query", "result": fq}, mode="code")
 
         ranking = self._ranking()
         c_scan = self.cite_text("3.59", "SCANNED") or self.cite_text("leverage", "SCANNED")
@@ -176,12 +199,15 @@ class TriageRun:
                       payload={"ranking": ranking}, tier=res.tier, model=res.model, mode=res.mode,
                       latency_ms=res.latency_ms)
 
-        # triage memo
+        # triage memo — a REVIEW MATRIX: each borrower carries its own check list + reasons
         S = lambda t, cs=(): {"text": t, "citations": [c for c in cs if c]}
+        matrix = []
+        for i, rr in enumerate(ranking):
+            matrix.append(S(f"#{i+1} {rr['borrower']} — {rr['reason']}", [c_scan, c_step] if i == 0 else []))
+            for chk in rr.get("checks", []):
+                matrix.append(S(f"     • {chk}"))
         sections = [
-            {"heading": "Priority ranking", "sentences":
-                [S(f"#{i+1} {r['borrower']} — {r['reason']}",
-                   [c_scan, c_step] if i == 0 else []) for i, r in enumerate(ranking)]},
+            {"heading": "Priority ranking & review matrix", "sentences": matrix},
             {"heading": "Recommended next step", "sentences":
                 [S(f"Deep-run {ranking[0]['borrower']} for {SCENARIO_S0['test_quarter']} now — the "
                    "step-down makes this quarter the decisive test.", [c_step])]},

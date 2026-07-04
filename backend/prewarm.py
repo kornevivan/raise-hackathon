@@ -13,7 +13,7 @@ for _ in tr.run_triage():
     pass
 
 # deep runs + their suggested chat questions (indexes 'hospira' + 'precedents')
-for sid in ("S3", "S1", "S2"):
+for sid in ("S3", "S1", "S2", "S4"):
     t0 = time.time()
     sc = oh.SCENARIOS[sid]
     memo = None

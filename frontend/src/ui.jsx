@@ -59,6 +59,7 @@ export function RecBadge({ rec }) {
     at_risk:        ['At risk', 'bg-orange-500/15 text-orange-200 border-orange-400/40'],
     insufficient_data: ['Insufficient data', 'bg-slate-500/15 text-slate-200 border-slate-400/40'],
     triage: ['Portfolio triage', 'bg-sky-500/15 text-sky-200 border-sky-400/40'],
+    misstated_certificate: ['Misstated certificate', 'bg-orange-500/15 text-orange-200 border-orange-400/40'],
   }
   const [label, cls] = map[rec] || [rec, 'bg-slate-700 text-slate-200']
   return <span className={`chip border px-3 py-1 text-xs ${cls}`}>{label}</span>

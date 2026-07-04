@@ -1,0 +1,16 @@
+borrower,period,document,due_date,received_date,days_late
+"Hospira, Inc.",2014Q1,compliance_certificate,2014-05-15,2014-05-09,0
+Atlantic Beverage Partners Inc,2014Q1,compliance_certificate,2014-05-15,2014-05-12,0
+Cascadia Medical Supply Corp,2014Q1,compliance_certificate,2014-05-15,2014-05-07,0
+"Hospira, Inc.",2014Q2,compliance_certificate,2014-08-14,2014-08-08,0
+Atlantic Beverage Partners Inc,2014Q2,compliance_certificate,2014-08-14,2014-08-11,0
+Cascadia Medical Supply Corp,2014Q2,compliance_certificate,2014-08-14,2014-08-06,0
+"Hospira, Inc.",2014Q3,compliance_certificate,2014-11-14,2014-11-08,0
+Atlantic Beverage Partners Inc,2014Q3,compliance_certificate,2014-11-14,2014-11-11,0
+Cascadia Medical Supply Corp,2014Q3,compliance_certificate,2014-11-14,2014-11-06,0
+"Hospira, Inc.",2014Q4,compliance_certificate,2015-02-14,2015-02-08,0
+Atlantic Beverage Partners Inc,2014Q4,compliance_certificate,2015-02-14,2015-02-11,0
+Cascadia Medical Supply Corp,2014Q4,compliance_certificate,2015-02-14,2015-02-06,0
+"Hospira, Inc.",2015Q1,compliance_certificate,2015-05-15,2015-05-09,0
+Atlantic Beverage Partners Inc,2015Q1,compliance_certificate,2015-05-15,2015-05-12,0
+Cascadia Medical Supply Corp,2015Q1,compliance_certificate,2015-05-15,2015-05-18,3

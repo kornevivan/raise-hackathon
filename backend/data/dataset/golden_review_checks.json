@@ -1,0 +1,34 @@
+{
+  "S4_certificate_crosscheck_2014Q2": {
+    "borrower_claimed_ebitda": 995.0,
+    "borrower_claimed_ratio": 3.497,
+    "recomputed_ebitda": 965.0,
+    "recomputed_ratio": 3.606,
+    "discrepancy_cause": "borrower applied Device Strategy addback of 130.0 ignoring the 290.0 lifetime cap (remaining capacity at window start 100.0); 30.0 over-added",
+    "both_compliant": true,
+    "claimed_headroom_x": 0.253,
+    "true_headroom_x": 0.144,
+    "expected_action": "notify borrower; request corrected certificate; no default event"
+  },
+  "atlantic_interest_coverage": {
+    "covenant_min": 3.0,
+    "series": {
+      "2014Q1": 3.52,
+      "2014Q2": 3.44,
+      "2014Q3": 3.37,
+      "2014Q4": 3.29,
+      "2015Q1": 3.21
+    },
+    "verdict_2015Q1": "compliant, headroom 0.21x, five-quarter downward drift -> monitoring flag"
+  },
+  "filing_compliance_2015Q1": {
+    "deadline_days": 45,
+    "late": [
+      {
+        "borrower": "Cascadia Medical Supply Corp",
+        "days_late": 3,
+        "expected_action": "flag reporting covenant breach (cure: deliver certificate); low severity but must appear in the review"
+      }
+    ]
+  }
+}

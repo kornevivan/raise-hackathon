@@ -44,7 +44,7 @@ def health():
 @app.get("/api/scenarios")
 def scenarios():
     return {"scenarios": [orchestrator_triage.SCENARIO_S0]
-            + [orchestrator_hospira.SCENARIOS[k] for k in ("S3", "S1", "S2")]}
+            + [orchestrator_hospira.SCENARIOS[k] for k in ("S3", "S1", "S2", "S4")]}
 
 
 @app.get("/api/run/{scenario_id}")

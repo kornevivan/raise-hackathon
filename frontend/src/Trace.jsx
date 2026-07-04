@@ -52,6 +52,13 @@ function StepBody({ ev, onOpen }) {
                 </span>
               </div>
               {rr.reason && <div className="mt-0.5 text-[11px] leading-tight text-slate-400">{rr.reason}</div>}
+              {rr.checks?.length > 0 && (
+                <ul className="mt-1 space-y-0.5">
+                  {rr.checks.map((chk, j) => (
+                    <li key={j} className={`text-[10.5px] leading-tight ${/LATE|over|exhaust/i.test(chk) ? 'text-amber-300/90' : 'text-slate-500'}`}>· {chk}</li>
+                  ))}
+                </ul>
+              )}
             </div>
           ))}
         </div>
