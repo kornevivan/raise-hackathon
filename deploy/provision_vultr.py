@@ -16,6 +16,15 @@ import time
 
 import httpx
 
+# auto-load keys from the repo-root .env so a single command works
+_envp = os.path.join(os.path.dirname(__file__), "..", ".env")
+if os.path.exists(_envp):
+    for _l in open(_envp):
+        _l = _l.strip()
+        if _l and not _l.startswith("#") and "=" in _l:
+            _k, _v = _l.split("=", 1)
+            os.environ.setdefault(_k.strip(), _v.strip())
+
 REPO = sys.argv[1] if len(sys.argv) > 1 else os.getenv("REPO_URL", "")
 REGION = sys.argv[2] if len(sys.argv) > 2 else os.getenv("REGION", "")
 PLAN = sys.argv[3] if len(sys.argv) > 3 else os.getenv("PLAN", "vc2-2c-4gb")
