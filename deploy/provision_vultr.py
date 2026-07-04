@@ -38,6 +38,33 @@ API = "https://api.vultr.com/v2"
 H = {"Authorization": f"Bearer {ACCOUNT}", "Content-Type": "application/json"}
 c = httpx.Client(base_url=API, headers=H, timeout=60)
 
+
+def read_pubkey():
+    """Public SSH key from SSH_PUBKEY env, or the user's default ~/.ssh key."""
+    v = os.getenv("SSH_PUBKEY", "").strip()
+    if v:
+        return v
+    for name in ("id_ed25519.pub", "id_rsa.pub"):
+        p = os.path.expanduser(f"~/.ssh/{name}")
+        if os.path.exists(p):
+            return open(p).read().strip()
+    return ""
+
+
+def ssh_key_id():
+    pub = read_pubkey()
+    if not pub:
+        print("no SSH public key found (SSH_PUBKEY env or ~/.ssh/*.pub) — creating without SSH key")
+        return None
+    # reuse an already-registered identical key, else register it
+    for k in c.get("/ssh-keys", params={"per_page": 500}).json().get("ssh_keys", []):
+        if k["ssh_key"].split()[:2] == pub.split()[:2]:
+            return k["id"]
+    r = c.post("/ssh-keys", json={"name": "covenant-sentinel", "ssh_key": pub})
+    r.raise_for_status()
+    print("registered your SSH public key with Vultr")
+    return r.json()["ssh_key"]["id"]
+
 ENV = f"""VULTR_INFERENCE_API_KEY={INFER}
 VULTR_MODEL_PRIME=deepseek-ai/DeepSeek-V4-Flash
 VULTR_MODEL_CORE=deepseek-ai/DeepSeek-V4-Flash
@@ -54,6 +81,7 @@ write_files:
     permissions: '0600'
     content: |
 {os.linesep.join('      ' + l for l in ENV.splitlines())}
+ssh_pwauth: true
 runcmd:
   - [ bash, -lc, "curl -fsSL https://get.docker.com | sh" ]
   - [ bash, -lc, "git clone {REPO} /opt/cs && cp /root/app.env /opt/cs/.env" ]
@@ -84,10 +112,12 @@ def pick_region():
 def main():
     os_id = find_os()
     region = pick_region()
-    print(f"region={region} plan={PLAN} os_id={os_id}")
+    kid = ssh_key_id()
+    print(f"region={region} plan={PLAN} os_id={os_id} ssh_key={'yes' if kid else 'no'}")
     body = {
         "region": region, "plan": PLAN, "os_id": os_id,
         "label": "covenant-sentinel", "hostname": "covenant-sentinel",
+        **({"sshkey_id": [kid]} if kid else {}),
         "user_data": base64.b64encode(CLOUD_INIT.encode()).decode(),
         "backups": "disabled",
     }
