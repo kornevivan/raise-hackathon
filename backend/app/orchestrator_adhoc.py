@@ -262,15 +262,16 @@ class AdHocRun:
                                 "threshold": cov["threshold"], "over": over}, mode="code")
 
     def _gap(self, cov, addbacks):
-        low = self.full_text.lower()
-        mentions = ("amendment no. 1" in low) and not addbacks
+        from .gapcheck import detect_instrument
+        instrument = detect_instrument(self.full_text)
+        mentions = bool(instrument) and not addbacks
 
         def offline():
             if mentions:
-                return {"gap_found": True, "missing_document": "Amendment No. 1",
-                        "reason": ("The EBITDA definition is amended by Amendment No. 1 (clause d) "
-                                   "but the calculation used the base definition — the ratio may "
-                                   "overstate leverage."), "escalate_retriever": True}
+                return {"gap_found": True, "missing_document": instrument,
+                        "reason": (f"The EBITDA definition / covenant references {instrument}, which "
+                                   "amends the addbacks or threshold but has not been applied — the "
+                                   "ratio may be wrong."), "escalate_retriever": True}
             return {"gap_found": False, "missing_document": None,
                     "reason": "Evidence is complete and unambiguous.", "escalate_retriever": False}
 
