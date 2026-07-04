@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { RecBadge, Icon } from './ui.jsx'
+import { imgUrl } from './api.js'
 
 export function RatioBanner({ naive, final, threshold, twisted }) {
   if (naive == null) return null
@@ -134,7 +135,7 @@ export function DocViewer({ source }) {
         {source.scanned && <span className="chip border border-amber-500/40 bg-amber-500/10 text-amber-300">scanned page</span>}
       </div>
       <div className="relative overflow-hidden rounded-lg border border-slate-800 bg-white">
-        <img src={`/corpus/${source.image}`} alt="" className="block w-full" />
+        <img src={imgUrl(source.image)} alt="" className="block w-full" />
         {pct && <div ref={ref} className="pointer-events-none absolute rounded-sm ring-2 ring-amber-400" style={{ ...pct, background: 'rgba(250,204,21,0.22)' }} />}
       </div>
     </div>

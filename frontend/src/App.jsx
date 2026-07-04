@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { getHealth, getScenarios, runScenario, postDecision } from './api.js'
+import { getHealth, getScenarios, runScenario, runUpload, uploadDocuments, getSamples, postDecision } from './api.js'
 import Trace from './Trace.jsx'
 import { Memo, DocViewer, RatioBanner } from './Memo.jsx'
+import UploadPanel from './UploadPanel.jsx'
 import { Icon } from './ui.jsx'
 
 export default function App() {
@@ -15,6 +16,9 @@ export default function App() {
   const [tab, setTab] = useState('memo')            // memo | source
   const [source, setSource] = useState(null)
   const [decision, setDecision] = useState(null)
+  const [mode, setMode] = useState('samples')   // samples | upload
+  const [uploadBusy, setUploadBusy] = useState(false)
+  const [uploadErr, setUploadErr] = useState(null)
   const traceRef = useRef(null)
   const stopRef = useRef(null)
 
@@ -23,11 +27,11 @@ export default function App() {
     if (traceRef.current) traceRef.current.scrollTop = traceRef.current.scrollHeight
   }, [events, running])
 
-  function start(sc) {
+  function beginRun(activeId, streamFn) {
     stopRef.current?.()
-    setActive(sc.id); setEvents([]); setMemo(null); setSource(null)
+    setActive(activeId); setEvents([]); setMemo(null); setSource(null)
     setDecision(null); setTab('memo'); setRunning(true)
-    stopRef.current = runScenario(sc.id, {
+    stopRef.current = streamFn({
       onRunId: setRunId,
       onTrace: (ev) => {
         setEvents((prev) => [...prev, ev])
@@ -36,6 +40,21 @@ export default function App() {
       onEnd: () => setRunning(false),
       onError: () => setRunning(false),
     })
+  }
+
+  function start(sc) {
+    beginRun(sc.id, (h) => runScenario(sc.id, h))
+  }
+
+  async function analyze(files) {
+    setUploadErr(null); setUploadBusy(true)
+    try {
+      const { upload_id } = await uploadDocuments(files)
+      setUploadBusy(false)
+      beginRun('upload:' + upload_id, (h) => runUpload(upload_id, h))
+    } catch (e) {
+      setUploadBusy(false); setUploadErr(e.message || 'upload failed')
+    }
   }
 
   function openSource(s) {
@@ -84,22 +103,40 @@ export default function App() {
         </div>
       </header>
 
-      {/* scenario launcher */}
-      <div className="flex gap-2 overflow-x-auto border-b border-slate-800/80 px-5 py-2.5">
-        {scenarios.map((s) => (
-          <button key={s.id} onClick={() => start(s)} disabled={running}
-            className={`group min-w-[260px] flex-1 rounded-xl border px-3 py-2 text-left transition disabled:opacity-60
-              ${active === s.id ? 'border-sky-500/60 bg-sky-500/5' : 'border-slate-800 bg-slate-900/40 hover:border-slate-700'}`}>
-            <div className="flex items-center justify-between">
-              <span className="text-[12.5px] font-semibold text-slate-100">{s.label}</span>
-              <span className="chip border border-slate-700 bg-slate-800/60 text-slate-400 group-hover:text-sky-300">
-                {active === s.id && running ? 'running…' : 'run ▸'}
-              </span>
-            </div>
-            <div className="mt-0.5 line-clamp-2 text-[11px] leading-tight text-slate-500">{s.blurb}</div>
-          </button>
-        ))}
+      {/* mode toggle */}
+      <div className="flex items-center gap-2 border-b border-slate-800/80 px-5 pt-2.5">
+        <div className="flex gap-1 rounded-lg border border-slate-800 bg-slate-900/50 p-0.5 text-[12px]">
+          <TabBtn on={mode === 'samples'} onClick={() => setMode('samples')} label="Sample portfolio" />
+          <TabBtn on={mode === 'upload'} onClick={() => setMode('upload')} label="Upload your documents" />
+        </div>
+        <span className="text-[11px] text-slate-500">
+          {mode === 'samples' ? 'Pick a borrower from the example portfolio'
+                              : 'Upload a credit agreement + financials (PDF) — the agent detects the covenant and analyzes it'}
+        </span>
       </div>
+
+      {/* launcher */}
+      {mode === 'samples' ? (
+        <div className="flex gap-2 overflow-x-auto border-b border-slate-800/80 px-5 py-2.5">
+          {scenarios.map((s) => (
+            <button key={s.id} onClick={() => start(s)} disabled={running}
+              className={`group min-w-[260px] flex-1 rounded-xl border px-3 py-2 text-left transition disabled:opacity-60
+                ${active === s.id ? 'border-sky-500/60 bg-sky-500/5' : 'border-slate-800 bg-slate-900/40 hover:border-slate-700'}`}>
+              <div className="flex items-center justify-between">
+                <span className="text-[12.5px] font-semibold text-slate-100">{s.label}</span>
+                <span className="chip border border-slate-700 bg-slate-800/60 text-slate-400 group-hover:text-sky-300">
+                  {active === s.id && running ? 'running…' : 'run ▸'}
+                </span>
+              </div>
+              <div className="mt-0.5 line-clamp-2 text-[11px] leading-tight text-slate-500">{s.blurb}</div>
+            </button>
+          ))}
+        </div>
+      ) : (
+        <div className="border-b border-slate-800/80 px-5 py-3">
+          <UploadPanel onAnalyze={analyze} busy={uploadBusy || running} error={uploadErr} />
+        </div>
+      )}
 
       {/* two panes */}
       <div className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-2">

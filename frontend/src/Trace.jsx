@@ -1,4 +1,5 @@
 import { PHASE, TierBadge, ModeBadge, Icon } from './ui.jsx'
+import { imgUrl } from './api.js'
 
 function StepShell({ ev, children }) {
   const ph = PHASE[ev.phase] || PHASE.EVIDENCE
@@ -24,7 +25,7 @@ function Hit({ h, onOpen }) {
     <button onClick={() => onOpen(h)}
       className="group flex gap-2 rounded-lg border border-slate-800 bg-slate-900/60 p-1.5 text-left hover:border-sky-500/50 transition">
       <div className="relative h-16 w-12 shrink-0 overflow-hidden rounded bg-slate-800">
-        <img src={`/corpus/${h.image}`} alt="" className="h-full w-full object-cover object-top opacity-90 group-hover:opacity-100" />
+        <img src={imgUrl(h.image)} alt="" className="h-full w-full object-cover object-top opacity-90 group-hover:opacity-100" />
         {h.scanned && <span className="absolute bottom-0 left-0 right-0 bg-amber-500/80 text-[8px] font-bold text-slate-900 text-center">SCAN</span>}
       </div>
       <div className="min-w-0 flex-1">

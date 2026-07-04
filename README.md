@@ -38,6 +38,13 @@ Reasoning runs on **Vultr Serverless Inference** chat models, routed by task com
 
 ---
 
+## Two ways to run it
+
+- **Sample portfolio** — pick one of three seeded borrowers (below). Instant, deterministic, ideal for the pitch.
+- **Upload your own documents** — drop a credit agreement + financial statements (PDF). The agent **detects the covenant and threshold itself, extracts the figures, and analyzes them** — no configuration. Uploaded PDFs are rendered and text‑extracted (PyMuPDF), indexed into a Vultr Vector Store (VultronRetriever), and every citation highlights the exact clause on *your* page. Three sample PDFs ship in‑app (they reproduce the amendment twist) so you can try it in one click.
+
+The arithmetic stays deterministic on the extracted numbers, so even on uploaded documents every figure in the memo is tool‑verified and cited.
+
 ## Architecture
 
 ```
