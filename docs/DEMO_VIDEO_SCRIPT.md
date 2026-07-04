@@ -5,8 +5,9 @@ Verify the header reads **LIVE · Vultr** (not REPLAY) before recording.
 **0:00–0:10 — Problem + triage (S0).**
 Click **S0 · Quarter closed**.
 > "Covenant checks are quarterly, manual, and slow. Covenant Sentinel triages the book first."
-Point at the trace: it reads Hospira's **scanned** 2014Q4 certificate — **3.59×** — and ranks
-Hospira #1: that 3.59× is already above the **3.50× step‑down** that hits next quarter. Click
+Point at the trace: VultronRetriever surfaces Hospira's latest certificate — a **scanned** page —
+and the agent flags Hospira #1 because its **recomputed** 2014Q4 leverage **3.59×** is already
+above the **3.50× step‑down** that hits next quarter. Click
 **Deep‑run Hospira (S2)** — actually, for the twist, launch **S1** from the top bar.
 
 **0:10–0:22 — Plan + first retrieval (S1).**

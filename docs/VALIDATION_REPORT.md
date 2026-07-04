@@ -35,7 +35,9 @@ the SCANNED certificate.
 - Threshold citation → Amendment No. 1 page with §6.6A / "3.75 to 1.00" (NOT base §6.6).
 - Addback-cap citation → Amendment No. 1 §1(d) ("$290.0 million").
 - EBITDA-definition citation → base agreement §1.1 ("Consolidated Adjusted EBITDA means…").
-- Financial figures → the correct quarter's report / certificate table (incl. scanned 2014Q4).
+- Financial figures → the correct quarter's report / certificate table (text‑layer docs). The
+  **scanned** 2014Q4 certificate is cited at the page level only — it is image‑only and not OCR'd;
+  the 3.59x is the engine's recomputation (see `docs/SCENARIO_DOCUMENTS.md`).
 
 ## 3.4 Negative / robustness — PASS
 1. **Amendment referenced but absent** (`test_negative_amendment_referenced_but_absent`): the agent

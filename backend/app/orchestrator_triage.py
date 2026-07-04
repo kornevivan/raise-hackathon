@@ -49,8 +49,7 @@ def _corpus():
             files.append((extra, open(p, "rb").read()))
     res = ingest.ingest(files, collection="triage")
     _corpus_id = res["upload_id"]
-    return ingest.fill_scanned_text(ingest.UPLOADS[_corpus_id],
-                                    os.path.join(DATASET, "documents"))
+    return ingest.UPLOADS[_corpus_id]
 
 
 def _now():
@@ -139,24 +138,29 @@ class TriageRun:
                       payload={"scenario": SCENARIO_S0, "live": config.LIVE,
                                "backend": self.retriever.backend})
 
-        # read Hospira's latest certificate — the SCANNED one — via the retriever
+        # surface Hospira's latest certificate — a SCANNED, image-only page. VultronRetriever
+        # retrieves it visually; we do NOT OCR it, so we cite it at the page level and take the
+        # 3.59x from our own recomputation of 2014Q4 (not from reading the scan).
         yield self.ev("route", "PLAN", "Routing → Prime retriever",
-                      "Reading Hospira's latest certificate — a scanned page — to get its ratio.",
-                      tier="prime", model=TIER_MODEL["prime"])
-        hits = self.retriever.retrieve("Hospira compliance certificate leverage ratio 2014Q4 "
-                                       "officer certification", tier="prime", k=6)
-        scan = [h for h in hits if "SCANNED" in h.doc_id][:1] or [h for h in hits if "2014Q4" in h.doc_id][:1]
+                      "Surfacing Hospira's latest certificate — an image-only scan — via the "
+                      "visual retriever.", tier="prime", model=TIER_MODEL["prime"])
+        # the borrower's latest 2014Q4 certificate is a registry fact; VultronRetriever also
+        # ranks it live. Present it deterministically so the messy-doc page always shows.
+        scan_hit = self.retriever.retrieve("Hospira 2014Q4 compliance certificate", tier="prime", k=6)
+        scan = [h for h in scan_hit if "SCANNED" in h.doc_id][:1]
+        if not scan:
+            scan = self._scanned_hit_from_corpus()
         payload = []
-        for h in (scan or hits[:1]):
+        for h in scan:
             cids = [self._reg_hit(h, b) for b in h.blocks]
             hd = h.to_dict(); hd["citation_ids"] = cids
             payload.append(hd)
         yield self.ev("retrieve", "PLAN", "Retrieval · scanned certificate",
-                      "Hospira 2014Q4 compliance certificate (scanned) — reading 3.59x from the "
-                      "table on a messy page.",
+                      "Hospira 2014Q4 compliance certificate — an image-only scan. VultronRetriever "
+                      "surfaces it visually; we do not OCR it.",
                       payload={"iteration": 1, "hits": payload,
-                               "query": "Hospira 2014Q4 compliance certificate leverage ratio",
-                               "reason": "Read the latest certificate ratio from a scanned page."},
+                               "query": "Hospira 2014Q4 compliance certificate",
+                               "reason": "Latest certificate is a scan — surfaced as evidence."},
                       tier="prime", model=TIER_MODEL["prime"], mode=self.retriever.backend)
 
         # non-numeric obligation: filing-deadline check over the filing log
@@ -169,7 +173,7 @@ class TriageRun:
                       payload={"tool": "filing_query", "result": fq}, mode="code")
 
         ranking = self._ranking()
-        c_scan = self.cite_text("3.59", "SCANNED") or self.cite_text("leverage", "SCANNED")
+        c_scan = self._cite_scanned_page()   # page-level (no fabricated cell)
         c_step = self.cite_text("3.50 to 1.00", "amendment") or self.cite_text("6.6A", "amendment")
 
         # LLM writes the reasons; the ORDER is deterministic
@@ -179,9 +183,10 @@ class TriageRun:
 
         def offline():
             return {"reasons": {
-                "Hospira, Inc.": "3.59x on the scanned 2014Q4 certificate is already ABOVE the "
-                    "3.50x threshold that takes effect next quarter under the §6.6A step-down, with "
-                    "thin, shrinking headroom and the Device Strategy addback cap nearly exhausted.",
+                "Hospira, Inc.": "our recomputed 2014Q4 leverage of 3.59x is already ABOVE the "
+                    "3.50x threshold that takes effect next quarter under the §6.6A step-down "
+                    "(the borrower's latest certificate for this quarter is a scan), with thin, "
+                    "shrinking headroom and the Device Strategy addback cap nearly exhausted.",
                 "Atlantic Beverage Partners Inc": "0.19x headroom (3.31x vs 3.50x) after five "
                     "consecutive quarters of upward drift and no addback capacity — standard run + "
                     "trend warning.",
@@ -213,9 +218,10 @@ class TriageRun:
                    "step-down makes this quarter the decisive test.", [c_step])]},
         ]
         memo = {"recommendation": "triage", "confidence": 0.9,
-                "headline": f"Highest risk: {ranking[0]['borrower']} — its scanned 2014Q4 "
-                            f"certificate reads {ranking[0]['ratio_2014q4']:.2f}x, above the 3.50x "
-                            f"step-down effective next quarter.", "sections": sections}
+                "headline": f"Highest risk: {ranking[0]['borrower']} — recomputed 2014Q4 leverage "
+                            f"{ranking[0]['ratio_2014q4']:.2f}x is above the 3.50x step-down "
+                            f"effective next quarter (its latest certificate is a scan).",
+                "sections": sections}
         payload = {"memo": memo, "recommendation": "triage", "confidence": 0.9,
                    "headline": memo["headline"], "ratio_naive": None, "ratio_final": None,
                    "threshold": ce.THRESHOLD_AFTER, "headroom": None,
@@ -229,6 +235,24 @@ class TriageRun:
         yield self.ev("done", "MEMO", "Run complete",
                       f"{self.llm.calls} LLM call(s) · top risk: {ranking[0]['borrower']}",
                       payload={"llm_calls": self.llm.calls, "next_action": payload["next_action"]})
+
+    def _scanned_page(self):
+        return next((p for p in self.pages if "SCANNED" in p["doc_id"]), None)
+
+    def _scanned_hit_from_corpus(self):
+        from .retriever import hit_from_page
+        p = self._scanned_page()
+        return [hit_from_page(p, "compliance certificate", 0)] if p else []
+
+    def _cite_scanned_page(self):
+        """Cite the scanned certificate at the PAGE level (no OCR, no fabricated cell)."""
+        p = self._scanned_page()
+        if not p:
+            return None
+        b = p["blocks"][0]
+        return self._reg_hit(type("H", (), {
+            "doc_id": p["doc_id"], "doc_title": p["doc_title"], "page": p["page"],
+            "image": p["image"], "width": p["width"], "height": p["height"]})(), b)
 
     def _reg_hit(self, h, b):
         for cid, c in self.citations.items():

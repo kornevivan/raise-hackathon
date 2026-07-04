@@ -60,7 +60,7 @@ def corpus():
             files.append((os.path.basename(p), open(p, "rb").read()))
     res = ingest.ingest(files, collection="hospira")
     _corpus_id = res["upload_id"]
-    return ingest.fill_scanned_text(ingest.UPLOADS[_corpus_id], DOCS)
+    return ingest.UPLOADS[_corpus_id]
 
 
 @lru_cache(maxsize=1)

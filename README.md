@@ -12,7 +12,7 @@ Built for the **RAISE Summit Hackathon — Vultr track: "Agentic Intelligence wi
 
 ## What it does
 
-- **Portfolio triage (S0)** — "quarter closed, review the book": the planner ranks all borrowers by risk with stated reasons, reading Hospira's latest **scanned** certificate (3.59×) via VultronRetriever, and flags it #1 because 3.59× is already above the 3.50× threshold the §6.6A **step‑down** brings next quarter. One click deep‑runs the top borrower.
+- **Portfolio triage (S0)** — "quarter closed, review the book": the planner ranks all borrowers by risk with stated reasons. It surfaces Hospira's latest certificate — a **scanned, image‑only page** — via VultronRetriever (visual retrieval), and flags Hospira #1 because our **recomputed** 2014Q4 leverage (3.59×) is already above the 3.50× threshold the §6.6A **step‑down** brings next quarter. (We don't OCR the scan — the number is engine‑computed; the scan is cited at the page level. See `docs/SCENARIO_DOCUMENTS.md`.) One click deep‑runs the top borrower.
 - **Deep covenant run (S1/S2/S3)** — plan → retrieve (>1, motivated) → deterministic tools → verify → cited memo. The engine implements the *real* mechanics: trailing‑four‑quarter Adjusted EBITDA, **Permitted Addbacks with lifetime caps** ($290M Device Strategy / $110M quality), and the **date‑dependent threshold** (3.75× → 3.50× after 2014‑12‑31).
 - **Precedents** — before the memo, one more VultronRetriever pass over 7 credit‑committee case histories; the memo cites 2–3 comparables (S2 cites the *real* Hospira waiver, the Novaline step‑down analog, and the negative Gulfport case).
 - **Grounded chat** — ask the run anything: cap math, "what changes next quarter?", "show precedents", or a **what‑if** ("repay $200M" → `3280/965 = 3.399× HYPOTHETICAL`, verdict unchanged). Every answer is cited; every number is tool‑computed; verdicts change only via a real re‑run.
@@ -47,7 +47,7 @@ S0 triage  → rank borrowers (Prime) → deep-run the top one
 ```
 
 - **Deterministic engine** (`app/covenant_engine.py`): `addback = min(charges_in_window, max(0, cap − cumulative_before_window))`, per‑category caps, §6.6A step‑down by test‑date. Verified against `data/dataset/golden_covenant_math.json` by `tests/test_golden.py` (all 6 quarters, exact).
-- **Retrieval → VultronRetriever** (Flash/Core/Prime, tiered) via the Vultr **Vector Store**; results map back to local blocks for pixel‑precise citations, incl. the **scanned** certificate.
+- **Retrieval → VultronRetriever** (Flash/Core/Prime, tiered) via the Vultr **Vector Store**; results map back to local blocks for pixel‑precise citations on text‑layer documents. The **scanned** certificate is retrieved visually and cited at the page level (no OCR/fabricated cell).
 - **Reasoning → Vultr Serverless Inference** (`deepseek-ai/DeepSeek-V4-Flash`). See **[docs/COMPLIANCE_NOTE.md](docs/COMPLIANCE_NOTE.md)**: the VultronRetriever models are retrieval‑only (chat endpoints return 404 — proven by `probe_vultr.py`), so core reasoning runs on a Vultr‑hosted chat model. Both requirements are met via Vultr Serverless Inference.
 
 **Stack:** FastAPI + SSE · React + Vite + Tailwind · SQLite (chat history) · PyMuPDF ingestion · `openai` SDK → `api.vultrinference.com`.

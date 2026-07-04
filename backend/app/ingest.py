@@ -54,9 +54,17 @@ def _pdf_pages(upload_id: str, doc_id: str, title: str, data: bytes, out_dir: st
                          int((x1 - x0) * ZOOM), int((y1 - y0) * ZOOM)],
                 "text": text, "kind": _block_kind(text),
             })
+        scanned = not blocks   # image-only PDF page → no text layer (a real scan)
+        if scanned:
+            # We do NOT OCR and do NOT fabricate row text/positions. The page is a real
+            # scan: VultronRetriever surfaces it visually; we expose only a page-level
+            # reference so a citation shows the document, never a made-up cell.
+            blocks = [{"id": f"{doc_id}-p{i}-b1", "bbox": None,
+                       "text": "[scanned page — image only; retrieved visually by VultronRetriever]",
+                       "kind": "scanned"}]
         pages.append({
             "doc_id": doc_id, "doc_title": title, "kind": "uploaded",
-            "borrower_id": None, "scanned": False, "page": i,
+            "borrower_id": None, "scanned": scanned, "page": i,
             "image": served, "width": pix.width, "height": pix.height,
             "text": "\n".join(b["text"] for b in blocks),
             "blocks": blocks, "page_uid": f"{doc_id}#p{i}",
@@ -113,47 +121,6 @@ class UploadedRetriever:
             except Exception:
                 pass
         return self._local.retrieve(query, tier=tier, k=k, restrict_kind=restrict_kind)
-
-
-def fill_scanned_text(entry: dict, docs_dir: str):
-    """A scanned (image-only) PDF has no text layer. VultronRetriever reads such pages
-    visually in live mode; for the local retriever and citation layer we recover the
-    text from the identical non-scanned sibling certificate (same document), so the
-    "read a number from a table on a scanned page" beat works everywhere. Pages stay
-    flagged scanned."""
-    changed = False
-    for p in entry["pages"]:
-        if "SCANNED" not in p["doc_id"] or p["text"].strip():
-            continue
-        sibling = os.path.join(docs_dir, p["doc_id"].replace("_SCANNED", "") + ".pdf")
-        if not os.path.exists(sibling):
-            continue
-        pdf = fitz.open(sibling)
-        cpage = pdf[0]
-        cw, chh = cpage.rect.width, cpage.rect.height
-        # scale the clean page's REAL text-block geometry onto the scanned image, so a
-        # citation highlights the actual row on the scan (not an approximate position).
-        sx, sy = p["width"] / cw, p["height"] / chh
-        raw = [b for b in cpage.get_text("blocks") if b[4].strip()]
-        pdf.close()
-        if not raw:
-            continue
-        blocks = []
-        for i, b in enumerate(raw):
-            x0, y0, x1, y1, txt = b[0], b[1], b[2], b[3], " ".join(b[4].split())
-            blocks.append({"id": f"{p['doc_id']}-p{p['page']}-b{i + 1}",
-                           "bbox": [int(x0 * sx), int(y0 * sy), int((x1 - x0) * sx), int((y1 - y0) * sy)],
-                           "text": txt, "kind": "table" if any(c.isdigit() for c in txt) else "paragraph"})
-        p["blocks"], p["text"] = blocks, "\n".join(b["text"] for b in blocks)
-        for b in blocks:
-            entry["by_block"][(p["doc_id"], p["page"], b["id"])] = {
-                **b, "doc_id": p["doc_id"], "page": p["page"], "image": p["image"],
-                "doc_title": p["doc_title"], "width": p["width"], "height": p["height"]}
-        changed = True
-    if changed:
-        entry["retriever"] = UploadedRetriever(entry["retriever"].collection.replace("up-", ""),
-                                               entry["pages"])
-    return entry
 
 
 def ingest(files: list[tuple[str, bytes]], collection: str | None = None) -> dict:
