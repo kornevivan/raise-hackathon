@@ -153,9 +153,12 @@ def fill_scanned_text(entry: dict, docs_dir: str):
     return entry
 
 
-def ingest(files: list[tuple[str, bytes]]) -> dict:
-    """files = [(filename, bytes)]. Returns {upload_id, documents, page_count}."""
-    upload_id = uuid.uuid4().hex[:10]
+def ingest(files: list[tuple[str, bytes]], collection: str | None = None) -> dict:
+    """files = [(filename, bytes)]. Returns {upload_id, documents, page_count}.
+    A fixed `collection` gives a stable Vultr Vector Store name that persists across
+    processes (sample corpora), so the deployed demo reuses the index instead of
+    re-indexing on every boot."""
+    upload_id = collection or uuid.uuid4().hex[:10]
     out_dir = os.path.join(UPLOAD_DIR, upload_id)
     os.makedirs(out_dir, exist_ok=True)
     all_pages, documents = [], []

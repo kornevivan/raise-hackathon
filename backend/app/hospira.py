@@ -43,7 +43,7 @@ def corpus():
         p = os.path.join(DOCS, name)
         if os.path.exists(p):
             files.append((name, open(p, "rb").read()))
-    res = ingest.ingest(files)
+    res = ingest.ingest(files, collection="hospira")
     _corpus_id = res["upload_id"]
     return ingest.fill_scanned_text(ingest.UPLOADS[_corpus_id], DOCS)
 

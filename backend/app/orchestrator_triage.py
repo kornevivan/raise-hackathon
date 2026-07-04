@@ -42,7 +42,7 @@ def _corpus():
         p = os.path.join(DATASET, "documents", extra)
         if os.path.exists(p):
             files.append((extra, open(p, "rb").read()))
-    res = ingest.ingest(files)
+    res = ingest.ingest(files, collection="triage")
     _corpus_id = res["upload_id"]
     return ingest.fill_scanned_text(ingest.UPLOADS[_corpus_id],
                                     os.path.join(DATASET, "documents"))

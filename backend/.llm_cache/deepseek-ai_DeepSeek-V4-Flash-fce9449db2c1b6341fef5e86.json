@@ -1,1 +1,0 @@
-{"data": {"covenant_name": "Maximum Total Net Leverage Ratio", "metric": "leverage", "threshold": 3.5, "operator": "<=", "definition_mentions_amendment": true}, "raw": "{\n  \"covenant_name\": \"Maximum Total Net Leverage Ratio\",\n  \"metric\": \"leverage\",\n  \"threshold\": 3.50,\n  \"operator\": \"<=\",\n  \"definition_mentions_amendment\": true\n}", "latency_ms": 4304}

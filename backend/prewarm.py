@@ -1,28 +1,29 @@
-"""Pre-warm the Vultr response cache so the live demo replays instantly.
-
-Runs every scenario end-to-end (up to 3 passes) until every reasoning call has a
-cached Vultr response. Requires VULTR_INFERENCE_API_KEY in the environment / .env.
+"""Pre-warm the Vultr response cache AND the persistent vector-store collections so
+the deployed demo replays instantly and live. Requires VULTR_INFERENCE_API_KEY.
 
     python prewarm.py
 """
 import time
 
-from app import corpus, orchestrator
+from app import chat, orchestrator_hospira as oh, orchestrator_triage as tr
 
-sces = corpus.scenarios()
-for attempt in range(1, 4):
-    all_live = True
-    for sc in sces:
-        live = off = 0
-        for ev in orchestrator.run_scenario(sc):
-            if ev["kind"] in ("plan", "gap", "cause", "verify", "memo"):
-                if ev.get("mode") == "vultr":
-                    live += 1
-                elif ev.get("mode") == "offline":
-                    off += 1
-        if off:
-            all_live = False
-        print(f"attempt {attempt} {sc['id']:12s} live={live} offline={off}", flush=True)
-    if all_live:
-        print("ALL LIVE + CACHED", flush=True)
-        break
+# S0 triage (indexes the 'triage' collection)
+print("S0 triage…", flush=True)
+for _ in tr.run_triage():
+    pass
+
+# deep runs + their suggested chat questions (indexes 'hospira' + 'precedents')
+for sid in ("S3", "S1", "S2"):
+    t0 = time.time()
+    sc = oh.SCENARIOS[sid]
+    memo = None
+    for ev in oh.run_scenario(sc):
+        if ev["kind"] == "memo":
+            memo = ev["payload"]
+    run = {"scenario": sc, "memo": memo}
+    for q in chat.SUGGESTED.get(sid, []):
+        for _ in chat.ChatSession(run).answer(q):
+            pass
+    print(f"{sid} + {len(chat.SUGGESTED.get(sid, []))} chat turns  {time.time()-t0:.0f}s", flush=True)
+
+print("PREWARM DONE", flush=True)

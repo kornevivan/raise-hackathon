@@ -1,39 +1,40 @@
-# 1‑minute demo video script (record against the deployed URL, scenario S1)
+# 1‑minute demo video script (record against the deployed Vultr URL, LIVE badge on)
 
-Set `DEMO_PACE_MS=420` so the trace streams at a readable pace. Verify the header
-badge reads **“Vultr inference live”** before recording.
+Verify the header reads **LIVE · Vultr** (not REPLAY) before recording.
 
-**0:00–0:10 — Problem.**
-> “Covenant compliance checks take a credit analyst days per borrower — re‑reading a
-> 200‑page agreement, rebuilding ratios in Excel. And amended definitions make the
-> naive calculation *wrong*. Meet Covenant Sentinel.”
+**0:00–0:10 — Problem + triage (S0).**
+Click **S0 · Quarter closed**.
+> "Covenant checks are quarterly, manual, and slow. Covenant Sentinel triages the book first."
+Point at the trace: it reads Hospira's **scanned** 2014Q4 certificate — **3.59×** — and ranks
+Hospira #1: that 3.59× is already above the **3.50× step‑down** that hits next quarter. Click
+**Deep‑run Hospira (S2)** — actually, for the twist, launch **S1** from the top bar.
 
-**0:10–0:22 — Plan + first retrieval.**
-Click **S1 — The Amendment Twist**. Point at the trace:
-> “It plans the check on the Prime model, then retrieves the covenant definition and
-> threshold with VultronRetriever.” (ratio tile shows **3.55×** in red.)
+**0:10–0:22 — Plan + first retrieval (S1).**
+> "It plans the check and retrieves the EBITDA definition and the §6.6 threshold with
+> VultronRetriever." The ratio tile shows **4.218×** in red — looks like a breach.
 
-**0:22–0:40 — THE TWIST (the money shot).**
-> “3.55× — that’s a breach. But the gap‑check notices the EBITDA definition was
-> *amended* — so it goes back a second time, **escalating Flash → Prime**, and pulls
-> Amendment No. 1.” Point at the amber gap line, then the second retrieval.
-> “It finds a \$4.5M acquisition add‑back in the ledger, the calculator recomputes —
-> and the ratio flips to **3.42×. No breach.** It just caught a false positive.”
-(Let the **3.55× → 3.42×** tiles land on screen.)
+**0:22–0:42 — THE TWIST (the money shot).**
+> "4.218× — a breach. But the gap‑check notices the definition was *amended*, escalates
+> Flash→Prime, and pulls Amendment No. 1." Point at the amber gap line, then retrieval #2.
+> "The Permitted Addbacks are **capped** — the calculator shows `min(130, remaining 100) = 100`,
+> so **$30M is disallowed** — and the ratio recomputes to **3.606× vs 3.75×. No breach**, but
+> only 0.144× headroom." Let the **4.218× → 3.606×** tiles land. Note the transaction cause:
+> the $460M Meridian acquisition draw moved *debt*, not EBITDA.
 
-**0:40–0:52 — Cited memo + scanned page.**
-> “Every claim in the memo is cited.” Click citation **[1]** → the **scanned**
-> compliance certificate opens and the exact cell highlights.
-> “That number came from a table on a *scanned* page — VultronRetriever read it like
-> a person.” Show the verifier’s 100% grounded bar and the confidence score.
+**0:42–0:52 — Cited memo + precedents + chat.**
+Click citation **[n]** → the source clause highlights. Show the **Precedents** section
+(TriState). Open **Chat**, click *"What if we repay $200M of the revolver?"* →
+**`3280 / 965 = 3.399× — HYPOTHETICAL`**, verdict unchanged.
+> "Every claim cited, every number from a tool, what‑ifs are simulations only."
 
 **0:52–1:00 — Human decides + close.**
-> “The agent prepares the decision; the analyst makes it — Approve, Escalate, or Send
-> back.” Click **Escalate for monitoring**.
-> “Every claim cited, every number recomputed. VultronRetriever end to end, deployed
-> on Vultr.”
+Click **Escalate**.
+> "The agent prepares the decision; the analyst makes the call. VultronRetriever for retrieval,
+> Vultr Serverless Inference for reasoning, deployed on Vultr."
 
-## Backup
-If live inference is flaky during recording, the deterministic offline mode produces
-an identical trace and memo — record against that and say so in the description. The
-cached‑replay of a prior live run is also instant (prompt‑hash cache).
+## Notes
+- S2 is the strongest single beat if you want a real breach: 3.615× trips the step‑down 3.50×,
+  and the memo cites the real Hospira waiver + Novaline + Gulfport precedents.
+- The demo is pre‑warmed (cache + persistent collections) so it runs instantly while staying LIVE.
+  If a live call is ever slow on stage, it degrades to the identical deterministic result — the
+  numbers never change (golden‑tested).

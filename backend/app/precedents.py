@@ -50,7 +50,7 @@ def _corpus():
     for name in sorted(os.listdir(PREC_DIR)):
         if name.endswith(".pdf"):
             files.append((name, open(os.path.join(PREC_DIR, name), "rb").read()))
-    res = ingest.ingest(files)
+    res = ingest.ingest(files, collection="precedents")
     _corpus_id = res["upload_id"]
     return ingest.UPLOADS[_corpus_id]
 

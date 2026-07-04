@@ -1,135 +1,86 @@
 # Covenant Sentinel
 
-**An enterprise agent that monitors a loan portfolio the way a credit officer would** — it reads the actual credit agreement, recomputes the covenant ratios itself, digs through the transaction ledger for causes, and hands the analyst a decision‑ready escalation memo where **every claim is cited and every number is verifiable**.
+**An enterprise agent that monitors a loan portfolio the way a credit officer would** — it triages the book, reads the actual credit agreement and its amendments, recomputes the covenant ratios itself, digs through the ledger for causes, cites comparable committee precedents, and hands the analyst a decision‑ready escalation memo where **every claim is cited and every number is tool‑verified** — then answers follow‑up questions in a grounded chat.
 
-Built for the **RAISE Summit Hackathon — Vultr track: “Agentic Intelligence with the VultronRetriever.”** Retrieval, reasoning and deployment all run on Vultr.
+Built for the **RAISE Summit Hackathon — Vultr track: "Agentic Intelligence with the VultronRetriever."** Retrieval, reasoning and deployment run on Vultr. Anchored to **two real Hospira credit documents from SEC EDGAR** (Credit Agreement 2011‑10‑28 + Amendment No. 1 2013‑04‑30) plus an internally‑consistent synthetic financial package.
 
-> **The demo beat:** a borrower’s quarter prints a **3.55× leverage ratio — a covenant breach.** A naive bot (or a naive analyst) escalates it. Covenant Sentinel notices the EBITDA definition was *amended*, re‑retrieves **Amendment No. 1**, applies the acquisition‑cost add‑back, and recomputes **3.42× — no breach.** It caught a false positive by reading the documents like a human.
+> **The demo beat (S1, 2014Q2):** a borrower's quarter prints **4.218× — a covenant breach**. A naive bot escalates it. Covenant Sentinel notices the EBITDA definition was *amended*, re‑retrieves Amendment No. 1, applies the Permitted Addbacks **subject to their lifetime cap** — `min(130, remaining 100) = 100, so $30M is disallowed` — and recomputes **3.606× vs the 3.75× covenant. No breach**, but thin 0.144× headroom. It caught a false positive *and* didn't over‑credit the addback.
 
----
-
-## Why this is an *agent*, not a RAG chatbot
-
-The Vultr brief asks for a system that **plans → retrieves more than once when it needs to → calls tools → makes decisions → produces a usable outcome.** Each verb is individually visible in the live trace:
-
-| Verb | Where you see it |
-|---|---|
-| **Plan** | The planner (Prime tier) enumerates the checks and the evidence each one needs. |
-| **Retrieve (>1×, motivated)** | Retrieval #1 pulls the covenant definition. A **gap‑check** notices the definition was amended → **Retrieval #2** goes back for the amendment, with the reason logged. |
-| **Call tools** | Deterministic `financials_query`, `transactions_query`, and `ratio_calculator` — the agent never does arithmetic itself. |
-| **Decide** | The evidence loop closes, the verifier grounds every claim, and the memo carries a recommendation + confidence. |
-| **Outcome a team can use** | A cited escalation memo with Approve / Escalate / Send‑back. |
+**Public demo URL:** `http://<vultr-ip>` · **Video:** _add link_
 
 ---
 
-## The three‑tier VultronRetriever design (the creative multi‑agent story)
+## What it does
 
-VultronRetriever is a **layout‑aware visual page retriever** (ColPali / late‑interaction family) — it reads a rendered page image, tables, charts and **scans** included. We use all three flavors, **escalated by difficulty**, and log every routing decision:
+- **Portfolio triage (S0)** — "quarter closed, review the book": the planner ranks all borrowers by risk with stated reasons, reading Hospira's latest **scanned** certificate (3.59×) via VultronRetriever, and flags it #1 because 3.59× is already above the 3.50× threshold the §6.6A **step‑down** brings next quarter. One click deep‑runs the top borrower.
+- **Deep covenant run (S1/S2/S3)** — plan → retrieve (>1, motivated) → deterministic tools → verify → cited memo. The engine implements the *real* mechanics: trailing‑four‑quarter Adjusted EBITDA, **Permitted Addbacks with lifetime caps** ($290M Device Strategy / $110M quality), and the **date‑dependent threshold** (3.75× → 3.50× after 2014‑12‑31).
+- **Precedents** — before the memo, one more VultronRetriever pass over 7 credit‑committee case histories; the memo cites 2–3 comparables (S2 cites the *real* Hospira waiver, the Novaline step‑down analog, and the negative Gulfport case).
+- **Grounded chat** — ask the run anything: cap math, "what changes next quarter?", "show precedents", or a **what‑if** ("repay $200M" → `3280/965 = 3.399× HYPOTHETICAL`, verdict unchanged). Every answer is cited; every number is tool‑computed; verdicts change only via a real re‑run.
+- **Upload your own documents** — drop a credit agreement + financials (PDF); the agent detects the covenant and analyzes it. Missing figures → an honest "insufficient data", never a guess.
 
-- **Flash‑0.8B** → routine first‑pass page lookups (cheap, frequent).
-- **Core‑4.5B** → standard evidence retrieval.
-- **Prime‑8B** → hard / ambiguous / layout‑heavy pages. When the gap‑check flags the amended definition, retrieval **escalates Flash → Prime** to pull the amendment carefully.
-
-Retrieval is **genuinely live**: each document page is indexed into a **Vultr Vector Store** collection (the service that fronts the VultronRetriever models) and every retrieval is a real `vector_store/search` call with the chosen VultronRetriever flavor. Results map back to local page blocks so citations stay pixel‑precise.
-
-Reasoning runs on **Vultr Serverless Inference** chat models, routed by task complexity across three tiers. From the live `/v1/models` we selected **`deepseek-ai/DeepSeek-V4-Flash`** for its consistent low latency and reliable JSON (the probe script compares the alternatives). The trace shows, per step, which tier and model produced it, and whether it came from Vultr or the deterministic fallback.
-
-> **Messy‑document bonus:** the Q4 compliance certificate is a **scanned, skewed, noisy image‑PDF**. In the demo the agent pulls a number **from a table on that scanned page**, and clicking the citation highlights the exact cell — VultronRetriever’s advertised strength.
+### The three deep scenarios (real golden numbers, CI‑checked)
+| Scenario | Quarter | Naive → correct | Threshold | Verdict |
+|---|---|---|---|---|
+| **S3** All clear, watch the cap | 2014Q1 | 3.847× → **3.066×** | 3.75× | Compliant; Device cap 285/290 warning |
+| **S1** False breach & capped addback | 2014Q2 | 4.218× → **3.606×** | 3.75× | Compliant, thin 0.144× → monitor |
+| **S2** Step‑down trap | 2015Q1 | 3.800× → **3.615×** | **3.50×** | **BREACH** (would've passed old 3.75×) |
 
 ---
-
-## Two ways to run it
-
-- **Sample portfolio** — pick one of three seeded borrowers (below). Instant, deterministic, ideal for the pitch.
-- **Upload your own documents** — drop a credit agreement + financial statements (PDF). The agent **detects the covenant and threshold itself, extracts the figures, and analyzes them** — no configuration. Uploaded PDFs are rendered and text‑extracted (PyMuPDF), indexed into a Vultr Vector Store (VultronRetriever), and every citation highlights the exact clause on *your* page. Three sample PDFs ship in‑app (they reproduce the amendment twist) so you can try it in one click.
-
-The arithmetic stays deterministic on the extracted numbers, so even on uploaded documents every figure in the memo is tool‑verified and cited.
 
 ## Architecture
 
+Fixed orchestration skeleton in code; the LLM is used only at narrow, schema‑constrained points. **Every number and every verdict is deterministic** — the model plans, judges gaps, and writes prose; the audited engine decides the outcome.
+
 ```
-Trigger: "Run covenant check for borrower X, new quarter"
-        │
-   [1] PLANNER            Prime · strict JSON      → checks + evidence needs
-        │
-   [2] EVIDENCE LOOP  (per check, ≤3 iterations, orchestrated in code)
-        │   a. RETRIEVE   VultronRetriever page search  → {doc, page, block} citations
-        │   b. TOOLS      financials_query · transactions_query · ratio_calculator
-        │   c. GAP‑CHECK  "definition references an amendment not yet applied?"
-        │                 → motivated re‑retrieval (escalate Flash→Prime), logged
-        │
-   [3] VERIFIER           every claim has a citation + matches a tool output
-        │                 → grounded confidence = verified fraction
-   [4] MEMO SYNTHESIS     situation · calc trail · cause · recommendation, all cited
-        │
-   [5] HUMAN‑IN‑THE‑LOOP  Approve / Escalate / Send‑back
+S0 triage  → rank borrowers (Prime) → deep-run the top one
+   │
+[1] PLANNER            → the check + evidence needed
+[2] EVIDENCE LOOP  (motivated, ≤3 iterations)
+     a. RETRIEVE       VultronRetriever page search → {doc, page, block} citations
+     b. TOOLS          covenant_engine · ratio_calculator · financials_query · transactions_query
+     c. GAP-CHECK      references an amending instrument not yet applied? (generalized, not hardcoded)
+                       → escalate Flash→Prime, re-retrieve the amendment
+[3] PRECEDENTS         VultronRetriever over committee case histories → 2–3 comparables
+[4] VERIFIER           every claim cited + matches a tool → grounded confidence
+[5] MEMO               situation · capped-calc trail · cause · precedents · recommendation
+[6] HUMAN + CHAT       Approve / Escalate / Send-back · grounded Q&A + what-if
 ```
 
-Fixed orchestration skeleton in code; the LLM is used only at narrow, schema‑constrained points (planner, gap‑check, verifier, memo). Every LLM call has a JSON schema, a timeout, a one‑shot repair retry, and a per‑run budget (≤14 calls). No free‑form agent loops.
+- **Deterministic engine** (`app/covenant_engine.py`): `addback = min(charges_in_window, max(0, cap − cumulative_before_window))`, per‑category caps, §6.6A step‑down by test‑date. Verified against `data/dataset/golden_covenant_math.json` by `tests/test_golden.py` (all 6 quarters, exact).
+- **Retrieval → VultronRetriever** (Flash/Core/Prime, tiered) via the Vultr **Vector Store**; results map back to local blocks for pixel‑precise citations, incl. the **scanned** certificate.
+- **Reasoning → Vultr Serverless Inference** (`deepseek-ai/DeepSeek-V4-Flash`). See **[docs/COMPLIANCE_NOTE.md](docs/COMPLIANCE_NOTE.md)**: the VultronRetriever models are retrieval‑only (chat endpoints return 404 — proven by `probe_vultr.py`), so core reasoning runs on a Vultr‑hosted chat model. Both requirements are met via Vultr Serverless Inference.
 
-**Stack:** FastAPI + SSE (backend) · React + Vite + Tailwind (two‑pane UI) · SQLite (ledger + runs) · `openai` SDK pointed at `https://api.vultrinference.com/v1`. One `llm.py` wrapper owns all model routing, caching and JSON repair; one `retriever.py` owns retrieval — nothing else touches the API.
+**Stack:** FastAPI + SSE · React + Vite + Tailwind · SQLite (chat history) · PyMuPDF ingestion · `openai` SDK → `api.vultrinference.com`.
 
 ---
 
 ## Deployed on Vultr
 
-- **Backend + UI**: a single Docker image (multi‑stage: Vite build → FastAPI serving the API *and* the built SPA) on a **Vultr Cloud Compute** instance, fronted by **Caddy** (automatic HTTPS).
-- **Reasoning + retrieval**: **Vultr Serverless Inference** — VultronRetriever for documents, Vultr‑served chat LLMs for reasoning. (Vultr GPUs are not used; Serverless Inference only, per the brief.)
-- **Public demo URL:** _add after deploy_ · **Video:** _add link_
+Single Docker image (Vite build → FastAPI serving API + SPA) on a **Vultr Cloud Compute** instance behind **Caddy**. Reasoning + retrieval on **Vultr Serverless Inference**. A pre‑warmed response cache and persistent vector‑store collections make the demo instant and **LIVE** (header badge shows LIVE vs REPLAY). Deploy: [`deploy/vultr.md`](deploy/vultr.md).
 
-See [`deploy/vultr.md`](deploy/vultr.md) for the one‑command deploy.
-
----
-
-## Run it locally
+## Run locally
 
 ```bash
-# 1) backend
-cd backend
-python -m venv .venv && source .venv/bin/activate
+cd backend && python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-python -m data.generate            # deterministic corpus (already committed)
-uvicorn app.main:app --reload      # :8000
-
-# 2) frontend
-cd ../frontend
-npm install
-npm run dev                        # :5173  (proxies /api + /corpus to :8000)
+python -m tests.test_golden && python -m tests.test_gapcheck   # CI gate — must pass
+uvicorn app.main:app --reload            # :8000  (serves built UI; or run the frontend dev server)
+cd ../frontend && npm install && npm run build
 ```
-
-Open http://localhost:5173, pick a borrower, watch the agent run.
-
-**Offline vs live Vultr.** Set `VULTR_INFERENCE_API_KEY` (from a Serverless Inference subscription) to route reasoning + retrieval through Vultr — the header badge reads *“Vultr inference live”* and every trace step shows its model and latency. With no key the app runs a **deterministic offline engine**: the full pipeline, trace, tools and memo behave identically, so the demo never fails and you can develop before credentials are ready. A **pre‑warmed response cache** (`backend/.llm_cache`, committed) makes the live demo replay instantly; a cache miss simply calls Vultr again. Any per‑call failure degrades to the deterministic result, so a run can never break mid‑demo. Use `python backend/probe_vultr.py` to list served model ids and lock them in `.env`.
-
-**Design integrity:** the recommendation, confidence and every number are deterministic functions of the tool‑verified calculation — never an LLM opinion. The model *plans, judges gaps, and writes prose*; the audited math decides the outcome.
-
-> One activation step: Vultr requires a **verified account email** before it will create a Serverless Inference subscription. Verify the email, add the subscription, copy its key into `.env`, run `probe_vultr.py`, and the app flips to live Vultr with no code changes.
+Open http://localhost:8000. Set `VULTR_INFERENCE_API_KEY` for LIVE mode; without it the deterministic REPLAY mode produces an identical trace/memo. `python backend/probe_vultr.py` prints the served models + the VultronRetriever‑chat evidence.
 
 ---
 
 ## Data — honest about real vs synthetic
 
-A hybrid corpus generated by one **seeded** script ([`backend/data/generate.py`](backend/data/generate.py)) so every figure reconciles: the **transaction ledger aggregates up to the financial statements, which feed the covenant ratio.** Click any citation and the numbers tie out.
-
-- **Documents (synthetic, authentic legal/financial style):** credit agreement with a real maintenance covenant (max total net leverage ≤ 3.50×) and a Consolidated EBITDA definition; **Amendment No. 1** adding a Permitted‑Acquisition add‑back; table‑heavy financial statements; and a **scanned** compliance certificate.
-- **Structured data (synthetic, seeded):** 4 quarters of financials + a ~400‑row ledger with the Q4 “Project Atlas” acquisition‑cost cluster (\$4.5M) that both explains the EBITDA dip and qualifies for the amendment add‑back.
-
-Everything is generated for the demo and labeled as such — no real company’s filings are used. Swapping in a real SEC EDGAR credit agreement is a drop‑in (`data/generate.py` documents where).
-
-### The three seeded scenarios
-- **S1 — The Amendment Twist:** naive 3.55× breach → amendment add‑back → 3.42×, false positive avoided, 0.08× headroom.
-- **S2 — Genuine Breach:** 4.04×, driven by a real revenue collapse in the ledger; no add‑back saves it → escalate.
-- **S3 — All Clear:** 2.35×, healthy; the agent passes quickly — calibrated, not alarmist.
-
----
+- **Real (SEC EDGAR):** Hospira Credit Agreement (2011‑10‑28) §1.1/§6.6 and Amendment No. 1 (2013‑04‑30) §1(d) caps / §1(j) step‑down. Faithful, source‑linked excerpt PDFs are generated by `data/dataset_docs.py` so the demo is self‑contained; links in `data/dataset/README_demo_data.md`.
+- **Synthetic (seeded, labeled):** 9 quarters of financials, a ~700‑row ledger (the S1 debt jump is the real 2014‑05‑19 $460M "Meridian Infusion Assets" acquisition draw), compliance certificates incl. a **scanned** one, 7 committee precedents, and 2 extra portfolio borrowers. Every PDF footer: *"SYNTHETIC DEMONSTRATION DATA … NOT the actual financial results of Hospira, Inc."* Ground truth: `golden_answers.md` + `golden_covenant_math.json`.
 
 ## Repo layout
-
 ```
-backend/
-  app/  config · corpus · retriever · llm · tools · orchestrator · main (FastAPI/SSE)
-  data/ generate.py · render.py · corpus/ (page images + index.json) · ledger.csv · covenant.sqlite
-  probe_vultr.py
-frontend/ src/  App · Trace · Memo · ui · api      (React + Vite + Tailwind)
-Dockerfile · docker-compose.yml · Caddyfile · deploy/vultr.md
+backend/app/  covenant_engine · hospira · precedents · orchestrator_{hospira,triage,adhoc}
+              · chat · gapcheck · retriever · ingest · llm · main (FastAPI/SSE)
+backend/tests/ test_golden.py · test_gapcheck.py           backend/data/dataset/  (Hospira dataset)
+frontend/src/ App · Trace · Memo · Chat · UploadPanel · ui · api
+Dockerfile · docker-compose.yml · Caddyfile · deploy/ · docs/
 ```
