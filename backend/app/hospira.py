@@ -45,7 +45,7 @@ def corpus():
             files.append((name, open(p, "rb").read()))
     res = ingest.ingest(files)
     _corpus_id = res["upload_id"]
-    return ingest.UPLOADS[_corpus_id]
+    return ingest.fill_scanned_text(ingest.UPLOADS[_corpus_id], DOCS)
 
 
 @lru_cache(maxsize=1)

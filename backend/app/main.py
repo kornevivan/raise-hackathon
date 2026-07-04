@@ -13,7 +13,7 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from sse_starlette.sse import EventSourceResponse
 
-from . import config, corpus, orchestrator_adhoc, ingest, orchestrator_hospira
+from . import config, orchestrator_adhoc, ingest, orchestrator_hospira, orchestrator_triage
 
 app = FastAPI(title="Covenant Sentinel", version="1.0")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"],
@@ -41,21 +41,25 @@ def health():
 
 @app.get("/api/scenarios")
 def scenarios():
-    return {"scenarios": [orchestrator_hospira.SCENARIOS[k] for k in ("S3", "S1", "S2")]}
+    return {"scenarios": [orchestrator_triage.SCENARIO_S0]
+            + [orchestrator_hospira.SCENARIOS[k] for k in ("S3", "S1", "S2")]}
 
 
 @app.get("/api/run/{scenario_id}")
 async def run(scenario_id: str):
-    sc = orchestrator_hospira.SCENARIOS.get(scenario_id)
+    is_triage = scenario_id == "S0"
+    sc = orchestrator_triage.SCENARIO_S0 if is_triage else orchestrator_hospira.SCENARIOS.get(scenario_id)
     if not sc:
         raise HTTPException(404, f"scenario {scenario_id} not found")
     run_id = uuid.uuid4().hex[:12]
     events: list[dict] = []
     RUNS[run_id] = {"events": events, "scenario": sc, "memo": None, "decision": None}
+    gen_events = (orchestrator_triage.run_triage() if is_triage
+                  else orchestrator_hospira.run_scenario(sc))
 
     async def gen():
         yield {"event": "run_id", "data": json.dumps({"run_id": run_id})}
-        for ev in orchestrator_hospira.run_scenario(sc):
+        for ev in gen_events:
             events.append(ev)
             if ev["kind"] == "memo":
                 RUNS[run_id]["memo"] = ev["payload"]

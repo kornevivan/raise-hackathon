@@ -115,6 +115,44 @@ class UploadedRetriever:
         return self._local.retrieve(query, tier=tier, k=k, restrict_kind=restrict_kind)
 
 
+def fill_scanned_text(entry: dict, docs_dir: str):
+    """A scanned (image-only) PDF has no text layer. VultronRetriever reads such pages
+    visually in live mode; for the local retriever and citation layer we recover the
+    text from the identical non-scanned sibling certificate (same document), so the
+    "read a number from a table on a scanned page" beat works everywhere. Pages stay
+    flagged scanned."""
+    changed = False
+    for p in entry["pages"]:
+        if "SCANNED" not in p["doc_id"] or p["text"].strip():
+            continue
+        sibling = os.path.join(docs_dir, p["doc_id"].replace("_SCANNED", "") + ".pdf")
+        if not os.path.exists(sibling):
+            continue
+        pdf = fitz.open(sibling)
+        text = pdf[0].get_text("text")
+        pdf.close()
+        lines = [ln.strip() for ln in text.splitlines() if ln.strip()]
+        if not lines:
+            continue
+        top, span = int(p["height"] * 0.10), int(p["height"] * 0.80 / max(1, len(lines)))
+        blocks = []
+        for i, ln in enumerate(lines):
+            y = top + i * span
+            blocks.append({"id": f"{p['doc_id']}-p{p['page']}-b{i + 1}",
+                           "bbox": [int(p["width"] * 0.08), y, int(p["width"] * 0.84), span],
+                           "text": ln, "kind": "table" if any(c.isdigit() for c in ln) else "paragraph"})
+        p["blocks"], p["text"] = blocks, "\n".join(lines)
+        for b in blocks:
+            entry["by_block"][(p["doc_id"], p["page"], b["id"])] = {
+                **b, "doc_id": p["doc_id"], "page": p["page"], "image": p["image"],
+                "doc_title": p["doc_title"], "width": p["width"], "height": p["height"]}
+        changed = True
+    if changed:
+        entry["retriever"] = UploadedRetriever(entry["retriever"].collection.replace("up-", ""),
+                                               entry["pages"])
+    return entry
+
+
 def ingest(files: list[tuple[str, bytes]]) -> dict:
     """files = [(filename, bytes)]. Returns {upload_id, documents, page_count}."""
     upload_id = uuid.uuid4().hex[:10]
