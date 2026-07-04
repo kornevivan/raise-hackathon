@@ -1,0 +1,82 @@
+{
+  "scenarios": [
+    {
+      "id": "S-meridian",
+      "label": "S1 \u2014 The Amendment Twist",
+      "blurb": "Naive leverage prints 3.55x (breach!). The agent notices the EBITDA definition was amended, re-retrieves Amendment No. 1, applies the acquisition addback, and recomputes 3.42x \u2014 no breach, but only 0.08x of headroom.",
+      "borrower_id": "meridian",
+      "borrower_name": "Meridian Logistics",
+      "period": "Q4-2025",
+      "covenant": {
+        "name": "Maximum Total Net Leverage Ratio",
+        "formula": "Consolidated Total Net Debt / Consolidated EBITDA (LTM)",
+        "threshold": 3.5,
+        "operator": "<=",
+        "test": "quarterly"
+      },
+      "trend": {
+        "Q1-2025": 2.8,
+        "Q2-2025": 3.1,
+        "Q3-2025": 3.33,
+        "Q4-2025": 3.55
+      },
+      "expected": {
+        "naive_ratio": 3.55,
+        "adjusted_ratio": 3.42,
+        "has_amendment": true
+      }
+    },
+    {
+      "id": "S-cascade",
+      "label": "S2 \u2014 Genuine Breach",
+      "blurb": "Leverage at 4.04x driven by a real revenue collapse visible in the ledger. No addback saves it. Escalate immediately.",
+      "borrower_id": "cascade",
+      "borrower_name": "Cascade Manufacturing",
+      "period": "Q4-2025",
+      "covenant": {
+        "name": "Maximum Total Net Leverage Ratio",
+        "formula": "Consolidated Total Net Debt / Consolidated EBITDA (LTM)",
+        "threshold": 3.5,
+        "operator": "<=",
+        "test": "quarterly"
+      },
+      "trend": {
+        "Q1-2025": 3.05,
+        "Q2-2025": 3.28,
+        "Q3-2025": 3.61,
+        "Q4-2025": 4.04
+      },
+      "expected": {
+        "naive_ratio": 4.042,
+        "adjusted_ratio": 4.042,
+        "has_amendment": false
+      }
+    },
+    {
+      "id": "S-northwind",
+      "label": "S3 \u2014 All Clear",
+      "blurb": "Healthy borrower at 2.35x. The agent passes quickly \u2014 calibrated, not alarmist.",
+      "borrower_id": "northwind",
+      "borrower_name": "Northwind Retail",
+      "period": "Q4-2025",
+      "covenant": {
+        "name": "Maximum Total Net Leverage Ratio",
+        "formula": "Consolidated Total Net Debt / Consolidated EBITDA (LTM)",
+        "threshold": 3.5,
+        "operator": "<=",
+        "test": "quarterly"
+      },
+      "trend": {
+        "Q1-2025": 2.2,
+        "Q2-2025": 2.28,
+        "Q3-2025": 2.31,
+        "Q4-2025": 2.35
+      },
+      "expected": {
+        "naive_ratio": 2.35,
+        "adjusted_ratio": 2.35,
+        "has_amendment": false
+      }
+    }
+  ]
+}

@@ -1,0 +1,410 @@
+txn_id,borrower_id,period,date,vendor,category,memo,amount_usd_000,one_time,acquisition_related
+T1001,meridian,Q1-2025,2025-02-05,CityPower Utilities,Payroll,Recurring operating expense,160.4,0,0
+T1002,meridian,Q1-2025,2025-02-02,CityPower Utilities,Leasing,Recurring operating expense,378.1,0,0
+T1003,meridian,Q1-2025,2025-02-24,OfficeWorks,Utilities,Recurring operating expense,133.0,0,0
+T1004,meridian,Q1-2025,2025-02-21,PortSide Terminals,Terminal Fees,Recurring operating expense,928.0,0,0
+T1005,meridian,Q1-2025,2025-02-01,TransFleet Leasing,Payroll,Recurring operating expense,216.4,0,0
+T1006,meridian,Q1-2025,2025-02-02,MetroPayroll,Terminal Fees,Recurring operating expense,325.7,0,0
+T1007,meridian,Q1-2025,2025-02-23,MetroPayroll,Leasing,Recurring operating expense,508.1,0,0
+T1008,meridian,Q1-2025,2025-02-20,MetroPayroll,Payroll,Recurring operating expense,812.3,0,0
+T1009,meridian,Q1-2025,2025-02-22,PortSide Terminals,Utilities,Recurring operating expense,438.6,0,0
+T1010,meridian,Q1-2025,2025-02-18,PortSide Terminals,Insurance,Recurring operating expense,799.7,0,0
+T1011,meridian,Q1-2025,2025-02-04,Interstate Freight,Fuel,Recurring operating expense,295.2,0,0
+T1012,meridian,Q1-2025,2025-02-19,OfficeWorks,Maintenance,Recurring operating expense,657.2,0,0
+T1013,meridian,Q1-2025,2025-02-05,Atlas Fuel Co,Terminal Fees,Recurring operating expense,747.3,0,0
+T1014,meridian,Q1-2025,2025-02-09,CityPower Utilities,Insurance,Recurring operating expense,90.3,0,0
+T1015,meridian,Q1-2025,2025-02-15,PortSide Terminals,Fuel,Recurring operating expense,134.6,0,0
+T1016,meridian,Q1-2025,2025-02-05,CityPower Utilities,Utilities,Recurring operating expense,399.2,0,0
+T1017,meridian,Q1-2025,2025-02-14,PortSide Terminals,Utilities,Recurring operating expense,353.7,0,0
+T1018,meridian,Q1-2025,2025-02-18,PortSide Terminals,Leasing,Recurring operating expense,236.2,0,0
+T1019,meridian,Q1-2025,2025-02-21,CityPower Utilities,Payroll,Recurring operating expense,838.6,0,0
+T1020,meridian,Q1-2025,2025-02-03,MetroPayroll,Maintenance,Recurring operating expense,170.7,0,0
+T1021,meridian,Q1-2025,2025-02-08,TransFleet Leasing,Utilities,Recurring operating expense,491.6,0,0
+T1022,meridian,Q1-2025,2025-02-11,PortSide Terminals,Leasing,Recurring operating expense,572.7,0,0
+T1023,meridian,Q1-2025,2025-02-17,Atlas Fuel Co,Fuel,Recurring operating expense,111.3,0,0
+T1024,meridian,Q1-2025,2025-02-13,Harbor Insurance,Utilities,Recurring operating expense,320.7,0,0
+T1025,meridian,Q1-2025,2025-02-27,Harbor Insurance,Payroll,Recurring operating expense,677.7,0,0
+T1026,meridian,Q1-2025,2025-02-05,PortSide Terminals,Utilities,Recurring operating expense,372.0,0,0
+T1027,meridian,Q1-2025,2025-02-27,PortSide Terminals,Fuel,Recurring operating expense,838.4,0,0
+T1028,meridian,Q1-2025,2025-02-27,Atlas Fuel Co,Insurance,Recurring operating expense,559.6,0,0
+T1029,meridian,Q1-2025,2025-02-08,TransFleet Leasing,Payroll,Recurring operating expense,922.6,0,0
+T1030,meridian,Q1-2025,2025-02-22,Atlas Fuel Co,Payroll,Recurring operating expense,273.1,0,0
+T1031,meridian,Q1-2025,2025-02-07,Interstate Freight,Fuel,Recurring operating expense,147.9,0,0
+T1032,meridian,Q1-2025,2025-02-15,CityPower Utilities,Payroll,Recurring operating expense,496.9,0,0
+T1033,meridian,Q1-2025,2025-02-08,MetroPayroll,Fuel,Recurring operating expense,589.4,0,0
+T1034,meridian,Q1-2025,2025-02-12,Atlas Fuel Co,Payroll,Recurring operating expense,283.5,0,0
+T1035,meridian,Q1-2025,2025-02-06,TransFleet Leasing,Utilities,Recurring operating expense,771.3,0,0
+T1036,meridian,Q1-2025,2025-02-24,Interstate Freight,Terminal Fees,Recurring operating expense,528.3,0,0
+T1037,meridian,Q1-2025,2025-02-14,CityPower Utilities,Terminal Fees,Recurring operating expense,721.2,0,0
+T1038,meridian,Q2-2025,2025-05-09,Atlas Fuel Co,Maintenance,Recurring operating expense,314.9,0,0
+T1039,meridian,Q2-2025,2025-05-19,PortSide Terminals,Leasing,Recurring operating expense,867.8,0,0
+T1040,meridian,Q2-2025,2025-05-14,Atlas Fuel Co,Insurance,Recurring operating expense,307.0,0,0
+T1041,meridian,Q2-2025,2025-05-22,Interstate Freight,Insurance,Recurring operating expense,252.7,0,0
+T1042,meridian,Q2-2025,2025-05-17,TransFleet Leasing,Fuel,Recurring operating expense,687.7,0,0
+T1043,meridian,Q2-2025,2025-05-24,PortSide Terminals,Terminal Fees,Recurring operating expense,287.2,0,0
+T1044,meridian,Q2-2025,2025-05-04,MetroPayroll,Leasing,Recurring operating expense,614.8,0,0
+T1045,meridian,Q2-2025,2025-05-22,TransFleet Leasing,Payroll,Recurring operating expense,570.8,0,0
+T1046,meridian,Q2-2025,2025-05-25,CityPower Utilities,Insurance,Recurring operating expense,373.3,0,0
+T1047,meridian,Q2-2025,2025-05-03,TransFleet Leasing,Payroll,Recurring operating expense,248.3,0,0
+T1048,meridian,Q2-2025,2025-05-16,Atlas Fuel Co,Leasing,Recurring operating expense,536.2,0,0
+T1049,meridian,Q2-2025,2025-05-17,OfficeWorks,Payroll,Recurring operating expense,647.4,0,0
+T1050,meridian,Q2-2025,2025-05-25,Atlas Fuel Co,Fuel,Recurring operating expense,489.2,0,0
+T1051,meridian,Q2-2025,2025-05-27,OfficeWorks,Leasing,Recurring operating expense,668.7,0,0
+T1052,meridian,Q2-2025,2025-05-02,Harbor Insurance,Payroll,Recurring operating expense,731.3,0,0
+T1053,meridian,Q2-2025,2025-05-23,PortSide Terminals,Maintenance,Recurring operating expense,470.6,0,0
+T1054,meridian,Q2-2025,2025-05-11,CityPower Utilities,Terminal Fees,Recurring operating expense,259.8,0,0
+T1055,meridian,Q2-2025,2025-05-01,PortSide Terminals,Payroll,Recurring operating expense,401.3,0,0
+T1056,meridian,Q2-2025,2025-05-11,Interstate Freight,Leasing,Recurring operating expense,877.0,0,0
+T1057,meridian,Q2-2025,2025-05-07,PortSide Terminals,Terminal Fees,Recurring operating expense,341.8,0,0
+T1058,meridian,Q2-2025,2025-05-19,Interstate Freight,Leasing,Recurring operating expense,96.2,0,0
+T1059,meridian,Q2-2025,2025-05-08,CityPower Utilities,Terminal Fees,Recurring operating expense,747.6,0,0
+T1060,meridian,Q2-2025,2025-05-19,Interstate Freight,Terminal Fees,Recurring operating expense,734.5,0,0
+T1061,meridian,Q2-2025,2025-05-14,Harbor Insurance,Insurance,Recurring operating expense,666.0,0,0
+T1062,meridian,Q2-2025,2025-05-24,OfficeWorks,Insurance,Recurring operating expense,940.9,0,0
+T1063,meridian,Q2-2025,2025-05-19,TransFleet Leasing,Insurance,Recurring operating expense,897.6,0,0
+T1064,meridian,Q2-2025,2025-05-01,CityPower Utilities,Utilities,Recurring operating expense,896.6,0,0
+T1065,meridian,Q2-2025,2025-05-22,CityPower Utilities,Insurance,Recurring operating expense,660.0,0,0
+T1066,meridian,Q3-2025,2025-08-01,MetroPayroll,Utilities,Recurring operating expense,425.1,0,0
+T1067,meridian,Q3-2025,2025-08-11,Harbor Insurance,Maintenance,Recurring operating expense,850.9,0,0
+T1068,meridian,Q3-2025,2025-08-02,Harbor Insurance,Leasing,Recurring operating expense,322.5,0,0
+T1069,meridian,Q3-2025,2025-08-20,MetroPayroll,Maintenance,Recurring operating expense,421.5,0,0
+T1070,meridian,Q3-2025,2025-08-06,OfficeWorks,Payroll,Recurring operating expense,391.1,0,0
+T1071,meridian,Q3-2025,2025-08-25,TransFleet Leasing,Utilities,Recurring operating expense,793.4,0,0
+T1072,meridian,Q3-2025,2025-08-06,CityPower Utilities,Insurance,Recurring operating expense,480.0,0,0
+T1073,meridian,Q3-2025,2025-08-01,OfficeWorks,Insurance,Recurring operating expense,135.8,0,0
+T1074,meridian,Q3-2025,2025-08-09,Interstate Freight,Terminal Fees,Recurring operating expense,402.9,0,0
+T1075,meridian,Q3-2025,2025-08-23,PortSide Terminals,Leasing,Recurring operating expense,304.9,0,0
+T1076,meridian,Q3-2025,2025-08-25,TransFleet Leasing,Leasing,Recurring operating expense,148.7,0,0
+T1077,meridian,Q3-2025,2025-08-20,Atlas Fuel Co,Leasing,Recurring operating expense,639.4,0,0
+T1078,meridian,Q3-2025,2025-08-21,OfficeWorks,Maintenance,Recurring operating expense,852.4,0,0
+T1079,meridian,Q3-2025,2025-08-10,Atlas Fuel Co,Maintenance,Recurring operating expense,614.1,0,0
+T1080,meridian,Q3-2025,2025-08-25,MetroPayroll,Maintenance,Recurring operating expense,504.0,0,0
+T1081,meridian,Q3-2025,2025-08-16,TransFleet Leasing,Maintenance,Recurring operating expense,414.5,0,0
+T1082,meridian,Q3-2025,2025-08-13,MetroPayroll,Insurance,Recurring operating expense,289.5,0,0
+T1083,meridian,Q3-2025,2025-08-06,CityPower Utilities,Terminal Fees,Recurring operating expense,327.7,0,0
+T1084,meridian,Q3-2025,2025-08-17,OfficeWorks,Fuel,Recurring operating expense,606.9,0,0
+T1085,meridian,Q3-2025,2025-08-08,PortSide Terminals,Leasing,Recurring operating expense,759.0,0,0
+T1086,meridian,Q3-2025,2025-08-05,TransFleet Leasing,Fuel,Recurring operating expense,706.8,0,0
+T1087,meridian,Q3-2025,2025-08-22,PortSide Terminals,Payroll,Recurring operating expense,476.5,0,0
+T1088,meridian,Q3-2025,2025-08-16,TransFleet Leasing,Maintenance,Recurring operating expense,263.3,0,0
+T1089,meridian,Q3-2025,2025-08-24,MetroPayroll,Payroll,Recurring operating expense,90.1,0,0
+T1090,meridian,Q3-2025,2025-08-10,Atlas Fuel Co,Utilities,Recurring operating expense,664.8,0,0
+T1091,meridian,Q3-2025,2025-08-11,TransFleet Leasing,Leasing,Recurring operating expense,350.2,0,0
+T1092,meridian,Q3-2025,2025-08-08,Harbor Insurance,Terminal Fees,Recurring operating expense,926.7,0,0
+T1093,meridian,Q3-2025,2025-08-08,Atlas Fuel Co,Utilities,Recurring operating expense,860.7,0,0
+T1094,meridian,Q3-2025,2025-08-22,PortSide Terminals,Leasing,Recurring operating expense,612.9,0,0
+T1095,meridian,Q3-2025,2025-08-21,MetroPayroll,Maintenance,Recurring operating expense,652.3,0,0
+T1096,meridian,Q3-2025,2025-08-07,Interstate Freight,Payroll,Recurring operating expense,437.9,0,0
+T1097,meridian,Q3-2025,2025-08-19,TransFleet Leasing,Payroll,Recurring operating expense,317.5,0,0
+T1098,meridian,Q3-2025,2025-08-15,CityPower Utilities,Payroll,Recurring operating expense,915.6,0,0
+T1099,meridian,Q3-2025,2025-08-11,Harbor Insurance,Fuel,Recurring operating expense,526.1,0,0
+T1100,meridian,Q3-2025,2025-08-25,Interstate Freight,Terminal Fees,Recurring operating expense,351.5,0,0
+T1101,meridian,Q3-2025,2025-08-20,PortSide Terminals,Insurance,Recurring operating expense,859.4,0,0
+T1102,meridian,Q4-2025,2025-11-12,Interstate Freight,Terminal Fees,Recurring operating expense,415.0,0,0
+T1103,meridian,Q4-2025,2025-11-08,Harbor Insurance,Payroll,Recurring operating expense,706.1,0,0
+T1104,meridian,Q4-2025,2025-11-13,PortSide Terminals,Leasing,Recurring operating expense,476.5,0,0
+T1105,meridian,Q4-2025,2025-11-10,MetroPayroll,Terminal Fees,Recurring operating expense,499.8,0,0
+T1106,meridian,Q4-2025,2025-11-21,Atlas Fuel Co,Maintenance,Recurring operating expense,660.7,0,0
+T1107,meridian,Q4-2025,2025-11-25,Interstate Freight,Insurance,Recurring operating expense,671.6,0,0
+T1108,meridian,Q4-2025,2025-11-01,Atlas Fuel Co,Maintenance,Recurring operating expense,180.1,0,0
+T1109,meridian,Q4-2025,2025-11-05,Atlas Fuel Co,Leasing,Recurring operating expense,896.2,0,0
+T1110,meridian,Q4-2025,2025-11-20,CityPower Utilities,Terminal Fees,Recurring operating expense,924.2,0,0
+T1111,meridian,Q4-2025,2025-11-14,Atlas Fuel Co,Utilities,Recurring operating expense,460.3,0,0
+T1112,meridian,Q4-2025,2025-11-13,CityPower Utilities,Payroll,Recurring operating expense,622.7,0,0
+T1113,meridian,Q4-2025,2025-11-03,CityPower Utilities,Insurance,Recurring operating expense,294.8,0,0
+T1114,meridian,Q4-2025,2025-11-08,Atlas Fuel Co,Payroll,Recurring operating expense,689.6,0,0
+T1115,meridian,Q4-2025,2025-11-08,Harbor Insurance,Leasing,Recurring operating expense,200.1,0,0
+T1116,meridian,Q4-2025,2025-11-20,Harbor Insurance,Fuel,Recurring operating expense,270.7,0,0
+T1117,meridian,Q4-2025,2025-11-05,MetroPayroll,Leasing,Recurring operating expense,742.5,0,0
+T1118,meridian,Q4-2025,2025-11-15,CityPower Utilities,Insurance,Recurring operating expense,787.8,0,0
+T1119,meridian,Q4-2025,2025-11-22,Interstate Freight,Insurance,Recurring operating expense,172.8,0,0
+T1120,meridian,Q4-2025,2025-11-01,TransFleet Leasing,Terminal Fees,Recurring operating expense,854.2,0,0
+T1121,meridian,Q4-2025,2025-11-10,Interstate Freight,Fuel,Recurring operating expense,578.4,0,0
+T1122,meridian,Q4-2025,2025-11-17,MetroPayroll,Fuel,Recurring operating expense,178.8,0,0
+T1123,meridian,Q4-2025,2025-11-07,Harbor Insurance,Leasing,Recurring operating expense,376.1,0,0
+T1124,meridian,Q4-2025,2025-11-25,TransFleet Leasing,Maintenance,Recurring operating expense,239.1,0,0
+T1125,meridian,Q4-2025,2025-11-26,Atlas Fuel Co,Maintenance,Recurring operating expense,339.6,0,0
+T1126,meridian,Q4-2025,2025-11-10,Interstate Freight,Fuel,Recurring operating expense,835.5,0,0
+T1127,meridian,Q4-2025,2025-11-08,CityPower Utilities,Leasing,Recurring operating expense,280.0,0,0
+T1128,meridian,Q4-2025,2025-11-17,OfficeWorks,Terminal Fees,Recurring operating expense,770.4,0,0
+T1129,meridian,Q4-2025,2025-11-03,CityPower Utilities,Utilities,Recurring operating expense,941.5,0,0
+T1130,meridian,Q4-2025,2025-11-01,MetroPayroll,Leasing,Recurring operating expense,903.4,0,0
+T1131,meridian,Q4-2025,2025-11-08,CityPower Utilities,Terminal Fees,Recurring operating expense,84.4,0,0
+T1132,meridian,Q4-2025,2025-11-20,OfficeWorks,Terminal Fees,Recurring operating expense,823.1,0,0
+T1133,meridian,Q4-2025,2025-11-24,Atlas Fuel Co,Terminal Fees,Recurring operating expense,324.3,0,0
+T1134,meridian,Q4-2025,2025-11-05,TransFleet Leasing,Leasing,Recurring operating expense,801.0,0,0
+T1135,meridian,Q4-2025,2025-11-07,Whitmore & Cole LLP,Legal — M&A,Project Atlas — acquisition legal fees,1800.0,1,1
+T1136,meridian,Q4-2025,2025-11-05,Bridgepoint Advisory,Advisory,Project Atlas — financial advisory (buy-side),1400.0,1,1
+T1137,meridian,Q4-2025,2025-11-15,Deloitte QoE Team,Due Diligence,Project Atlas — quality-of-earnings & tax DD,700.0,1,1
+T1138,meridian,Q4-2025,2025-11-04,Meridian Integration PMO,Integration,Project Atlas — one-time integration & retention,600.0,1,1
+T1139,cascade,Q1-2025,2025-02-12,CityPower Utilities,Leasing,Recurring operating expense,507.2,0,0
+T1140,cascade,Q1-2025,2025-02-03,CityPower Utilities,Utilities,Recurring operating expense,215.3,0,0
+T1141,cascade,Q1-2025,2025-02-20,TransFleet Leasing,Terminal Fees,Recurring operating expense,394.9,0,0
+T1142,cascade,Q1-2025,2025-02-25,CityPower Utilities,Terminal Fees,Recurring operating expense,189.5,0,0
+T1143,cascade,Q1-2025,2025-02-20,Harbor Insurance,Fuel,Recurring operating expense,644.6,0,0
+T1144,cascade,Q1-2025,2025-02-13,CityPower Utilities,Fuel,Recurring operating expense,133.1,0,0
+T1145,cascade,Q1-2025,2025-02-23,Atlas Fuel Co,Fuel,Recurring operating expense,509.5,0,0
+T1146,cascade,Q1-2025,2025-02-27,Harbor Insurance,Fuel,Recurring operating expense,164.9,0,0
+T1147,cascade,Q1-2025,2025-02-09,CityPower Utilities,Utilities,Recurring operating expense,745.6,0,0
+T1148,cascade,Q1-2025,2025-02-17,Harbor Insurance,Terminal Fees,Recurring operating expense,937.8,0,0
+T1149,cascade,Q1-2025,2025-02-24,Interstate Freight,Maintenance,Recurring operating expense,150.3,0,0
+T1150,cascade,Q1-2025,2025-02-18,TransFleet Leasing,Terminal Fees,Recurring operating expense,553.8,0,0
+T1151,cascade,Q1-2025,2025-02-03,MetroPayroll,Utilities,Recurring operating expense,671.0,0,0
+T1152,cascade,Q1-2025,2025-02-08,MetroPayroll,Payroll,Recurring operating expense,308.6,0,0
+T1153,cascade,Q1-2025,2025-02-02,MetroPayroll,Fuel,Recurring operating expense,97.9,0,0
+T1154,cascade,Q1-2025,2025-02-03,CityPower Utilities,Utilities,Recurring operating expense,233.3,0,0
+T1155,cascade,Q1-2025,2025-02-04,CityPower Utilities,Insurance,Recurring operating expense,547.1,0,0
+T1156,cascade,Q1-2025,2025-02-27,Harbor Insurance,Maintenance,Recurring operating expense,698.9,0,0
+T1157,cascade,Q1-2025,2025-02-08,PortSide Terminals,Utilities,Recurring operating expense,225.7,0,0
+T1158,cascade,Q1-2025,2025-02-08,Harbor Insurance,Payroll,Recurring operating expense,831.3,0,0
+T1159,cascade,Q1-2025,2025-02-07,CityPower Utilities,Insurance,Recurring operating expense,821.6,0,0
+T1160,cascade,Q1-2025,2025-02-20,Harbor Insurance,Utilities,Recurring operating expense,463.3,0,0
+T1161,cascade,Q1-2025,2025-02-24,CityPower Utilities,Insurance,Recurring operating expense,795.9,0,0
+T1162,cascade,Q1-2025,2025-02-21,Harbor Insurance,Terminal Fees,Recurring operating expense,276.6,0,0
+T1163,cascade,Q1-2025,2025-02-17,PortSide Terminals,Utilities,Recurring operating expense,167.1,0,0
+T1164,cascade,Q1-2025,2025-02-10,Interstate Freight,Insurance,Recurring operating expense,194.2,0,0
+T1165,cascade,Q1-2025,2025-02-03,TransFleet Leasing,Maintenance,Recurring operating expense,597.7,0,0
+T1166,cascade,Q1-2025,2025-02-12,MetroPayroll,Insurance,Recurring operating expense,802.0,0,0
+T1167,cascade,Q1-2025,2025-02-24,OfficeWorks,Utilities,Recurring operating expense,783.7,0,0
+T1168,cascade,Q1-2025,2025-02-09,MetroPayroll,Maintenance,Recurring operating expense,206.7,0,0
+T1169,cascade,Q1-2025,2025-02-13,Atlas Fuel Co,Insurance,Recurring operating expense,921.6,0,0
+T1170,cascade,Q1-2025,2025-02-25,PortSide Terminals,Utilities,Recurring operating expense,675.3,0,0
+T1171,cascade,Q1-2025,2025-02-23,Harbor Insurance,Leasing,Recurring operating expense,233.7,0,0
+T1172,cascade,Q1-2025,2025-02-09,CityPower Utilities,Payroll,Recurring operating expense,498.4,0,0
+T1173,cascade,Q1-2025,2025-02-07,MetroPayroll,Leasing,Recurring operating expense,264.6,0,0
+T1174,cascade,Q1-2025,2025-02-20,Atlas Fuel Co,Leasing,Recurring operating expense,200.6,0,0
+T1175,cascade,Q1-2025,2025-02-27,Atlas Fuel Co,Utilities,Recurring operating expense,849.5,0,0
+T1176,cascade,Q1-2025,2025-02-13,Interstate Freight,Terminal Fees,Recurring operating expense,753.2,0,0
+T1177,cascade,Q1-2025,2025-02-16,CityPower Utilities,Fuel,Recurring operating expense,268.1,0,0
+T1178,cascade,Q1-2025,2025-02-27,Atlas Fuel Co,Maintenance,Recurring operating expense,805.7,0,0
+T1179,cascade,Q2-2025,2025-05-08,CityPower Utilities,Terminal Fees,Recurring operating expense,568.9,0,0
+T1180,cascade,Q2-2025,2025-05-10,CityPower Utilities,Maintenance,Recurring operating expense,578.1,0,0
+T1181,cascade,Q2-2025,2025-05-04,OfficeWorks,Insurance,Recurring operating expense,566.0,0,0
+T1182,cascade,Q2-2025,2025-05-20,Harbor Insurance,Insurance,Recurring operating expense,97.6,0,0
+T1183,cascade,Q2-2025,2025-05-02,TransFleet Leasing,Maintenance,Recurring operating expense,89.4,0,0
+T1184,cascade,Q2-2025,2025-05-25,PortSide Terminals,Leasing,Recurring operating expense,708.8,0,0
+T1185,cascade,Q2-2025,2025-05-05,Harbor Insurance,Utilities,Recurring operating expense,629.5,0,0
+T1186,cascade,Q2-2025,2025-05-16,TransFleet Leasing,Leasing,Recurring operating expense,695.2,0,0
+T1187,cascade,Q2-2025,2025-05-17,Harbor Insurance,Terminal Fees,Recurring operating expense,180.7,0,0
+T1188,cascade,Q2-2025,2025-05-21,Interstate Freight,Maintenance,Recurring operating expense,172.8,0,0
+T1189,cascade,Q2-2025,2025-05-17,CityPower Utilities,Fuel,Recurring operating expense,778.9,0,0
+T1190,cascade,Q2-2025,2025-05-23,Atlas Fuel Co,Utilities,Recurring operating expense,389.3,0,0
+T1191,cascade,Q2-2025,2025-05-03,CityPower Utilities,Payroll,Recurring operating expense,390.8,0,0
+T1192,cascade,Q2-2025,2025-05-03,PortSide Terminals,Payroll,Recurring operating expense,795.9,0,0
+T1193,cascade,Q2-2025,2025-05-21,Atlas Fuel Co,Payroll,Recurring operating expense,359.2,0,0
+T1194,cascade,Q2-2025,2025-05-02,OfficeWorks,Leasing,Recurring operating expense,393.4,0,0
+T1195,cascade,Q2-2025,2025-05-23,Atlas Fuel Co,Utilities,Recurring operating expense,295.9,0,0
+T1196,cascade,Q2-2025,2025-05-04,Interstate Freight,Insurance,Recurring operating expense,495.2,0,0
+T1197,cascade,Q2-2025,2025-05-25,TransFleet Leasing,Maintenance,Recurring operating expense,904.2,0,0
+T1198,cascade,Q2-2025,2025-05-01,TransFleet Leasing,Terminal Fees,Recurring operating expense,926.4,0,0
+T1199,cascade,Q2-2025,2025-05-07,MetroPayroll,Fuel,Recurring operating expense,313.1,0,0
+T1200,cascade,Q2-2025,2025-05-17,Atlas Fuel Co,Fuel,Recurring operating expense,839.1,0,0
+T1201,cascade,Q2-2025,2025-05-03,Harbor Insurance,Terminal Fees,Recurring operating expense,170.5,0,0
+T1202,cascade,Q2-2025,2025-05-15,Interstate Freight,Insurance,Recurring operating expense,840.7,0,0
+T1203,cascade,Q2-2025,2025-05-25,Harbor Insurance,Insurance,Recurring operating expense,547.8,0,0
+T1204,cascade,Q2-2025,2025-05-18,Interstate Freight,Utilities,Recurring operating expense,259.7,0,0
+T1205,cascade,Q2-2025,2025-05-21,Interstate Freight,Insurance,Recurring operating expense,589.2,0,0
+T1206,cascade,Q2-2025,2025-05-18,Atlas Fuel Co,Maintenance,Recurring operating expense,633.7,0,0
+T1207,cascade,Q2-2025,2025-05-24,Harbor Insurance,Utilities,Recurring operating expense,834.3,0,0
+T1208,cascade,Q2-2025,2025-05-10,Interstate Freight,Insurance,Recurring operating expense,243.8,0,0
+T1209,cascade,Q2-2025,2025-05-15,TransFleet Leasing,Maintenance,Recurring operating expense,419.2,0,0
+T1210,cascade,Q3-2025,2025-08-17,MetroPayroll,Terminal Fees,Recurring operating expense,106.1,0,0
+T1211,cascade,Q3-2025,2025-08-16,Harbor Insurance,Payroll,Recurring operating expense,837.7,0,0
+T1212,cascade,Q3-2025,2025-08-11,PortSide Terminals,Insurance,Recurring operating expense,769.4,0,0
+T1213,cascade,Q3-2025,2025-08-07,OfficeWorks,Leasing,Recurring operating expense,740.7,0,0
+T1214,cascade,Q3-2025,2025-08-03,CityPower Utilities,Maintenance,Recurring operating expense,512.6,0,0
+T1215,cascade,Q3-2025,2025-08-20,Harbor Insurance,Utilities,Recurring operating expense,708.8,0,0
+T1216,cascade,Q3-2025,2025-08-04,TransFleet Leasing,Maintenance,Recurring operating expense,899.3,0,0
+T1217,cascade,Q3-2025,2025-08-05,Interstate Freight,Insurance,Recurring operating expense,822.0,0,0
+T1218,cascade,Q3-2025,2025-08-20,Atlas Fuel Co,Leasing,Recurring operating expense,249.2,0,0
+T1219,cascade,Q3-2025,2025-08-03,MetroPayroll,Payroll,Recurring operating expense,151.1,0,0
+T1220,cascade,Q3-2025,2025-08-14,Interstate Freight,Leasing,Recurring operating expense,397.4,0,0
+T1221,cascade,Q3-2025,2025-08-16,Harbor Insurance,Terminal Fees,Recurring operating expense,758.0,0,0
+T1222,cascade,Q3-2025,2025-08-03,Interstate Freight,Insurance,Recurring operating expense,259.4,0,0
+T1223,cascade,Q3-2025,2025-08-04,Atlas Fuel Co,Maintenance,Recurring operating expense,437.4,0,0
+T1224,cascade,Q3-2025,2025-08-17,PortSide Terminals,Utilities,Recurring operating expense,399.0,0,0
+T1225,cascade,Q3-2025,2025-08-18,Interstate Freight,Fuel,Recurring operating expense,375.7,0,0
+T1226,cascade,Q3-2025,2025-08-20,OfficeWorks,Insurance,Recurring operating expense,273.3,0,0
+T1227,cascade,Q3-2025,2025-08-15,Interstate Freight,Fuel,Recurring operating expense,687.6,0,0
+T1228,cascade,Q3-2025,2025-08-21,Interstate Freight,Terminal Fees,Recurring operating expense,713.3,0,0
+T1229,cascade,Q3-2025,2025-08-13,OfficeWorks,Insurance,Recurring operating expense,271.0,0,0
+T1230,cascade,Q3-2025,2025-08-03,OfficeWorks,Maintenance,Recurring operating expense,179.4,0,0
+T1231,cascade,Q3-2025,2025-08-10,Atlas Fuel Co,Payroll,Recurring operating expense,300.2,0,0
+T1232,cascade,Q3-2025,2025-08-16,Interstate Freight,Leasing,Recurring operating expense,732.7,0,0
+T1233,cascade,Q3-2025,2025-08-07,Atlas Fuel Co,Maintenance,Recurring operating expense,922.0,0,0
+T1234,cascade,Q3-2025,2025-08-15,PortSide Terminals,Utilities,Recurring operating expense,924.3,0,0
+T1235,cascade,Q3-2025,2025-08-14,MetroPayroll,Terminal Fees,Recurring operating expense,194.1,0,0
+T1236,cascade,Q3-2025,2025-08-05,Atlas Fuel Co,Payroll,Recurring operating expense,335.2,0,0
+T1237,cascade,Q3-2025,2025-08-13,TransFleet Leasing,Leasing,Recurring operating expense,858.7,0,0
+T1238,cascade,Q3-2025,2025-08-13,Atlas Fuel Co,Payroll,Recurring operating expense,209.7,0,0
+T1239,cascade,Q3-2025,2025-08-07,Harbor Insurance,Payroll,Recurring operating expense,271.0,0,0
+T1240,cascade,Q3-2025,2025-08-21,CityPower Utilities,Insurance,Recurring operating expense,248.7,0,0
+T1241,cascade,Q3-2025,2025-08-07,Interstate Freight,Insurance,Recurring operating expense,327.4,0,0
+T1242,cascade,Q3-2025,2025-08-21,Interstate Freight,Leasing,Recurring operating expense,409.5,0,0
+T1243,cascade,Q3-2025,2025-08-15,Interstate Freight,Terminal Fees,Recurring operating expense,223.4,0,0
+T1244,cascade,Q3-2025,2025-08-24,Atlas Fuel Co,Maintenance,Recurring operating expense,815.6,0,0
+T1245,cascade,Q3-2025,2025-08-05,OfficeWorks,Terminal Fees,Recurring operating expense,520.4,0,0
+T1246,cascade,Q4-2025,2025-11-18,TransFleet Leasing,Leasing,Recurring operating expense,243.7,0,0
+T1247,cascade,Q4-2025,2025-11-25,MetroPayroll,Terminal Fees,Recurring operating expense,604.7,0,0
+T1248,cascade,Q4-2025,2025-11-23,Atlas Fuel Co,Maintenance,Recurring operating expense,391.1,0,0
+T1249,cascade,Q4-2025,2025-11-27,TransFleet Leasing,Insurance,Recurring operating expense,738.4,0,0
+T1250,cascade,Q4-2025,2025-11-25,CityPower Utilities,Leasing,Recurring operating expense,772.8,0,0
+T1251,cascade,Q4-2025,2025-11-08,PortSide Terminals,Fuel,Recurring operating expense,211.3,0,0
+T1252,cascade,Q4-2025,2025-11-13,Atlas Fuel Co,Terminal Fees,Recurring operating expense,948.9,0,0
+T1253,cascade,Q4-2025,2025-11-23,TransFleet Leasing,Fuel,Recurring operating expense,314.8,0,0
+T1254,cascade,Q4-2025,2025-11-14,CityPower Utilities,Payroll,Recurring operating expense,137.8,0,0
+T1255,cascade,Q4-2025,2025-11-18,TransFleet Leasing,Payroll,Recurring operating expense,824.9,0,0
+T1256,cascade,Q4-2025,2025-11-13,CityPower Utilities,Utilities,Recurring operating expense,400.7,0,0
+T1257,cascade,Q4-2025,2025-11-25,Interstate Freight,Maintenance,Recurring operating expense,807.9,0,0
+T1258,cascade,Q4-2025,2025-11-18,Interstate Freight,Payroll,Recurring operating expense,297.1,0,0
+T1259,cascade,Q4-2025,2025-11-26,Atlas Fuel Co,Utilities,Recurring operating expense,214.4,0,0
+T1260,cascade,Q4-2025,2025-11-07,Harbor Insurance,Insurance,Recurring operating expense,927.0,0,0
+T1261,cascade,Q4-2025,2025-11-24,Atlas Fuel Co,Fuel,Recurring operating expense,237.1,0,0
+T1262,cascade,Q4-2025,2025-11-27,MetroPayroll,Maintenance,Recurring operating expense,396.3,0,0
+T1263,cascade,Q4-2025,2025-11-07,MetroPayroll,Leasing,Recurring operating expense,687.0,0,0
+T1264,cascade,Q4-2025,2025-11-19,Interstate Freight,Insurance,Recurring operating expense,561.0,0,0
+T1265,cascade,Q4-2025,2025-11-22,Interstate Freight,Fuel,Recurring operating expense,699.0,0,0
+T1266,cascade,Q4-2025,2025-11-04,CityPower Utilities,Payroll,Recurring operating expense,803.2,0,0
+T1267,cascade,Q4-2025,2025-11-24,CityPower Utilities,Fuel,Recurring operating expense,238.8,0,0
+T1268,cascade,Q4-2025,2025-11-10,OfficeWorks,Utilities,Recurring operating expense,702.5,0,0
+T1269,cascade,Q4-2025,2025-11-03,TransFleet Leasing,Leasing,Recurring operating expense,385.5,0,0
+T1270,cascade,Q4-2025,2025-11-02,OfficeWorks,Terminal Fees,Recurring operating expense,593.8,0,0
+T1271,cascade,Q4-2025,2025-11-11,CityPower Utilities,Payroll,Recurring operating expense,654.9,0,0
+T1272,cascade,Q4-2025,2025-11-11,Harbor Insurance,Fuel,Recurring operating expense,549.8,0,0
+T1273,cascade,Q4-2025,2025-11-24,Harbor Insurance,Terminal Fees,Recurring operating expense,255.5,0,0
+T1274,cascade,Q4-2025,2025-11-08,PortSide Terminals,Fuel,Recurring operating expense,625.4,0,0
+T1275,cascade,Q4-2025,2025-11-04,Harbor Insurance,Fuel,Recurring operating expense,559.3,0,0
+T1276,cascade,Q4-2025,2025-11-12,CityPower Utilities,Maintenance,Recurring operating expense,80.0,0,0
+T1277,cascade,Q4-2025,2025-11-17,MetroPayroll,Terminal Fees,Recurring operating expense,546.0,0,0
+T1278,cascade,Q4-2025,2025-11-02,PortSide Terminals,Leasing,Recurring operating expense,798.2,0,0
+T1279,cascade,Q4-2025,2025-11-18,PortSide Terminals,Fuel,Recurring operating expense,830.2,0,0
+T1280,cascade,Q4-2025,2025-11-11,PortSide Terminals,Utilities,Recurring operating expense,410.6,0,0
+T1281,cascade,Q4-2025,2025-11-08,OfficeWorks,Payroll,Recurring operating expense,848.3,0,0
+T1282,cascade,Q4-2025,2025-11-27,CityPower Utilities,Payroll,Recurring operating expense,432.9,0,0
+T1283,cascade,Q4-2025,2025-10-15,Anchor customer: Vertex Retail,Revenue — Lost Contract,Termination of Vertex master supply agreement (~28% of revenue),-58000.0,0,0
+T1284,northwind,Q1-2025,2025-02-17,TransFleet Leasing,Payroll,Recurring operating expense,351.6,0,0
+T1285,northwind,Q1-2025,2025-02-02,TransFleet Leasing,Leasing,Recurring operating expense,695.3,0,0
+T1286,northwind,Q1-2025,2025-02-05,Interstate Freight,Fuel,Recurring operating expense,256.9,0,0
+T1287,northwind,Q1-2025,2025-02-21,MetroPayroll,Leasing,Recurring operating expense,223.5,0,0
+T1288,northwind,Q1-2025,2025-02-01,Atlas Fuel Co,Leasing,Recurring operating expense,662.8,0,0
+T1289,northwind,Q1-2025,2025-02-10,MetroPayroll,Fuel,Recurring operating expense,172.3,0,0
+T1290,northwind,Q1-2025,2025-02-19,CityPower Utilities,Fuel,Recurring operating expense,332.6,0,0
+T1291,northwind,Q1-2025,2025-02-10,TransFleet Leasing,Utilities,Recurring operating expense,579.4,0,0
+T1292,northwind,Q1-2025,2025-02-14,MetroPayroll,Insurance,Recurring operating expense,845.7,0,0
+T1293,northwind,Q1-2025,2025-02-19,TransFleet Leasing,Leasing,Recurring operating expense,856.6,0,0
+T1294,northwind,Q1-2025,2025-02-14,Harbor Insurance,Maintenance,Recurring operating expense,85.3,0,0
+T1295,northwind,Q1-2025,2025-02-19,Harbor Insurance,Insurance,Recurring operating expense,101.6,0,0
+T1296,northwind,Q1-2025,2025-02-25,PortSide Terminals,Insurance,Recurring operating expense,117.3,0,0
+T1297,northwind,Q1-2025,2025-02-13,MetroPayroll,Payroll,Recurring operating expense,481.2,0,0
+T1298,northwind,Q1-2025,2025-02-10,PortSide Terminals,Terminal Fees,Recurring operating expense,912.5,0,0
+T1299,northwind,Q1-2025,2025-02-20,TransFleet Leasing,Utilities,Recurring operating expense,256.8,0,0
+T1300,northwind,Q1-2025,2025-02-27,PortSide Terminals,Insurance,Recurring operating expense,242.4,0,0
+T1301,northwind,Q1-2025,2025-02-15,Interstate Freight,Fuel,Recurring operating expense,309.1,0,0
+T1302,northwind,Q1-2025,2025-02-05,MetroPayroll,Insurance,Recurring operating expense,202.4,0,0
+T1303,northwind,Q1-2025,2025-02-05,CityPower Utilities,Fuel,Recurring operating expense,680.3,0,0
+T1304,northwind,Q1-2025,2025-02-04,CityPower Utilities,Utilities,Recurring operating expense,318.7,0,0
+T1305,northwind,Q1-2025,2025-02-25,Interstate Freight,Leasing,Recurring operating expense,697.8,0,0
+T1306,northwind,Q1-2025,2025-02-21,Harbor Insurance,Terminal Fees,Recurring operating expense,619.6,0,0
+T1307,northwind,Q1-2025,2025-02-18,Interstate Freight,Leasing,Recurring operating expense,813.5,0,0
+T1308,northwind,Q1-2025,2025-02-24,PortSide Terminals,Leasing,Recurring operating expense,454.3,0,0
+T1309,northwind,Q1-2025,2025-02-02,TransFleet Leasing,Terminal Fees,Recurring operating expense,433.3,0,0
+T1310,northwind,Q1-2025,2025-02-26,TransFleet Leasing,Terminal Fees,Recurring operating expense,183.3,0,0
+T1311,northwind,Q1-2025,2025-02-21,Interstate Freight,Terminal Fees,Recurring operating expense,850.0,0,0
+T1312,northwind,Q1-2025,2025-02-06,OfficeWorks,Leasing,Recurring operating expense,880.9,0,0
+T1313,northwind,Q1-2025,2025-02-18,TransFleet Leasing,Maintenance,Recurring operating expense,552.7,0,0
+T1314,northwind,Q1-2025,2025-02-15,TransFleet Leasing,Utilities,Recurring operating expense,682.0,0,0
+T1315,northwind,Q1-2025,2025-02-03,Harbor Insurance,Leasing,Recurring operating expense,106.0,0,0
+T1316,northwind,Q1-2025,2025-02-21,TransFleet Leasing,Insurance,Recurring operating expense,534.4,0,0
+T1317,northwind,Q1-2025,2025-02-13,Atlas Fuel Co,Maintenance,Recurring operating expense,693.9,0,0
+T1318,northwind,Q1-2025,2025-02-14,MetroPayroll,Insurance,Recurring operating expense,196.8,0,0
+T1319,northwind,Q1-2025,2025-02-10,TransFleet Leasing,Utilities,Recurring operating expense,743.3,0,0
+T1320,northwind,Q1-2025,2025-02-27,PortSide Terminals,Maintenance,Recurring operating expense,816.5,0,0
+T1321,northwind,Q2-2025,2025-05-21,CityPower Utilities,Fuel,Recurring operating expense,725.7,0,0
+T1322,northwind,Q2-2025,2025-05-13,MetroPayroll,Fuel,Recurring operating expense,105.5,0,0
+T1323,northwind,Q2-2025,2025-05-27,Harbor Insurance,Fuel,Recurring operating expense,397.5,0,0
+T1324,northwind,Q2-2025,2025-05-02,MetroPayroll,Leasing,Recurring operating expense,724.4,0,0
+T1325,northwind,Q2-2025,2025-05-15,Atlas Fuel Co,Leasing,Recurring operating expense,700.7,0,0
+T1326,northwind,Q2-2025,2025-05-08,CityPower Utilities,Leasing,Recurring operating expense,663.4,0,0
+T1327,northwind,Q2-2025,2025-05-26,MetroPayroll,Utilities,Recurring operating expense,308.1,0,0
+T1328,northwind,Q2-2025,2025-05-20,Interstate Freight,Payroll,Recurring operating expense,374.2,0,0
+T1329,northwind,Q2-2025,2025-05-18,Interstate Freight,Fuel,Recurring operating expense,135.8,0,0
+T1330,northwind,Q2-2025,2025-05-18,Interstate Freight,Insurance,Recurring operating expense,290.8,0,0
+T1331,northwind,Q2-2025,2025-05-03,TransFleet Leasing,Maintenance,Recurring operating expense,297.4,0,0
+T1332,northwind,Q2-2025,2025-05-03,Atlas Fuel Co,Insurance,Recurring operating expense,418.2,0,0
+T1333,northwind,Q2-2025,2025-05-17,Atlas Fuel Co,Utilities,Recurring operating expense,479.0,0,0
+T1334,northwind,Q2-2025,2025-05-08,MetroPayroll,Fuel,Recurring operating expense,718.4,0,0
+T1335,northwind,Q2-2025,2025-05-14,TransFleet Leasing,Insurance,Recurring operating expense,508.1,0,0
+T1336,northwind,Q2-2025,2025-05-08,Interstate Freight,Fuel,Recurring operating expense,295.2,0,0
+T1337,northwind,Q2-2025,2025-05-19,OfficeWorks,Payroll,Recurring operating expense,302.7,0,0
+T1338,northwind,Q2-2025,2025-05-24,OfficeWorks,Terminal Fees,Recurring operating expense,717.8,0,0
+T1339,northwind,Q2-2025,2025-05-06,MetroPayroll,Insurance,Recurring operating expense,159.3,0,0
+T1340,northwind,Q2-2025,2025-05-02,Interstate Freight,Maintenance,Recurring operating expense,233.4,0,0
+T1341,northwind,Q2-2025,2025-05-14,MetroPayroll,Insurance,Recurring operating expense,220.6,0,0
+T1342,northwind,Q2-2025,2025-05-20,Harbor Insurance,Fuel,Recurring operating expense,582.3,0,0
+T1343,northwind,Q2-2025,2025-05-04,TransFleet Leasing,Insurance,Recurring operating expense,175.3,0,0
+T1344,northwind,Q2-2025,2025-05-02,OfficeWorks,Payroll,Recurring operating expense,858.1,0,0
+T1345,northwind,Q2-2025,2025-05-04,Atlas Fuel Co,Fuel,Recurring operating expense,207.0,0,0
+T1346,northwind,Q2-2025,2025-05-15,MetroPayroll,Terminal Fees,Recurring operating expense,144.6,0,0
+T1347,northwind,Q2-2025,2025-05-09,OfficeWorks,Payroll,Recurring operating expense,299.3,0,0
+T1348,northwind,Q2-2025,2025-05-16,Harbor Insurance,Insurance,Recurring operating expense,348.6,0,0
+T1349,northwind,Q2-2025,2025-05-25,OfficeWorks,Leasing,Recurring operating expense,616.8,0,0
+T1350,northwind,Q2-2025,2025-05-16,MetroPayroll,Fuel,Recurring operating expense,668.3,0,0
+T1351,northwind,Q3-2025,2025-08-01,OfficeWorks,Terminal Fees,Recurring operating expense,680.8,0,0
+T1352,northwind,Q3-2025,2025-08-07,Harbor Insurance,Utilities,Recurring operating expense,159.7,0,0
+T1353,northwind,Q3-2025,2025-08-16,OfficeWorks,Utilities,Recurring operating expense,563.0,0,0
+T1354,northwind,Q3-2025,2025-08-24,Harbor Insurance,Fuel,Recurring operating expense,572.6,0,0
+T1355,northwind,Q3-2025,2025-08-13,CityPower Utilities,Maintenance,Recurring operating expense,464.7,0,0
+T1356,northwind,Q3-2025,2025-08-15,MetroPayroll,Fuel,Recurring operating expense,768.3,0,0
+T1357,northwind,Q3-2025,2025-08-26,Atlas Fuel Co,Leasing,Recurring operating expense,339.0,0,0
+T1358,northwind,Q3-2025,2025-08-15,CityPower Utilities,Insurance,Recurring operating expense,237.7,0,0
+T1359,northwind,Q3-2025,2025-08-10,OfficeWorks,Insurance,Recurring operating expense,311.3,0,0
+T1360,northwind,Q3-2025,2025-08-20,MetroPayroll,Fuel,Recurring operating expense,936.1,0,0
+T1361,northwind,Q3-2025,2025-08-02,TransFleet Leasing,Maintenance,Recurring operating expense,221.2,0,0
+T1362,northwind,Q3-2025,2025-08-14,Atlas Fuel Co,Maintenance,Recurring operating expense,658.5,0,0
+T1363,northwind,Q3-2025,2025-08-26,PortSide Terminals,Utilities,Recurring operating expense,791.4,0,0
+T1364,northwind,Q3-2025,2025-08-16,CityPower Utilities,Leasing,Recurring operating expense,238.6,0,0
+T1365,northwind,Q3-2025,2025-08-17,Harbor Insurance,Terminal Fees,Recurring operating expense,606.2,0,0
+T1366,northwind,Q3-2025,2025-08-08,Atlas Fuel Co,Payroll,Recurring operating expense,329.3,0,0
+T1367,northwind,Q3-2025,2025-08-09,Harbor Insurance,Payroll,Recurring operating expense,813.4,0,0
+T1368,northwind,Q3-2025,2025-08-07,PortSide Terminals,Payroll,Recurring operating expense,832.8,0,0
+T1369,northwind,Q3-2025,2025-08-27,CityPower Utilities,Payroll,Recurring operating expense,719.8,0,0
+T1370,northwind,Q3-2025,2025-08-16,Atlas Fuel Co,Payroll,Recurring operating expense,455.9,0,0
+T1371,northwind,Q3-2025,2025-08-24,TransFleet Leasing,Leasing,Recurring operating expense,161.8,0,0
+T1372,northwind,Q3-2025,2025-08-13,OfficeWorks,Leasing,Recurring operating expense,626.3,0,0
+T1373,northwind,Q3-2025,2025-08-11,MetroPayroll,Utilities,Recurring operating expense,88.7,0,0
+T1374,northwind,Q3-2025,2025-08-26,OfficeWorks,Fuel,Recurring operating expense,300.4,0,0
+T1375,northwind,Q3-2025,2025-08-22,Harbor Insurance,Payroll,Recurring operating expense,638.7,0,0
+T1376,northwind,Q3-2025,2025-08-21,Interstate Freight,Leasing,Recurring operating expense,757.4,0,0
+T1377,northwind,Q3-2025,2025-08-09,Interstate Freight,Insurance,Recurring operating expense,365.4,0,0
+T1378,northwind,Q3-2025,2025-08-09,OfficeWorks,Payroll,Recurring operating expense,381.5,0,0
+T1379,northwind,Q3-2025,2025-08-03,Atlas Fuel Co,Fuel,Recurring operating expense,621.4,0,0
+T1380,northwind,Q3-2025,2025-08-01,MetroPayroll,Utilities,Recurring operating expense,723.7,0,0
+T1381,northwind,Q4-2025,2025-11-18,Interstate Freight,Utilities,Recurring operating expense,799.2,0,0
+T1382,northwind,Q4-2025,2025-11-13,OfficeWorks,Maintenance,Recurring operating expense,901.0,0,0
+T1383,northwind,Q4-2025,2025-11-15,Atlas Fuel Co,Maintenance,Recurring operating expense,89.5,0,0
+T1384,northwind,Q4-2025,2025-11-09,PortSide Terminals,Leasing,Recurring operating expense,928.7,0,0
+T1385,northwind,Q4-2025,2025-11-10,Interstate Freight,Insurance,Recurring operating expense,772.4,0,0
+T1386,northwind,Q4-2025,2025-11-14,Interstate Freight,Fuel,Recurring operating expense,239.0,0,0
+T1387,northwind,Q4-2025,2025-11-10,Interstate Freight,Fuel,Recurring operating expense,157.4,0,0
+T1388,northwind,Q4-2025,2025-11-16,OfficeWorks,Utilities,Recurring operating expense,515.0,0,0
+T1389,northwind,Q4-2025,2025-11-06,OfficeWorks,Payroll,Recurring operating expense,670.2,0,0
+T1390,northwind,Q4-2025,2025-11-04,CityPower Utilities,Leasing,Recurring operating expense,231.8,0,0
+T1391,northwind,Q4-2025,2025-11-02,Harbor Insurance,Maintenance,Recurring operating expense,336.7,0,0
+T1392,northwind,Q4-2025,2025-11-25,PortSide Terminals,Utilities,Recurring operating expense,702.8,0,0
+T1393,northwind,Q4-2025,2025-11-02,TransFleet Leasing,Utilities,Recurring operating expense,497.3,0,0
+T1394,northwind,Q4-2025,2025-11-18,MetroPayroll,Terminal Fees,Recurring operating expense,702.2,0,0
+T1395,northwind,Q4-2025,2025-11-22,CityPower Utilities,Fuel,Recurring operating expense,886.9,0,0
+T1396,northwind,Q4-2025,2025-11-13,CityPower Utilities,Payroll,Recurring operating expense,519.1,0,0
+T1397,northwind,Q4-2025,2025-11-22,OfficeWorks,Terminal Fees,Recurring operating expense,715.0,0,0
+T1398,northwind,Q4-2025,2025-11-21,CityPower Utilities,Utilities,Recurring operating expense,239.1,0,0
+T1399,northwind,Q4-2025,2025-11-23,TransFleet Leasing,Utilities,Recurring operating expense,805.3,0,0
+T1400,northwind,Q4-2025,2025-11-17,OfficeWorks,Payroll,Recurring operating expense,477.8,0,0
+T1401,northwind,Q4-2025,2025-11-20,TransFleet Leasing,Leasing,Recurring operating expense,357.4,0,0
+T1402,northwind,Q4-2025,2025-11-13,CityPower Utilities,Utilities,Recurring operating expense,399.2,0,0
+T1403,northwind,Q4-2025,2025-11-22,Atlas Fuel Co,Utilities,Recurring operating expense,420.4,0,0
+T1404,northwind,Q4-2025,2025-11-13,PortSide Terminals,Leasing,Recurring operating expense,515.8,0,0
+T1405,northwind,Q4-2025,2025-11-08,Harbor Insurance,Utilities,Recurring operating expense,412.4,0,0
+T1406,northwind,Q4-2025,2025-11-02,Harbor Insurance,Utilities,Recurring operating expense,845.3,0,0
+T1407,northwind,Q4-2025,2025-11-23,MetroPayroll,Payroll,Recurring operating expense,82.6,0,0
+T1408,northwind,Q4-2025,2025-11-02,OfficeWorks,Fuel,Recurring operating expense,760.0,0,0
+T1409,northwind,Q4-2025,2025-11-19,PortSide Terminals,Payroll,Recurring operating expense,262.4,0,0

@@ -1,0 +1,53 @@
+{
+  "meridian": {
+    "Q4-2025": {
+      "revenue_ltm": 612.4,
+      "net_income_ltm": 41.0,
+      "interest_expense_ltm": 28.5,
+      "income_taxes_ltm": 12.8,
+      "depreciation_amortization_ltm": 36.0,
+      "consolidated_ebitda_reported": 118.3,
+      "senior_term_loan": 300.0,
+      "revolving_facility": 120.0,
+      "finance_leases": 32.0,
+      "total_indebtedness": 452.0,
+      "cash_and_equivalents": 32.0,
+      "consolidated_total_net_debt": 420.0,
+      "acquisition_one_time_costs": 4.5
+    }
+  },
+  "cascade": {
+    "Q4-2025": {
+      "revenue_ltm": 421.0,
+      "net_income_ltm": 18.0,
+      "interest_expense_ltm": 31.0,
+      "income_taxes_ltm": 7.0,
+      "depreciation_amortization_ltm": 40.0,
+      "consolidated_ebitda_reported": 96.0,
+      "senior_term_loan": 280.0,
+      "revolving_facility": 118.0,
+      "finance_leases": 22.0,
+      "total_indebtedness": 420.0,
+      "cash_and_equivalents": 32.0,
+      "consolidated_total_net_debt": 388.0,
+      "acquisition_one_time_costs": 0.0
+    }
+  },
+  "northwind": {
+    "Q4-2025": {
+      "revenue_ltm": 388.0,
+      "net_income_ltm": 33.0,
+      "interest_expense_ltm": 14.0,
+      "income_taxes_ltm": 9.0,
+      "depreciation_amortization_ltm": 20.0,
+      "consolidated_ebitda_reported": 76.0,
+      "senior_term_loan": 150.0,
+      "revolving_facility": 30.0,
+      "finance_leases": 8.0,
+      "total_indebtedness": 188.0,
+      "cash_and_equivalents": 9.4,
+      "consolidated_total_net_debt": 178.6,
+      "acquisition_one_time_costs": 0.0
+    }
+  }
+}
