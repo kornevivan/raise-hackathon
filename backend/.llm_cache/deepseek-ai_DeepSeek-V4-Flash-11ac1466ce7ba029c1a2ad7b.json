@@ -1,0 +1,1 @@
+{"data": {"covenant_name": "Leverage Ratio", "metric": "leverage", "threshold": null, "operator": null, "definition_mentions_amendment": false}, "raw": "{\n  \"covenant_name\": \"Leverage Ratio\",\n  \"metric\": \"leverage\",\n  \"threshold\": null,\n  \"operator\": null,\n  \"definition_mentions_amendment\": false\n}", "latency_ms": 2512}

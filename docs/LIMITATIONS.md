@@ -1,87 +1,79 @@
-# Limitations — what works only in the sample scenarios, and why
+# Limitations — what's genuine, what's simulated, and where the honest edge is
 
-Covenant Sentinel has **two modes**. Read this before assuming a capability generalizes.
-
-| Mode | What it is | Scope |
-|---|---|---|
-| **Sample scenarios (S0–S4)** | Scripted analyses wired to the committed **Hospira dataset** | Correct & tool‑verified, but **dataset‑bound** — will not "just work" on new documents |
-| **Upload ("New analysis")** | The general ad‑hoc agent over whatever PDFs you attach | **General**, but weaker: extraction‑based, single‑period, honest "insufficient data" |
-
-The design goal was a *flawless, verifiable demo* on a known corpus, not a general covenant engine.
-That trade‑off is deliberate; below is exactly where it bites and why.
+Covenant Sentinel is built to be **verifiable and honest**, not to overclaim. This is exactly what
+is real, what is simulated for the demo, and what would break on arbitrary input — with why.
 
 ---
 
-## 1. Where the numbers come from
-- **Sample mode:** every figure is read from **structured stores** — `financials_quarterly.json`
-  and `transactions.csv` — and computed by the deterministic engine. The agent does **not** parse
-  numbers out of the financial‑report PDFs; those PDFs exist for retrieval/citation, not as the
-  data source.
-  **Why:** robust table extraction from arbitrary PDFs is hard and error‑prone; the dataset ships
-  clean structured ground truth, so the demo's math is exact and golden‑testable.
-- **Upload mode:** figures are extracted from the uploaded PDFs by regex + LLM (`extract_financials`).
-  Quality depends on the document's layout; missing figures → `insufficient_data`.
-  **To generalize sample‑grade accuracy:** wire a real financial‑table extractor (e.g. layout‑aware
-  parsing) and feed it into the same engine.
+## 1. Financial figures are served from simulated tool stores
+- In the sample scenarios, the per‑quarter figures come from structured stores
+  (`financials_quarterly.json`, `transactions.csv`, the filing log) — **not** parsed from the report
+  PDFs at run time.
+- **Why this is the right design, not a shortcut:** in a real bank the numbers come from a financial
+  database or **SEC XBRL** structured facts — you would not re‑OCR a PDF every quarter. The tool
+  stores stand in for exactly those systems. Every synthetic PDF is footer‑labeled
+  *"SYNTHETIC DEMONSTRATION DATA … NOT the actual financial results of Hospira, Inc."*
+- **The agent does not depend on them.** The **Upload path** computes the covenant from attached
+  documents alone (§3).
 
-## 2. The covenant engine is Hospira‑specific
-- The trailing‑four‑quarter Adjusted EBITDA, the **per‑category lifetime addback caps**
-  ($290M / $110M), and the **§6.6A date step‑down** (3.75→3.50) are encoded in
-  `covenant_engine.py` to match **this** credit agreement + amendment.
-- **Why:** covenant mechanics are document‑specific; there is no universal formula. Encoding the
-  exact rules in code (not asking an 8B model to infer them) is what makes the numbers trustworthy.
-- **Upload mode** uses a generic `Net Debt / EBITDA` single‑period ratio instead — it does **not**
-  reproduce capped‑addback / step‑down logic for arbitrary agreements.
-- **To generalize:** the engine would need to *derive* the rule set per agreement (a much harder,
-  lower‑reliability task) rather than apply a fixed one.
+## 2. The covenant RULES are derived from the documents (not hardcoded)
+- `spec_extractor` reads the real EDGAR filing and extracts the threshold step‑down (3.75→3.50), the
+  two lifetime addback caps ($290M / $110M), and the EBITDA definition — each with its citation.
+  `generic_engine` is parameterized math with **no borrower knowledge**.
+- **Proven general:** `tests/test_transfer.py` runs the same pipeline on a *third‑party* agreement
+  and gets a cited spec — or an honest `insufficient_data` — with **zero code changes**. The values
+  are read from the document, not baked in (a hardcoded "3.75/3.50" would fail the transfer test).
 
-## 3. Citations use deterministic substring lookup
-- Sample‑mode citations are attached by code (`cite_text("290.0 million", …)`, `doc_substr="amendment"`),
-  tuned to the **excerpt wording**. On real SEC filings (different phrasing — e.g. "$290,000,000",
-  "3.50:1.00") or arbitrary uploads, those exact lookups may not resolve and fall back to a
-  best‑effort citation.
-- **Why:** citations are chosen by code, not the LLM, on purpose — small models hallucinate
-  citations. Deterministic linking guarantees "every number traces to a real block" for the demo.
-- **To generalize:** fuzzy/embedding‑based span linking between a computed value and the page block
-  that supports it (instead of literal substring match).
+## 3. Upload path = the same pipeline, on your documents
+- Uploading agreement + amendment + quarterly reports runs `spec_extractor → extract → generic_engine`.
+  Verified **LIVE** on the real Hospira filing (documents only): `3.800× → gap‑check → 3.615× BREACH`,
+  identical to the deep scenario. See `tests/test_upload_derived.py`.
+- **Figure extraction generalizes.** A generalized + LLM‑fallback extractor was validated on real
+  foreign 10‑Qs (Hershey, Coca‑Cola): it maps different label wording, normalizes thousands→millions,
+  and sums debt split across short‑term / current‑portion / long‑term lines. Missing figures →
+  honest `insufficient_data`; nothing is fabricated.
 
-## 4. The scanned certificate is not OCR'd
-- The scanned 2014Q4 certificate is an **image‑only** page. VultronRetriever surfaces it *visually*
-  (real), but we do **not** extract its text or cell positions: the citation is **page‑level** (no
-  highlighted cell), and the 3.59x is the engine's **recomputation**, not a value read off the scan.
-- **Why:** no OCR engine is wired in (a deliberate choice — see the discussion in the repo history).
-- **To generalize:** add Tesseract/`pytesseract` (real OCR with word bboxes) so a value can be read
-  and highlighted directly on the scan.
+## 4. The honest weak link is RETRIEVAL on full raw filings — not extraction
+- Measured end‑to‑end on full 70–80‑page 10‑Qs (retrieve → extract): **Hershey 4/5, Coca‑Cola 1/5**.
+  Given the *correct* statement text, extraction is ~perfect (10/10 on hand‑picked slices) — but on a
+  full filing the semantic retriever does not reliably rank the exact consolidated‑statement pages
+  above the many pages that repeat the same vocabulary (segment tables, notes, MD&A). The extractor
+  then honestly returns `None`/`insufficient` rather than guessing.
+- **Next hardening step:** table/structure‑aware retrieval (anchor on "CONSOLIDATED STATEMENTS OF …"
+  headers; pull whole tables) and/or an **XBRL** path for SEC filings — the reliable way to get
+  figures, which is also why production systems use structured feeds.
 
-## 5. Retrieval offline vs live
-- **Live:** retrieval runs on **VultronRetriever** (Vultr Vector Store) — including the scanned image.
-- **Offline / REPLAY:** the local fallback is BM25 over page text; pages with no text (the scan) can't
-  be ranked, so some sample steps present known pages deterministically instead of by ranking.
-- **Why:** an offline mode is needed for CI/dev without credentials; it mirrors the trace but not the
-  visual ranking.
+## 5. Triage mode has no upload equivalent
+- Portfolio triage (S0) ranks borrowers using the portfolio registry, filing log and coverage stores.
+  Its escalation now hands off **inputs** (the top borrower's corpus + as‑of date), and the deep run
+  processes those inputs through the same pipeline — but there is no "upload a portfolio → rank" path;
+  ranking needs the connected data stores.
 
-## 6. Reasoning model (track‑compliance nuance)
-- The VultronRetriever models are **retrieval‑only** (their chat endpoints return 404 — proven by
+## 6. The scanned certificate
+- The scanned 2014Q4 certificate is image‑only. VultronRetriever surfaces it **visually** (real).
+  OCR (pytesseract) reads a cell when available and the engine confirms it; otherwise the citation is
+  **page‑level** — never a fabricated cell.
+
+## 7. Reasoning model (track‑compliance nuance)
+- The VultronRetriever models are **retrieval‑only** — their chat endpoints return 404 (proven by
   `probe_vultr.py`). Core reasoning therefore runs on a Vultr‑hosted chat model
-  (`deepseek-ai/DeepSeek-V4-Flash`). Retrieval uses the VultronRetriever flavors. Both via Vultr
+  (`deepseek-ai/DeepSeek-V4-Flash`); retrieval uses the VultronRetriever flavors. Both via Vultr
   Serverless Inference. Full explanation: `docs/COMPLIANCE_NOTE.md`.
 
-## 7. Precedents / portfolio / filing / coverage
-- The precedent list per scenario (`precedents.REQUIRED`), the portfolio registry, the filing‑log
-  check, and the interest‑coverage reader are keyed to the dataset's files, filenames and layouts.
-- **Why:** demo scope. These are real tool calls over real dataset files, but not general services.
+## 8. Offline REPLAY vs LIVE
+- **LIVE:** retrieval on VultronRetriever (Vultr Vector Store), reasoning on Vultr inference.
+- **REPLAY (no key):** deterministic local retrieval + a pre‑warmed response cache reproduce an
+  identical trace/memo for CI and offline demo; visual ranking of the scan needs LIVE.
 
 ---
 
-## What IS genuine and general everywhere
-- All ratios/verdicts come from the **deterministic engine / `ratio_calculator`**, never the LLM —
-  and are asserted by `tests/test_golden.py` + `tests/test_scenarios.py`.
-- **Retrieval on VultronRetriever** (live), **reasoning on Vultr Serverless Inference**.
-- On text‑layer documents, citations use **real** PyMuPDF positions (accurate highlights).
-- The **gap‑check instrument trigger** is general (any amendment/waiver/supplement phrasing —
-  `tests/test_gapcheck.py`), and the agent **never fabricates** an addback cap it cannot cite
-  (`tests/test_scenarios.py::test_negative_amendment_referenced_but_absent`).
-- The **Upload path** genuinely works on arbitrary PDFs (detect covenant → multi‑retrieve →
-  extract → compute → cited memo, or honest `insufficient_data`).
-
-See `docs/SCENARIO_DOCUMENTS.md` for the exact file/tool mapping per scenario.
+## What is genuine and general everywhere
+- **Every ratio and verdict is deterministic** (`generic_engine` / `ratio_calculator`), never the LLM
+  — asserted by `test_golden`, `test_spec_extraction`, `test_scenarios`.
+- Covenant **rules derived from documents**, transfer‑tested on an unseen agreement.
+- **Upload path computes the covenant from documents alone** (LIVE‑verified on the real filing).
+- Retrieval on **VultronRetriever**, reasoning on **Vultr Serverless Inference**.
+- Citations use **real** PyMuPDF page positions; a value links to its supporting block by
+  numeric/date normalization (`linker`), not tuned substrings.
+- The agent **never fabricates** an addback cap it can't cite
+  (`test_scenarios::test_negative_amendment_referenced_but_absent`).

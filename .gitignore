@@ -37,3 +37,12 @@ backend/data/runs.sqlite
 
 # real SEC filings are committed (public; A0). HTML intermediates ignored:
 backend/data/real/*.html
+
+# local-only dev intake / briefs / scratch (never shipped)
+*.png
+_devreq/
+descripting-instructions*.md
+dev-requirements.zip
+covenant-sentinel-spec*.md
+Hackathon.html
+Retriever.pdf
