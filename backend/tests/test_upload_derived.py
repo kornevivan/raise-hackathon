@@ -68,9 +68,51 @@ def test_upload_still_handles_single_period_fallback():
     assert memo["ratio_final"] == memo["ratio_naive"]
 
 
+class _StubLLM:
+    """Stands in for a live model returning a foreign-layout read (Hershey-style: thousands)."""
+    def __init__(self, data):
+        self._data = data
+
+    def json_call(self, **kw):
+        from types import SimpleNamespace
+        return SimpleNamespace(data=self._data)
+
+
+def test_llm_fallback_normalizes_units_and_sums_debt():
+    """The LLM fallback maps foreign labels + normalizes thousands→millions (a no-op offline)."""
+    stub = _StubLLM({"reporting_units": "thousands", "period_end": "2026-03-29",
+                     "net_income": 435105, "financing_or_interest_expense": 49818,
+                     "income_tax_expense": 157590, "depreciation_and_amortization": 133002,
+                     "total_debt": 5357899})
+    got = fin_extract.llm_extract_figures("<foreign 10-Q text>", stub)
+    assert got["net_income"] == 435.1 and got["financing_expense"] == 49.8
+    assert got["income_tax_expense"] == 157.6 and got["depreciation_amortization"] == 133.0
+    assert got["consolidated_total_debt"] == 5357.9
+
+
+def test_llm_fallback_fills_fields_regex_cannot_read():
+    """A foreign-layout report (whole-integer thousands, 'Three Months Ended <Month D, YYYY>') is
+    detected and its figures filled by the LLM where the deterministic regex reads nothing."""
+    page = {"doc_id": "acme_10q", "page": 1, "doc_title": "ACME 10-Q", "image": None,
+            "width": 1000, "height": 1400, "blocks": [],
+            "text": ("ACME CORP CONSOLIDATED STATEMENTS OF INCOME (in thousands) Three Months "
+                     "Ended March 29, 2026 Net sales 3,104,167 Interest expense, net 49,818 "
+                     "Provision for income taxes 157,590 Net income 435,105")}
+    stub = _StubLLM({"reporting_units": "thousands", "net_income": 435105,
+                     "financing_or_interest_expense": 49818, "income_tax_expense": 157590,
+                     "depreciation_and_amortization": 133002, "total_debt": 5357899})
+    order, by_q = fin_extract.extract_financials([page], spec=None, llm=stub)
+    assert order == ["2026Q1"], order
+    r = by_q["2026Q1"]
+    assert r["period_end"] == "2026-03-29"
+    assert r["net_income"] == 435.1 and r["consolidated_total_debt"] == 5357.9
+
+
 if __name__ == "__main__":
     test_extracted_figures_match_the_store()
     test_upload_path_computes_covenant_from_documents()
     test_upload_still_handles_single_period_fallback()
+    test_llm_fallback_normalizes_units_and_sums_debt()
+    test_llm_fallback_fills_fields_regex_cannot_read()
     print("UPLOAD-DERIVED OK — prod path computes the covenant from documents (== deep result); "
           "single-period fallback intact.")

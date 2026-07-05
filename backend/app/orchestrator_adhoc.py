@@ -115,7 +115,10 @@ class AdHocRun:
     def _prepare_derived(self):
         try:
             self.spec = spec_extractor.build_spec(self.pages)
-            order, by_q = fin_extract.extract_financials(self.pages, self.spec)
+            # LIVE: let the LLM fill figures a foreign layout hides from the regex; offline stays
+            # deterministic (llm=None).
+            order, by_q = fin_extract.extract_financials(
+                self.pages, self.spec, llm=self.llm if config.LIVE else None)
         except Exception:
             return False
         n = self.spec.trailing_quarters
