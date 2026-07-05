@@ -14,7 +14,8 @@ import itertools
 import re
 from datetime import datetime, timezone
 
-from . import config, tools
+from . import config, tools, spec_extractor, fin_extract, generic_engine, linker
+from .gapcheck import detect_instrument
 from .llm import LLM, PRIME, CORE, FLASH
 from .retriever import TIER_MODEL
 
@@ -59,6 +60,7 @@ class AdHocRun:
         self.seq = itertools.count(1)
         self.citations: dict[str, dict] = {}
         self._cid = itertools.count(1)
+        self.engine = None          # set when the DERIVED (multi-quarter) path runs
 
     # ---- events + citations ----
     def ev(self, kind, phase, title, detail="", *, payload=None, tier=None, model=None,
@@ -99,9 +101,137 @@ class AdHocRun:
                                "backend": self.retriever.backend})
 
         cov = yield from self._detect()
-        yield from self._evidence(cov)
+        # Preferred path: if the uploads are quarterly reports, DERIVE the covenant spec from the
+        # agreement/amendment and EXTRACT the per-quarter figures from the reports, then run the
+        # SAME engine the deep scenarios use. Otherwise fall back to single-period extraction.
+        if self._prepare_derived():
+            yield from self._evidence_derived(cov)
+        else:
+            yield from self._evidence(cov)
         yield from self._verify(cov)
         yield from self._memo(cov)
+
+    # ---- DERIVED multi-quarter path (spec_extractor + fin_extract + generic_engine) ----
+    def _prepare_derived(self):
+        try:
+            self.spec = spec_extractor.build_spec(self.pages)
+            order, by_q = fin_extract.extract_financials(self.pages, self.spec)
+        except Exception:
+            return False
+        n = self.spec.trailing_quarters
+        testable = [q for i, q in enumerate(order) if i >= n - 1]
+        if not testable or not self.spec.threshold_schedule:
+            return False
+        self.order, self.by_q, self.tq = order, by_q, testable[-1]   # latest fully-covered quarter
+        return True
+
+    def _cite_val(self, value, tier=None):
+        p, b = linker.find_block(self.pages, value=value)
+        if not b:
+            return None
+        return self.cite_block({**b, "doc_id": p["doc_id"], "page": p["page"],
+                                "doc_title": p.get("doc_title", "")}, tier)
+
+    def _cite_span(self, text, tier=None):
+        p, b = linker.find_block(self.pages, text=text)
+        if not b:
+            return None
+        return self.cite_block({**b, "doc_id": p["doc_id"], "page": p["page"],
+                                "doc_title": p.get("doc_title", "")}, tier)
+
+    def _evidence_derived(self, cov):
+        r = generic_engine.compute(self.spec, self.order, self.by_q, self.tq)
+        self.engine = r
+        cov["threshold"] = r.threshold if r.threshold is not None else cov["threshold"]
+        cov["formula"] = "Consolidated Total Debt / trailing-4Q Adjusted EBITDA"
+
+        yield self.ev("status", "EVIDENCE", "Evidence loop started",
+                      f"Check: {cov['name']} · test quarter {self.tq} (period end {r.period_end})")
+        # retrieval #1 — EBITDA definition + threshold, from the uploaded agreement
+        yield self.ev("route", "EVIDENCE", "Routing → Flash retriever",
+                      "First-pass retrieval of the covenant definition and threshold.",
+                      tier="flash", model=TIER_MODEL["flash"])
+        hits = self.retriever.retrieve(
+            "Consolidated Adjusted EBITDA definition; Consolidated Total Debt; maximum leverage "
+            "ratio threshold shall not exceed", tier="flash", k=5)
+        yield self._retrieval_event(hits, 1, "EBITDA definition; Total Debt; threshold", "flash",
+                                    "First-pass retrieval of the covenant definition and threshold.")
+        self.cite_from_spec()
+
+        # tool: trailing-window sums from the EXTRACTED quarterly figures
+        s = lambda f: round(sum(self.by_q[q].get(f, 0.0) for q in r.window), 1)
+        yield self.ev("tool", "EVIDENCE", "Tool · financials_query",
+                      f"Trailing window {r.window[0]}–{r.window[-1]}: ΣNI {s('net_income')}, "
+                      f"ΣFin {s('financing_expense')}, ΣTax {s('income_tax_expense')}, "
+                      f"ΣD&A {s('depreciation_amortization')}; Total Debt {r.numerator}.",
+                      payload={"tool": "financials_query", "result": {
+                          "window": r.window, "consolidated_total_debt": r.numerator,
+                          "sum_net_income": s("net_income"),
+                          "sum_financing_expense": s("financing_expense"),
+                          "sum_income_tax": s("income_tax_expense"),
+                          "sum_depreciation_amortization": s("depreciation_amortization")}},
+                      mode="code")
+        self._cite_val(r.numerator)
+
+        naive_over = r.ratio_naive is not None and r.ratio_naive > r.threshold
+        yield self.ev("tool", "EVIDENCE", "Tool · ratio_calculator (naive)",
+                      f"{r.numerator:.1f} / {r.denom_naive:.1f} = {r.ratio_naive:.3f}x vs "
+                      f"{r.threshold:.2f}x → " + ("OVER (looks like a breach)" if naive_over
+                                                  else "within covenant"),
+                      payload={"tool": "ratio_calculator", "result": {
+                          "steps": r.calc_steps[:3], "ratio": r.ratio_naive},
+                          "threshold": r.threshold, "over": naive_over}, mode="code")
+
+        # gap-check + amendment addbacks
+        instrument = detect_instrument("\n".join(c["text"] for c in self.citations.values())) \
+            or (detect_instrument(self.full_text) if self.spec.addbacks else None)
+        gap = bool(self.spec.addbacks)
+        yield self.ev("gap", "EVIDENCE", "Gap-check → " + ("GAP FOUND" if gap else "no gap"),
+                      (f"The covenant references {instrument or 'an amendment'} that adjusts the "
+                       "Permitted Addbacks — retrieving and applying it within its cap."
+                       if gap else "Evidence is complete; no amending instrument to apply."),
+                      payload={"gap": {"gap_found": gap, "missing_document": instrument}},
+                      tier="core", model=config.MODEL_CORE, mode="code")
+        if gap:
+            yield self.ev("route", "EVIDENCE", "Routing → Prime retriever",
+                          "Escalating Flash → Prime to retrieve the amendment's addback caps.",
+                          tier="prime", model=TIER_MODEL["prime"])
+            ah = self.retriever.retrieve("Amendment Permitted Addbacks cap not to exceed "
+                                         "Device Strategy quality charges", tier="prime", k=3)
+            yield self._retrieval_event(ah, 2, "Amendment addback caps", "prime",
+                                        "Gap-check flagged the amendment; retrieving its caps.")
+            for a in self.spec.addbacks:
+                self.cite_from_cite(a.cite, "prime")
+
+        applied = [{"label": f"{a.category} addback (cap {self.cap_of(a):.0f})",
+                    "amount": a.allowed} for a in r.addbacks if a.allowed > 0]
+        yield self.ev("tool", "EVIDENCE", "Tool · ratio_calculator (adjusted)",
+                      f"Adjusted EBITDA {r.denom_adjusted:.1f} → {r.ratio_correct:.3f}x vs "
+                      f"{r.threshold:.2f}x → " + ("COMPLIANT" if r.compliant else "BREACH")
+                      + f" (headroom {r.headroom_x:+.3f}x)",
+                      payload={"tool": "ratio_calculator", "result": {
+                          "steps": r.calc_steps, "ratio": r.ratio_correct},
+                          "threshold": r.threshold, "over": not r.compliant}, mode="code")
+
+        self.facts = {"net_debt": r.numerator, "naive_ebitda": r.denom_naive,
+                      "calc": {"ratio": r.ratio_correct, "denominator_adjusted": r.denom_adjusted},
+                      "applied_addbacks": applied, "confidence": 0.9}
+
+    def cap_of(self, addback):
+        return next((a.cap for a in self.spec.addbacks if a.category == addback.category), 0.0)
+
+    def cite_from_spec(self):
+        # cite the derived numerator / threshold definitions on the uploaded pages
+        if self.spec.numerator_cite and self.spec.numerator_cite.text:
+            self._cite_span(self.spec.numerator_cite.text[:40])
+        t = self.spec.threshold_schedule[0].cite if self.spec.threshold_schedule else None
+        if t and t.text:
+            self._cite_span(t.text[:20])
+
+    def cite_from_cite(self, cite, tier=None):
+        if not cite or not cite.text:
+            return None
+        return self._cite_span(cite.text[:40], tier)
 
     # [1] DETECT the covenant
     def _detect(self):
@@ -407,11 +537,74 @@ class AdHocRun:
                       f"{self.llm.calls} LLM call(s) · recommendation: insufficient_data",
                       payload={"llm_calls": self.llm.calls})
 
+    def _memo_derived(self, cov):
+        """Memo for the derived multi-quarter path — verdict comes from the engine (compliant),
+        not from 'were addbacks applied', so a breach that survives the addbacks is a breach."""
+        r = self.engine
+        naive, final, thr, headroom = r.ratio_naive, r.ratio_correct, r.threshold, r.headroom_x
+        applied = [a for a in r.addbacks if a.allowed > 0]
+        S = lambda t, cs=(): {"text": t, "citations": [c for c in cs if c]}
+        tcite = self.spec.threshold_schedule[0].cite if self.spec.threshold_schedule else None
+        c_thr = (self._cite_span(tcite.text[:20]) if tcite and tcite.text else None) \
+            or next(iter(self.citations), None)
+        c_debt = self._cite_val(r.numerator)
+        c_caps = self.cite_from_cite(self.spec.addbacks[0].cite) if self.spec.addbacks else None
+
+        if r.compliant and naive is not None and naive > thr:
+            rec = "false_positive"
+            headline = (f"Naive leverage of {naive:.3f}x looks like a breach, but after the capped "
+                        f"Permitted Addbacks it is {final:.3f}x — within the {thr:.2f}x covenant "
+                        f"(headroom {headroom:+.3f}x).")
+        elif r.compliant:
+            rec = "no_breach"
+            headline = f"In compliance: leverage is {final:.3f}x against the {thr:.2f}x covenant " \
+                       f"(headroom {headroom:+.3f}x)."
+        else:
+            rec = "breach"
+            headline = (f"Covenant breach: leverage is {final:.3f}x against the {thr:.2f}x limit "
+                        f"(headroom {headroom:+.3f}x)" + (" — the capped addbacks do not cure it."
+                                                          if applied else "."))
+        disallowed = sum(a.disallowed for a in r.addbacks)
+        sections = [
+            {"heading": "Situation", "sentences": [
+                S(f"Tested {cov['name']} for the quarter ending {r.period_end} (trailing 4 fiscal "
+                  f"quarters {r.window[0]}–{r.window[-1]}), limit ≤ {thr:.2f}x.", [c_thr]),
+                S(f"On the reported figures the leverage ratio is {naive:.3f}x.", [c_debt])]},
+            {"heading": "Calculation trail", "sentences":
+                [S(f"Consolidated Total Debt {r.numerator:.0f} ÷ trailing Adjusted EBITDA "
+                   f"{r.denom_adjusted:.1f} = {final:.3f}x.", [c_debt])]
+                 + ([S(f"Permitted Addbacks applied within their lifetime caps"
+                       + (f"; {disallowed:.0f} disallowed by the cap" if disallowed > 0 else "")
+                       + ".", [c_caps])] if applied else [])},
+            {"heading": "Recommendation", "sentences": [S(
+                ("BREACH — escalate for a waiver discussion." if rec == "breach" else
+                 (f"NO BREACH — the naive breach was a false positive; headroom {headroom:+.3f}x."
+                  if rec == "false_positive" else
+                  f"IN COMPLIANCE — {headroom:+.3f}x of headroom.")))]},
+        ]
+        memo = {"recommendation": rec, "confidence": self.facts.get("confidence", 0.9),
+                "headline": headline, "sections": sections}
+        payload = {"memo": memo, "recommendation": rec, "confidence": memo["confidence"],
+                   "headline": headline, "ratio_naive": naive, "ratio_final": final,
+                   "threshold": thr, "headroom": headroom,
+                   "citations": list(self.citations.values()),
+                   "borrower": self.up["documents"][0]["title"] if self.up["documents"] else "Uploaded",
+                   "period": f"trailing 4FQ to {r.period_end}", "covenant": cov,
+                   "llm_calls": self.llm.calls}
+        yield self.ev("memo", "MEMO", "Escalation memo ready", headline, payload=payload,
+                      tier="prime", model=config.MODEL_PRIME, mode="code")
+        yield self.ev("done", "MEMO", "Run complete",
+                      f"{self.llm.calls} LLM call(s) · recommendation: {rec}",
+                      payload={"llm_calls": self.llm.calls})
+
     # [4] MEMO
     def _memo(self, cov):
         f = self.facts
         if f.get("insufficient"):
             yield from self._memo_insufficient(cov)
+            return
+        if self.engine is not None:
+            yield from self._memo_derived(cov)
             return
         naive = tools.ratio_calculator(f["net_debt"], f["naive_ebitda"])["ratio"]
         final = f["calc"]["ratio"]
