@@ -57,10 +57,10 @@ export function Memo({ memo, onCite, onDecision, decision, onAction }) {
           <span className="text-[11px] text-slate-500">{memo.borrower} · {memo.period}</span>
         </div>
         <h2 className="mt-2 text-[15px] font-semibold leading-snug text-slate-100">{m.headline}</h2>
-        {nextAction?.run && (
+        {nextAction?.corpus && (
           <button onClick={() => onAction?.(nextAction)}
             className="btn mt-2 bg-sky-500 px-3 py-1.5 text-[12px] text-slate-950 hover:bg-sky-400">
-            Deep-run {nextAction.borrower || nextAction.run} ({nextAction.run}) →
+            Deep-run {nextAction.borrower || 'top borrower'} →
           </button>
         )}
       </div>

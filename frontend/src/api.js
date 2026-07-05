@@ -42,6 +42,11 @@ export function runScenario(scenarioId, handlers) {
 export function runUpload(uploadId, handlers) {
   return stream(`/api/run_upload/${uploadId}`, handlers)
 }
+// Deep run from escalation INPUTS (borrower corpus + as-of date), not a scenario id.
+export function runDeep({ corpus, run_date, borrower }, handlers) {
+  const q = new URLSearchParams({ corpus, run_date, borrower: borrower || '' })
+  return stream(`/api/deeprun?${q}`, handlers)
+}
 
 export async function getSuggested(scenarioId) {
   try { const r = await fetch(`/api/suggested/${scenarioId}`); return (await r.json()).questions } catch { return [] }

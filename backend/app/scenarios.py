@@ -35,10 +35,27 @@ SCENARIOS = {
 }
 ORDER = ["S0", "S3", "S1", "S2", "S4"]
 
+# Data-availability registry: which borrowers have a full document room + financials tool store
+# connected, so a DEEP run can be launched on them. This is a fact about the dataset (a borrower's
+# data room is or isn't wired in), not a scenario branch — add a borrower ⇒ add an entry.
+DEEP_STORES = ["financials_quarterly", "transactions", "precedents_index"]
+DEEP_CORPUS_BY_BORROWER = {"Hospira, Inc.": "hospira"}
+
 
 def _quarter_for(run_date: str) -> str | None:
     _, by_q = hospira.financials()
     return next((q for q, r in by_q.items() if r.get("period_end") == run_date), None)
+
+
+def adhoc_deep(corpus: str, run_date: str, borrower: str | None = None) -> dict:
+    """Build + derive a deep-run config from ESCALATION INPUTS (a borrower's corpus + an as-of
+    date). This is the prod path: given those inputs, run the SAME deep pipeline as any scenario —
+    the config is not a stored scenario and carries no scenario id / canned answer."""
+    who = borrower or "the borrower"
+    trig = (f"Deep covenant check for {who} as of the quarter ending {run_date} — the amended "
+            "step-down makes this the decisive test.")
+    return derive({"id": f"deep-{corpus}-{run_date}", "corpus": corpus, "run_date": run_date,
+                   "stores": DEEP_STORES, "trigger": trig})
 
 
 def derive(sc: dict) -> dict:

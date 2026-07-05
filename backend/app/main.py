@@ -47,17 +47,14 @@ def scenarios():
     return {"scenarios": scen.all_views()}
 
 
-@app.get("/api/run/{scenario_id}")
-async def run(scenario_id: str):
-    cfg = scen.SCENARIOS.get(scenario_id)
-    if not cfg:
-        raise HTTPException(404, f"scenario {scenario_id} not found")
-    derived = scen.derive(cfg)           # everything is DERIVED from the pure config
-    is_triage = cfg["corpus"] == "portfolio"
+def _stream(derived: dict):
+    """Run a derived config through its pipeline and stream the trace as SSE. The pipeline is
+    chosen by the config's corpus (portfolio → triage, else deep) — no scenario-id branching."""
+    is_triage = derived["corpus"] == "portfolio"
     run_id = uuid.uuid4().hex[:12]
     events: list[dict] = []
     RUNS[run_id] = {"events": events, "scenario": derived, "memo": None, "decision": None}
-    gen_events = (orchestrator_triage.run_triage() if is_triage
+    gen_events = (orchestrator_triage.run_triage(derived) if is_triage
                   else orchestrator_hospira.run_scenario(derived))
 
     async def gen():
@@ -71,6 +68,24 @@ async def run(scenario_id: str):
         yield {"event": "end", "data": json.dumps({"run_id": run_id})}
 
     return EventSourceResponse(gen())
+
+
+@app.get("/api/run/{scenario_id}")
+async def run(scenario_id: str):
+    cfg = scen.SCENARIOS.get(scenario_id)
+    if not cfg:
+        raise HTTPException(404, f"scenario {scenario_id} not found")
+    return _stream(scen.derive(cfg))     # everything is DERIVED from the pure config
+
+
+@app.get("/api/deeprun")
+async def deeprun(corpus: str, run_date: str, borrower: str = ""):
+    """Launch a deep run from ESCALATION INPUTS (a borrower's corpus + an as-of date) — e.g. the
+    triage's 'deep-run the top borrower' hand-off. Builds an ad-hoc config and runs the SAME
+    pipeline; it is not tied to any stored scenario."""
+    if corpus not in scen.CORPORA:
+        raise HTTPException(404, f"unknown corpus {corpus}")
+    return _stream(scen.adhoc_deep(corpus, run_date, borrower or None))
 
 
 @app.get("/api/run/{run_id}/events")

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import {
-  getHealth, getScenarios, runScenario, runUpload, uploadDocuments,
+  getHealth, getScenarios, runScenario, runUpload, runDeep, uploadDocuments,
   getSuggested, chatStream, postDecision,
 } from './api.js'
 import Trace from './Trace.jsx'
@@ -112,7 +112,14 @@ export default function App() {
   }
 
   function handleAction(action) {
-    if (action?.run && convs[action.run]) { setActiveKey(action.run); setTimeout(() => startRun(action.run, (h) => runScenario(action.run, h), convs[action.run].prompt), 60) }
+    // Escalation carries INPUTS (borrower corpus + as-of date). Run the deep pipeline on those
+    // inputs as a new turn in THIS conversation — like attaching the borrower's files in a fresh
+    // chat — rather than jumping to a pre-defined scenario tab.
+    if (action?.corpus && action?.run_date) {
+      const who = action.borrower || 'the top borrower'
+      startRun(activeKey, (h) => runDeep(action, h),
+        `Deep-run ${who}'s leverage covenant as of the quarter ending ${action.run_date}.`)
+    }
   }
   async function decide(runTurnIdx, action) {
     const c = convs[activeKey]

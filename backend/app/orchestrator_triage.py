@@ -13,23 +13,12 @@ import json
 import os
 from datetime import datetime, timezone
 
-from . import config, covenant_engine as ce, ingest, hospira, linker, docroles
+from . import config, covenant_engine as ce, ingest, hospira, linker, docroles, scenarios as scen
 from .llm import LLM, PRIME
 from .retriever import TIER_MODEL
 
 DATASET = os.path.join(config.DATA_DIR, "dataset")
 PORT_DIR = os.path.join(DATASET, "documents", "portfolio")
-
-SCENARIO_S0 = {"id": "S0", "test_quarter": "2015Q1",
-               "label": "S0 · Quarter closed — review the portfolio",
-               "blurb": "Rank the book by risk before any deep check. Hospira surfaces #1 — its "
-                        "scanned 2014Q4 certificate reads 3.59x, already above the 3.50x step-down "
-                        "that hits next quarter.", "kind": "triage",
-               "prompt": "The quarter just closed — review the portfolio and tell me which borrower "
-                         "needs attention first.",
-               "doc_labels": ["Borrower profiles (Hospira, Atlantic, Cascadia)",
-                              "Latest 2014Q4 certificates (Hospira's is scanned)",
-                              "Amendment No. 1 (§6.6A step-down)"]}
 
 _corpus_id = None
 
@@ -61,7 +50,11 @@ def _now():
 
 
 class TriageRun:
-    def __init__(self):
+    def __init__(self, cfg=None):
+        # the as-of quarter is DERIVED from the run date (the quarter that just closed), not fixed
+        self.cfg = cfg or scen.derive(scen.SCENARIOS["S0"])
+        self.run_date = self.cfg["run_date"]
+        self.test_quarter = self.cfg["test_quarter"]
         self.corpus = _corpus()
         self.retriever = self.corpus["retriever"]
         self.pages = self.corpus["pages"]
@@ -108,7 +101,7 @@ class TriageRun:
             "borrower": "Hospira, Inc.", "ratio_2014q4": round(hosp.ratio_correct, 2),
             "forward_threshold": fwd, "forward_headroom": round(fwd - hosp.ratio_correct, 3),
             "trend": "thin & shrinking", "cap": "Device Strategy addback cap nearly exhausted",
-            "deep_run": "S2",
+            "deep_corpus": scen.DEEP_CORPUS_BY_BORROWER.get("Hospira, Inc."),
             "checks": ["Leverage §6.6A (amended definitions)",
                        "Device Strategy addback capacity (285/290 — nearly exhausted)",
                        "Certificate cross-check (borrower-submitted 2014Q2 → S4)"]}]
@@ -132,14 +125,14 @@ class TriageRun:
                 "forward_headroom": round(d["covenant_max"] - r14q4, 3),
                 "trend": ("upward drift " + f"{drift:+.2f}x/5Q" if drift > 0.05 else "stable"),
                 "cap": "no addback capacity" if "Atlantic" in name else "no one-time charges",
-                "deep_run": None, "checks": checks})
+                "deep_corpus": scen.DEEP_CORPUS_BY_BORROWER.get(name), "checks": checks})
         rows.sort(key=lambda x: x["forward_headroom"])
         return rows
 
     def stream(self):
         yield self.ev("status", "PLAN", "Quarter closed — portfolio review",
                       "Ranking 3 borrowers by covenant risk before any deep check.",
-                      payload={"scenario": SCENARIO_S0, "live": config.LIVE,
+                      payload={"scenario": self.cfg, "live": config.LIVE,
                                "backend": self.retriever.backend})
 
         # surface Hospira's latest certificate — a SCANNED, image-only page. VultronRetriever
@@ -227,11 +220,17 @@ class TriageRun:
             matrix.append(S(f"#{i+1} {rr['borrower']} — {rr['reason']}", [c_scan, c_step] if i == 0 else []))
             for chk in rr.get("checks", []):
                 matrix.append(S(f"     • {chk}"))
+        # escalation is INPUTS, not a scenario id: the top borrower's connected corpus + the as-of
+        # date (the just-closed quarter). The deep run then processes those inputs through the same
+        # pipeline — exactly as if the borrower's files were attached in a fresh chat.
+        top = ranking[0]
+        next_action = ({"borrower": top["borrower"], "corpus": top["deep_corpus"],
+                        "run_date": self.run_date} if top.get("deep_corpus") else None)
         sections = [
             {"heading": "Priority ranking & review matrix", "sentences": matrix},
             {"heading": "Recommended next step", "sentences":
-                [S(f"Deep-run {ranking[0]['borrower']} for {SCENARIO_S0['test_quarter']} now — the "
-                   "step-down makes this quarter the decisive test.", [c_step])]},
+                [S(f"Deep-run {top['borrower']} for {self.test_quarter} now — the step-down makes "
+                   "this quarter the decisive test.", [c_step])]},
         ]
         memo = {"recommendation": "triage", "confidence": 0.9,
                 "headline": f"Highest risk: {ranking[0]['borrower']} — recomputed 2014Q4 leverage "
@@ -244,7 +243,7 @@ class TriageRun:
                    "citations": list(self.citations.values()), "borrower": "Portfolio (3 borrowers)",
                    "period": "quarter close", "ranking": ranking,
                    "documents": [d["title"] for d in self.corpus["documents"]],
-                   "next_action": {"run": ranking[0]["deep_run"], "borrower": ranking[0]["borrower"]},
+                   "next_action": next_action,
                    "covenant": {"name": "Maximum Leverage Ratio"}, "llm_calls": self.llm.calls}
         yield self.ev("memo", "MEMO", "Triage complete", memo["headline"], payload=payload,
                       tier="prime", model=config.MODEL_PRIME, mode=res.mode)
@@ -292,9 +291,9 @@ class TriageRun:
         return cid
 
 
-def run_triage():
+def run_triage(cfg=None):
     try:
-        yield from TriageRun().stream()
+        yield from TriageRun(cfg).stream()
     except Exception as e:
         import traceback
         yield {"seq": -1, "t": _now(), "kind": "error", "phase": "-", "title": "Run error",

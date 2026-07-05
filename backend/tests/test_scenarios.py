@@ -110,6 +110,24 @@ def test_precedent_retrieval_top3():
     assert "PRECEDENT-2013-09" in {c["id"] for c in fp}
 
 
+def test_triage_escalation_is_inputs_not_scenario_id():
+    """S0's 'deep-run the top borrower' hand-off must carry INPUTS (borrower corpus + as-of date),
+    never a scenario id. Feeding those inputs to the SAME deep pipeline reproduces the deep result
+    (== S2 here) — proving the deep run processes the inputs, not a canned scenario."""
+    memo = next(e["payload"] for e in tr.run_triage(scen.cfg("S0")) if e["kind"] == "memo")
+    na = memo["next_action"]
+    assert na and "run" not in na, f"escalation still keyed to a scenario id: {na}"
+    assert na["corpus"] == "hospira" and na["run_date"] == "2015-03-31" and na["borrower"] == "Hospira, Inc."
+    # no ranking row may carry a scenario id either
+    assert all("deep_run" not in r for r in memo["ranking"])
+
+    deep = scen.adhoc_deep(na["corpus"], na["run_date"], na["borrower"])
+    md = next(e["payload"] for e in oh.run_scenario(deep) if e["kind"] == "memo")
+    ms2 = next(e["payload"] for e in oh.run_scenario(scen.cfg("S2")) if e["kind"] == "memo")
+    assert md["recommendation"] == ms2["recommendation"] == "breach"
+    assert md["ratio_final"] == ms2["ratio_final"] and md["threshold"] == ms2["threshold"]
+
+
 def test_consistency_check_cross_verifies_filing_text():
     """B2: the run cross-verifies a tool-store figure against the quarterly report's TEXT LAYER
     (not an assumption). Debt must be corroborated by the test-quarter filing."""
@@ -155,6 +173,7 @@ if __name__ == "__main__":
     for fn in (test_s4_certificate_crosscheck, test_s1_trace_assertions, test_s0_scanned_thumbnail,
                test_live_doc_set_is_real_no_excerpts, test_precedent_retrieval_top3,
                test_no_golden_leakage_in_ingest, test_atlantic_coverage_and_filing,
+               test_triage_escalation_is_inputs_not_scenario_id,
                test_consistency_check_cross_verifies_filing_text,
                test_negative_only_agreement_no_financials, test_negative_amendment_referenced_but_absent):
         fn(); print("ok:", fn.__name__)
