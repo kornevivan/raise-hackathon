@@ -6,7 +6,7 @@ Built for the **RAISE Summit Hackathon — Vultr track: "Agentic Intelligence wi
 
 > **The demo beat (S1, 2014 Q2).** A borrower's quarter prints **4.218× — a covenant breach**. A naive bot escalates it. Covenant Sentinel notices the EBITDA definition was *amended*, re‑retrieves Amendment No. 1, applies the Permitted Addbacks **subject to their lifetime cap** — `min($130M charges, $100M remaining cap) = $100M, so $30M is disallowed` — and recomputes **3.606× vs the 3.75× covenant. No breach**, but a thin 0.144× of headroom. It caught a false positive *and* refused to over‑credit the addback.
 
-**Video walkthrough:** https://www.youtube.com/watch?v=Ql6B7v9gmTs · **Public demo:** `http://<your-vultr-ip>` · **Runs with zero setup locally in REPLAY mode** (deterministic, no API key).
+**Live demo:** http://45.76.15.126 (Vultr · LIVE inference) · **Video walkthrough:** https://www.youtube.com/watch?v=Ql6B7v9gmTs · also **runs with zero setup locally in REPLAY mode** (deterministic, no API key).
 
 ---
 
